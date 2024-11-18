@@ -5,6 +5,7 @@ import Logo from "../assets/Logo.png";
 import Image from "next/image";
 import { IoMenu, IoClose } from "react-icons/io5";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function Navbar() {
   const [isNavOpen, setIsNavOpen] = useState<boolean>(false);
@@ -23,15 +24,23 @@ export default function Navbar() {
       </div>
 
       <ul className="text-lg font-medium items-center hidden md:flex">
-        <li className="p-4">Overview</li>
-        <li className="p-4">Features</li>
-        <li className="p-4">Contact us</li>
+        <li className="p-4 hover:underline">
+          <a href="#">Overview</a>
+        </li>
+        <li className="p-4 hover:underline">
+          <a href="#">Features</a>
+        </li>
+        <li className="p-4 hover:underline">
+          <a href="#">Contact us</a>
+        </li>
       </ul>
 
       <div className="hidden md:flex justify-center items-center">
-        <button className="border border-white px-5 py-2 font-bold text-H4 rounded-lg">
-          Sign In
-        </button>
+        <Link href="/sign-in">
+          <button className="border border-white px-5 py-2 font-bold text-H4 rounded-lg hover:bg-white hover:text-C1">
+            Sign In
+          </button>
+        </Link>
       </div>
 
       <div className="flex items-center md:hidden" onClick={ToggleNav}>
@@ -49,15 +58,18 @@ export default function Navbar() {
         </div>
         <ul className="mb-2">
           <li className="p-4 border-b border-gray-400 hover:bg-gray-400">
-            Overview
+            <a href="#">Overview</a>
           </li>
           <li className="p-4 border-b border-gray-400 hover:bg-gray-400">
-            Features
+            <a href="#">Features</a>
           </li>
           <li className="p-4 border-b border-gray-400 hover:bg-gray-400">
-            Contact us
+            <a href="#">Contact us</a>
           </li>
-          <li className="p-4 hover:bg-gray-400">Sign In</li>
+
+          <li className="p-4 hover:bg-gray-400">
+            <Link href="/sign-in">Sign In</Link>
+          </li>
         </ul>
       </div>
     </div>

@@ -1,13 +1,19 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
- 
-// This function can be marked `async` if using `await` inside
-export function middleware(request: NextRequest) {
-    console.log("Use middleware") // middleware are between client and server
-  return NextResponse.redirect(new URL('/home', request.url))
-}
- 
-// See "Matching Paths" below to learn more
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+
+const isPublicRoute = createRouteMatcher(['/','/sign-in(.*)', '/sign-up(.*)'])
+
+export default clerkMiddleware(async (auth, request) => {
+  if (!isPublicRoute(request)) {
+    await auth.protect()
+  }
+})
+
 export const config = {
-  matcher: '/about/:path*', // :path* is mean every path in nest of /about
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+    '/dashboard(.*)',
+  ],
 }
