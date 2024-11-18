@@ -24,13 +24,13 @@ export default function Navbar() {
       </div>
 
       <ul className="text-lg font-medium items-center hidden md:flex">
-        <li className="p-4 hover:underline">
+        <li className="p-4 hover:underline underline-offset-4">
           <a href="#">Overview</a>
         </li>
-        <li className="p-4 hover:underline">
+        <li className="p-4 hover:underline underline-offset-4">
           <a href="#">Features</a>
         </li>
-        <li className="p-4 hover:underline">
+        <li className="p-4 hover:underline underline-offset-4">
           <a href="#">Contact us</a>
         </li>
       </ul>

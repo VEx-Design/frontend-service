@@ -13,10 +13,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`font-lexend antialiased`}>
-        <ClerkProvider>{children}</ClerkProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={`font-lexend antialiased`}>{children}</body>
+      </html>
+    </ClerkProvider>
   );
 }
