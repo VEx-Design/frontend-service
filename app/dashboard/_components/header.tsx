@@ -1,5 +1,5 @@
 import React from "react";
-import Logo from "../assets/Logo.png";
+import Logo from "@/public/images/Logo.png";
 import Image from "next/image";
 import { UserButton } from "@clerk/nextjs";
 import { auth, currentUser } from "@clerk/nextjs/server";
@@ -17,13 +17,13 @@ export default async function header() {
     <div className="bg-C1 text-M1 flex justify-between px-10 py-4 h-20">
       <div className="flex gap-3 items-center">
         <a href="#" className="flex justify-center items-center">
-          <Image src={Logo} alt="Logo" height={24} width={43} />
+          <Image src={Logo} alt="Logo" className="w-auto h-7" priority />
         </a>
         <p className="font-bold text-3xl">VExDesign</p>
       </div>
       <div className="flex items-center gap-3 ">
-        <div>
-          {user?.firstName} {user?.lastName}
+        <div className="text-sm hidden md:block">
+          {user?.firstName} {user?.lastName?.charAt(0)} .
         </div>
         <UserButton
           appearance={{

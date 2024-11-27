@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Logo from "../assets/Logo.png";
+import Logo from "../../public/images/Logo.png";
 import Image from "next/image";
 import { IoMenu, IoClose } from "react-icons/io5";
 import { useState } from "react";
@@ -18,7 +18,7 @@ export default function Navbar() {
     <div className="bg-transparent text-M1 flex justify-between px-10 py-4 h-20">
       <div className="flex gap-3 items-center">
         <a href="#" className="flex justify-center items-center">
-          <Image src={Logo} alt="Logo" height={24} width={43} />
+          <Image src={Logo} alt="Logo" className="w-auto h-7" priority />
         </a>
         <p className="font-bold text-3xl">VExDesign</p>
       </div>
