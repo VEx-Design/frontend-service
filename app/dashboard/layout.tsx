@@ -1,5 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
-import Header from "./_components/header";
+import Header from "./_components/Header";
 import Sidebar from "./_components/Sidebar";
 
 export default async function DashboardLayout({

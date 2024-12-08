@@ -4,11 +4,11 @@ import Image from "next/image";
 import { UserButton } from "@clerk/nextjs";
 import { auth, currentUser } from "@clerk/nextjs/server";
 
-export default async function header() {
+export default async function Header() {
   const userId = await auth();
 
   if (!userId) {
-    return <div>Error Auth in header</div>;
+    return <div>Error Auth in Header</div>;
   }
 
   const user = await currentUser();
