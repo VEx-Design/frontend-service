@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { ObjectNode } from "../types/object";
 import { PyramidIcon } from "lucide-react";
 import Input from "./Input";
@@ -11,22 +11,28 @@ interface Props {
 export default function InspectorBar(props: Props) {
   const [name, setName] = useState(props.data.name);
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const updatedName = e.target.value;
-    setName(updatedName);
-    if (props.data.name) {
-      props.updateData({ ...props.data, name: updatedName });
-    }
-  };
+  const handleNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const updatedName = e.target.value;
+      setName(updatedName);
+      if (props.data.name) {
+        props.updateData({ ...props.data, name: updatedName });
+      }
+    },
+    [props]
+  );
 
-  const handleVarChange = (index: number, value: number) => {
-    const updatedVars = [...props.data.type.vars];
-    updatedVars[index].value = value;
-    props.updateData({
-      ...props.data,
-      type: { ...props.data.type, vars: updatedVars },
-    });
-  };
+  const handleVarChange = useCallback(
+    (index: number, value: number) => {
+      const updatedVars = [...props.data.type.vars];
+      updatedVars[index].value = value;
+      props.updateData({
+        ...props.data,
+        type: { ...props.data.type, vars: updatedVars },
+      });
+    },
+    [props]
+  );
 
   return (
     <div className="flex flex-col w-72 h-screen bg-editbar text-foreground border-l-2 border-editbar-border py-4 overflow-y-auto">
