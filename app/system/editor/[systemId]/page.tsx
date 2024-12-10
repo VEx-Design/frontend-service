@@ -1,6 +1,7 @@
 "use client";
 
 import Editor from "@/features/systems/components/Editor";
+import EditorNavbar from "@/features/systems/components/EditorNavbar";
 import InspectorBar from "@/features/systems/components/InspectorBar";
 import { ObjectNode } from "@/features/systems/types/object";
 import { useState } from "react";
@@ -23,14 +24,19 @@ export default function Page() {
   };
 
   return (
-    <div className="flex h-screen">
-      {/* Editor Area */}
-      <div className="flex-1">
-        <Editor />
-      </div>
+    <div className="flex h-screen flex-col">
+      {/* Navbar */}
+      <EditorNavbar />
 
-      {/* Inspector Sidebar */}
-      <InspectorBar data={data} updateData={updateData} />
+      <div className="flex h-full">
+        {/* Editor Area */}
+        <div className="flex-1">
+          <Editor />
+        </div>
+
+        {/* Inspector Sidebar */}
+        <InspectorBar data={data} updateData={updateData} />
+      </div>
     </div>
   );
 }

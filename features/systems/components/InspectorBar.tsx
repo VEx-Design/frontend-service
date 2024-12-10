@@ -35,7 +35,7 @@ export default function InspectorBar(props: Props) {
   );
 
   return (
-    <div className="flex flex-col w-72 h-screen bg-editbar text-foreground border-l-2 border-editbar-border py-4 overflow-y-auto">
+    <div className="flex flex-col w-72 h-full bg-editbar text-foreground border-l-2 border-editbar-border py-4 overflow-y-auto">
       <header className="text-center text-lg font-semibold border-b-2 border-editbar-border pb-4">
         Properties
       </header>
