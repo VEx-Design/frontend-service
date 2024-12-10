@@ -1,9 +1,9 @@
 export interface ObjectNode {
   name: string;
-  type: Type;
+  type: ObjectType;
 }
 
-interface Type {
+interface ObjectType {
   name: string;
   vars: {
     name: string;
