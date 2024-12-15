@@ -10,3 +10,8 @@ interface ObjectType {
     value: number;
   }[];
 }
+
+export interface ProjectNode {
+  ID: string;
+  name: string;
+}

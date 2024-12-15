@@ -1,17 +1,21 @@
+import { cn } from "@/lib/utils";
 import React from "react";
+import { mainColors } from "./colors";
 
 interface Props {
-  title: string;
+  children: React.ReactNode;
   handleButtonClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  variant?: "primary" | "secondary" | "sensitive";
 }
 
 export default function Button(props: Props) {
+  const variant = props.variant ? props.variant : "primary";
   return (
     <button
-      className="bg-orange-500 text-sm text-white px-5 py-2 rounded-lg"
+      className={cn("px-4 py-2 rounded-lg", mainColors[variant])}
       onClick={props.handleButtonClick}
     >
-      {props.title}
+      {props.children}
     </button>
   );
 }
