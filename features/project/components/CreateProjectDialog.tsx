@@ -1,9 +1,37 @@
 "use client";
 
+import Button from "@/components/Button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/Dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormSubmit,
+} from "@/components/Form";
+import Input from "@/components/inputs/Input";
 import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 export default function CreateProjectDialog() {
+  const createProjectSchema = z.object({
+    name: z.string().max(50),
+    description: z.string().max(80).optional(),
+  });
+
+  type createProjectData = z.infer<typeof createProjectSchema>;
+  const form = useForm<createProjectData>({
+    resolver: zodResolver(createProjectSchema),
+    defaultValues: {},
+  });
+
+  const onSubmit = (data: createProjectData) => {
+    console.log("Form data submitted: ", data);
+  };
+
   return (
     <Dialog title="New Project">
       <DialogTrigger>
@@ -12,9 +40,35 @@ export default function CreateProjectDialog() {
         </button>
       </DialogTrigger>
       <DialogContent>
-        <button className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
-          Close
-        </button>
+        <Form form={form} onSubmit={onSubmit}>
+          <FormField
+            name="name"
+            register={form.register}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input field={field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="description"
+            register={form.register}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Input field={field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormSubmit>
+            <Button type="submit">Create</Button>
+          </FormSubmit>
+        </Form>
       </DialogContent>
     </Dialog>
   );

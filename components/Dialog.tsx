@@ -1,10 +1,9 @@
 "use client";
 
-import getChildren from "@/lib/getChildren";
+import { getChild } from "@/components/getChildren";
 import React, { createContext, useState, useContext, useMemo } from "react";
 import { IoClose } from "react-icons/io5";
 import { RiStickyNoteAddFill } from "react-icons/ri";
-import Button from "./Button";
 
 const DialogContext = createContext<{
   openDialog: () => void;
@@ -27,12 +26,12 @@ export function Dialog(props: DialogProps) {
   };
 
   const trigger = useMemo(
-    () => getChildren(props.children, DialogTrigger),
+    () => getChild(props.children, DialogTrigger),
     [props.children]
   );
 
   const content = useMemo(
-    () => getChildren(props.children, DialogContent),
+    () => getChild(props.children, DialogContent),
     [props.children]
   );
 
@@ -55,11 +54,6 @@ export function Dialog(props: DialogProps) {
               </button>
             </div>
             <div className="p-4">{content}</div>
-            <div className="p-4">
-              <div className="flex justify-end">
-                <Button>Create</Button>
-              </div>
-            </div>
           </div>
         </div>
       )}
