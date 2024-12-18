@@ -6,7 +6,7 @@ export default function Empty() {
   return (
     <div className="flex flex-col justify-center items-center h-full">
       <Image src={EmptyImage} alt="EmptyProject" height={300} width={300} />
-      <span>
+      <span className="text-center">
         Your project library is empty. Start by creating a new project or
         importing one from the community.
       </span>

@@ -1,4 +1,4 @@
-import Typewriter from "../components/TypeWriter";
+import Typewriter from "../TypeWriter";
 
 export default function Overview() {
   return (

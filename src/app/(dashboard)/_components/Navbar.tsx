@@ -1,6 +1,6 @@
 import React from "react";
-import Logo from "@/public/images/Logo.png";
 import Image from "next/image";
+import Logo from "@/public/images/Logo.png";
 import { UserButton } from "@clerk/nextjs";
 import { auth, currentUser } from "@clerk/nextjs/server";
 

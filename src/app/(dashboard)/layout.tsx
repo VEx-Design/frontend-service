@@ -1,5 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
-import Header from "./_components/Header";
+import Navbar from "./_components/Navbar";
 import Sidebar from "./_components/Sidebar";
 
 export default async function DashboardLayout({
@@ -16,7 +16,7 @@ export default async function DashboardLayout({
   return (
     <section className="min-h-screen flex flex-col">
       <div className="flex-none">
-        <Header />
+        <Navbar />
       </div>
       <div className="flex flex-auto">
         <div className="pt-5 flex-none">

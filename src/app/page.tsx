@@ -1,6 +1,6 @@
 import React from "react";
-import Navbar from "./components/Navbar";
-import Overview from "./sections/Overview";
+import Navbar from "@/src/components/Navbar";
+import Overview from "@/src/components/sections/Overview";
 
 export default function Home() {
   return (

@@ -5,7 +5,7 @@ import { IoClose } from "react-icons/io5";
 import { IoIosAddCircle } from "react-icons/io";
 import { IoSearchSharp } from "react-icons/io5";
 import { RiApps2AddLine } from "react-icons/ri";
-import ObjectCard from "../components/ObjectCard";
+import ObjectCard from "../../components/ObjectCard";
 
 const Parameters = [
   {

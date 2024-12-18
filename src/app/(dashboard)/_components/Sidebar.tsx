@@ -13,32 +13,32 @@ export default function Sidebar() {
     <div className="min-h-full border-r px-5">
       <ul>
         <li className="p-4 hover:bg-B1 hover:rounded-md ">
-          <Link href="/dashboard/project">
+          <Link href="/project">
             <Image src={Home} alt="Home" width={24} height={24} />
           </Link>
         </li>
         <li className="p-4 hover:bg-B1 hover:rounded-md">
-          <Link href="/dashboard/library">
+          <Link href="/library">
             <Image src={Library} alt="Library" width={24} height={24} />
           </Link>
         </li>
         <li className="p-4 hover:bg-B1 hover:rounded-md">
-          <Link href="/dashboard/object">
+          <Link href="/object">
             <Image src={ObjectList} alt="ObjectList" width={24} height={24} />
           </Link>
         </li>
         <li className="p-4 hover:bg-B1 hover:rounded-md">
-          <Link href="/dashboard/warehouse">
+          <Link href="/warehouse">
             <Image src={Warehouse} alt="Warehouse" width={24} height={24} />
           </Link>
         </li>
         <li className="p-4 hover:bg-B1 hover:rounded-md">
-          <Link href="/dashboard/bookmark">
+          <Link href="/community">
             <Image src={Community} alt="Community" width={24} height={24} />
           </Link>
         </li>
         <li className="p-4 hover:bg-B1 hover:rounded-md">
-          <Link href="/dashboard/community">
+          <Link href="/bookmark">
             <Image src={Bookmark} alt="Bookmark" width={24} height={24} />
           </Link>
         </li>
