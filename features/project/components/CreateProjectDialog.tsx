@@ -14,22 +14,30 @@ import Input from "@/components/inputs/Input";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { createProjectData, createProjectSchema } from "../schema/project";
+import { useMutation } from "@tanstack/react-query";
+import createProject from "../actions/createProject";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 export default function CreateProjectDialog() {
-  const createProjectSchema = z.object({
-    name: z.string().max(50),
-    description: z.string().max(80).optional(),
-  });
-
-  type createProjectData = z.infer<typeof createProjectSchema>;
   const form = useForm<createProjectData>({
     resolver: zodResolver(createProjectSchema),
     defaultValues: {},
   });
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: createProject,
+    onSuccess: () => {
+      toast.success("Workflow created", { id: "create-workflow" });
+    },
+    onError: () => {
+      toast.error("Failed to create workflow", { id: "create-workflow" });
+    },
+  });
+
   const onSubmit = (data: createProjectData) => {
-    console.log("Form data submitted: ", data);
+    mutate(data);
   };
 
   return (
@@ -66,7 +74,10 @@ export default function CreateProjectDialog() {
             )}
           />
           <FormSubmit>
-            <Button type="submit">Create</Button>
+            <Button type="submit">
+              {!isPending && "Create"}
+              {isPending && <Loader2 className="animate-spin" />}
+            </Button>
           </FormSubmit>
         </Form>
       </DialogContent>
