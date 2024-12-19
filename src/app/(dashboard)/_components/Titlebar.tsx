@@ -7,8 +7,8 @@ import { IoClose } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 import LibraryForm from "./_forms/LibraryForm";
 import { RiStickyNoteAddFill } from "react-icons/ri";
-import OwnDropdown from "@/src/components/OwnDropdown";
-import OpenDropdown from "@/src/components/OpenDropdown";
+import FilterDropdown from "@/src/components/FilterDropdown";
+import SortDropdown from "@/src/components/SortDropdown";
 import ListDisplay from "@/public/icons/DisplayCardIcons/ph_list-light.svg";
 import CardDisplay from "@/public/icons/DisplayCardIcons/ri_gallery-view-2.svg";
 
@@ -17,6 +17,10 @@ interface TitlebarProps {
   buttonAction: "redirect" | "popup";
   currentView: "card" | "list";
   onViewChange: (view: "card" | "list") => void;
+  onFilterChange: (option: "All" | "Own by me" | "Own by anyone") => void;
+  onSortChange: (
+    option: "Last Modified" | "Created on" | "A - Z" | "Z - A"
+  ) => void;
 }
 
 function Titlebar({
@@ -24,6 +28,8 @@ function Titlebar({
   buttonAction,
   currentView,
   onViewChange,
+  onFilterChange,
+  onSortChange,
 }: TitlebarProps) {
   const router = useRouter();
   const [popup, setPopup] = useState<boolean>(false);
@@ -87,8 +93,8 @@ function Titlebar({
           </div>
         </div>
         <div className="flex gap-4">
-          <OwnDropdown />
-          <OpenDropdown />
+          <FilterDropdown onFilterChange={onFilterChange} />
+          <SortDropdown onSortChange={onSortChange} />
         </div>
       </div>
 

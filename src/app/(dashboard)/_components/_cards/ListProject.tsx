@@ -21,14 +21,18 @@ function ListProject({
       <img src={image_url} alt="" className="w-7 h-7 rounded object-cover" />
       <div className="flex border-r-2 px-3 flex-1 gap-3 flex-wrap justify-between">
         <span className="font-semibold ">{project_name}</span>
-        <div className="bg-C1 text-white w-fit px-2 py-1 text-xs rounded-lg">
+        <div
+          className={`${
+            can_edit ? "bg-C1" : "bg-gray-400"
+          } text-white w-fit px-2 py-1 text-xs rounded-lg`}
+        >
           {can_edit ? "Can Edit" : "View Only"}
         </div>
       </div>
-      <span className="border-r-2 px-3 flex-initial w-[150px] truncate hidden sm:block">
+      <span className="text-xs text-gray-400 border-r-2 px-3 flex-initial w-[150px] truncate hidden sm:block">
         {time_recent_access}
       </span>
-      <span className="border-r-2 px-3 flex-initial w-[150px] truncate hidden sm:block ">
+      <span className="text-xs text-gray-400 border-r-2 px-3 flex-initial w-[150px] truncate hidden sm:block ">
         by {owner}
       </span>
       <div className="pl-2">
