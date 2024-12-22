@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import { AppProviders } from "@/components/providers/AppProviders";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`font-lexend antialiased`}>{children}</body>
+        <body className={`font-lexend antialiased`}>
+          <AppProviders>{children}</AppProviders>
+        </body>
       </html>
     </ClerkProvider>
   );
