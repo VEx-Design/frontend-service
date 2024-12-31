@@ -71,7 +71,7 @@ export function FormItem(props: FormItemProps) {
     [props.children]
   );
 
-  const controll = useMemo(
+  const control = useMemo(
     () => getChild(props.children, FormControl),
     [props.children]
   );
@@ -79,7 +79,7 @@ export function FormItem(props: FormItemProps) {
   return (
     <div className="flex flex-col gap-1">
       <div>{label}</div>
-      <div>{controll}</div>
+      <div>{control}</div>
     </div>
   );
 }

@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import Editor from "@/features/systems/components/Editor";
 import EditorNavbar from "@/features/systems/components/EditorNavbar";
 import InspectorBar from "@/features/systems/components/InspectorBar";
@@ -27,16 +32,19 @@ export default function Page() {
     <div className="flex h-screen flex-col">
       {/* Navbar */}
       <EditorNavbar />
-
-      <div className="flex h-full">
-        {/* Editor Area */}
-        <div className="flex-1">
+      <ResizablePanelGroup direction="horizontal">
+        <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
+          <InspectorBar data={data} updateData={updateData} />
+        </ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel defaultSize={65} minSize={15}>
           <Editor />
-        </div>
-
-        {/* Inspector Sidebar */}
-        <InspectorBar data={data} updateData={updateData} />
-      </div>
+        </ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
+          <InspectorBar data={data} updateData={updateData} />
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 }

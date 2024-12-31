@@ -14,7 +14,7 @@ export default async function DashboardLayout({
   }
 
   return (
-    <section className="min-h-screen flex flex-col">
+    <section className="h-screen flex flex-col">
       <div className="flex-none">
         <Navbar />
       </div>
@@ -22,7 +22,7 @@ export default async function DashboardLayout({
         <div className="pt-5 flex-none">
           <Sidebar />
         </div>
-        <div className="pt-5 flex-1 px-8">{children}</div>
+        <div className="flex flex-1 pt-5 px-8">{children}</div>
       </div>
     </section>
   );

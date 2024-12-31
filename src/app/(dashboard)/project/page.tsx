@@ -40,6 +40,7 @@ export default function Project() {
         console.log(response);
         if (response.data && response.data.length > 0) {
           setProjects(response.data);
+          // setProjects([]);
         } else {
           setProjects([]);
         }
@@ -98,7 +99,7 @@ export default function Project() {
   const filteredAndSortedProjects = sortProjects(filterProjects);
 
   return (
-    <>
+    <div className="flex flex-1 flex-col">
       <Titlebar
         title="Project"
         buttonAction="redirect"
@@ -117,13 +118,13 @@ export default function Project() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col flex-1 gap-3">
             {filteredAndSortedProjects.map((project, index) => (
               <ListProject key={index} {...project} />
             ))}
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }

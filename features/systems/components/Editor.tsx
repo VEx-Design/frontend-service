@@ -60,6 +60,7 @@ export default function Editor() {
         onEdgesChange={onEdgesChange}
         style={rfStyle}
         fitView
+        fitViewOptions={{ maxZoom: 0.8 }}
       >
         <Background />
         <Controls />

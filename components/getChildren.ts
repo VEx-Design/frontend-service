@@ -38,7 +38,7 @@ export function getChildren<T extends ElementType>(
   children: ReactNode,
   componentCon: T,
   props?: React.ComponentProps<T>
-): ReactElement[] | null {
+): ReactElement[] {
   const matchingComponents = React.Children.toArray(children).filter(
     (child): child is ReactElement => {
       if (!isValidElement(child)) return false;
