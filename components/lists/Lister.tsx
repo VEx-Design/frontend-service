@@ -6,9 +6,11 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { ViewType } from "../views/View";
+import { ScrollArea } from "../ui/scroll-area";
 
 type Data = { [Key: string]: string };
 
@@ -257,18 +259,37 @@ export function ListerContentView(props: ListerContentViewProps) {
     );
   }
 
+  const parentRef = useRef<HTMLDivElement>(null); // Ref to the parent container
+  const [parentHeight, setParentHeight] = useState(0); // State to store parent height
+
+  // Update parent height on mount and resize
+  useEffect(() => {
+    const updateHeight = () => {
+      if (parentRef.current) {
+        setParentHeight(parentRef.current.offsetHeight);
+      }
+    };
+
+    updateHeight();
+
+    window.addEventListener("resize", updateHeight);
+    return () => window.removeEventListener("resize", updateHeight);
+  }, []);
+
   return (
-    <div className="flex flex-1">
-      {context.currentView === "card" && (
-        <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 justify-items-center">
-          {props.render({ data: context.data, type: context.currentView })}
-        </div>
-      )}
-      {context.currentView === "list" && (
-        <div className="flex flex-col flex-1 gap-3">
-          {props.render({ data: context.data, type: context.currentView })}
-        </div>
-      )}
+    <div ref={parentRef} className="flex flex-1">
+      <ScrollArea className="w-full" style={{ height: parentHeight }}>
+        {context.currentView === "card" && (
+          <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 justify-items-center">
+            {props.render({ data: context.data, type: context.currentView })}
+          </div>
+        )}
+        {context.currentView === "list" && (
+          <div className="flex flex-col flex-1 gap-3">
+            {props.render({ data: context.data, type: context.currentView })}
+          </div>
+        )}
+      </ScrollArea>
     </div>
   );
 }
