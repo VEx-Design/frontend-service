@@ -11,7 +11,7 @@ import {
   FormSubmit,
 } from "@/components/Form";
 import Input from "@/components/inputs/Input";
-import React from "react";
+import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createProjectData, createProjectSchema } from "../schema/project";
@@ -29,16 +29,20 @@ export default function CreateProjectDialog() {
   const { mutate, isPending } = useMutation({
     mutationFn: createProject,
     onSuccess: () => {
-      toast.success("Workflow created", { id: "create-workflow" });
+      toast.success("Project created", { id: "create-project" });
     },
     onError: () => {
-      toast.error("Failed to create workflow", { id: "create-workflow" });
+      toast.error("Failed to create project", { id: "create-project" });
     },
   });
 
-  const onSubmit = (data: createProjectData) => {
-    mutate(data);
-  };
+  const onSubmit = useCallback(
+    (values: createProjectData) => {
+      toast.loading("Creating project...", { id: "create-project" });
+      mutate(values);
+    },
+    [mutate]
+  );
 
   return (
     <Dialog title="New Project">
@@ -52,11 +56,18 @@ export default function CreateProjectDialog() {
           <FormField
             name="name"
             register={form.register}
-            render={({ field }) => (
+            render={({ field, isError }) => (
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input field={field} />
+                  <Input
+                    field={field}
+                    className={
+                      isError
+                        ? "border-red-500 focus:border-red-500 focus:outline-none"
+                        : ""
+                    }
+                  />
                 </FormControl>
               </FormItem>
             )}
@@ -64,11 +75,18 @@ export default function CreateProjectDialog() {
           <FormField
             name="description"
             register={form.register}
-            render={({ field }) => (
+            render={({ field, isError }) => (
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Input field={field} />
+                  <Input
+                    field={field}
+                    className={
+                      isError
+                        ? "border-red-500 focus:border-red-500 focus:outline-none"
+                        : ""
+                    }
+                  />
                 </FormControl>
               </FormItem>
             )}

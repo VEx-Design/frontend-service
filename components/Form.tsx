@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { createContext, useContext, useMemo } from "react";
 import {
+  FieldErrors,
   FieldValues,
   Path,
   SubmitHandler,
@@ -10,6 +11,14 @@ import {
   UseFormReturn,
 } from "react-hook-form";
 import { getChild, getChildren } from "./getChildren";
+
+interface FormContextType<TFieldValues extends FieldValues> {
+  errors: FieldErrors<TFieldValues>;
+}
+
+export const FormContext = createContext<
+  FormContextType<FieldValues> | undefined
+>(undefined);
 
 interface FormProps<TFormValues extends FieldValues> {
   form: UseFormReturn<TFormValues>;
@@ -30,11 +39,17 @@ export function Form<TFormValues extends FieldValues>(
     [props.children]
   );
 
+  const {
+    formState: { errors },
+  } = props.form;
+
   return (
-    <form onSubmit={props.form.handleSubmit(props.onSubmit)}>
-      {fields}
-      <div>{button}</div>
-    </form>
+    <FormContext.Provider value={{ errors: errors }}>
+      <form onSubmit={props.form.handleSubmit(props.onSubmit)}>
+        {fields}
+        <div>{button}</div>
+      </form>
+    </FormContext.Provider>
   );
 }
 
@@ -46,18 +61,42 @@ export function FormSubmit(props: FormSubmitProps) {
   return <div className="flex justify-end">{props.children}</div>;
 }
 
+export const FormFieldContext = createContext<{ name: string } | undefined>(
+  undefined
+);
+
 interface FormFieldProps<TFormValues extends FieldValues> {
   name: Path<TFormValues>;
   register: UseFormRegister<TFormValues>;
-  render: (field: { field: UseFormRegisterReturn }) => React.ReactNode;
+  render: (field: {
+    field: UseFormRegisterReturn;
+    isError: boolean;
+  }) => React.ReactNode;
 }
 
 export function FormField<TFormValues extends FieldValues>(
   props: FormFieldProps<TFormValues>
 ) {
   const register = props.register;
+  const formContext = useContext(FormContext);
+
+  if (!formContext) {
+    throw new Error("FormControl must be used within a FormProvider");
+  }
+
+  const error = formContext.errors[props.name];
+  const isError = !(error === undefined);
+  console.log(isError);
+
   return (
-    <div className="pb-3">{props.render({ field: register(props.name) })}</div>
+    <FormFieldContext.Provider value={{ name: props.name }}>
+      <div className="pb-3">
+        {props.render({
+          field: register(props.name),
+          isError,
+        })}
+      </div>
+    </FormFieldContext.Provider>
   );
 }
 
@@ -97,5 +136,26 @@ interface FormControlProps {
 }
 
 export function FormControl(props: FormControlProps) {
-  return <div>{props.children}</div>;
+  const formContext = useContext(FormContext);
+
+  if (!formContext) {
+    throw new Error("FormControl must be used within a FormProvider");
+  }
+
+  const fieldContext = useContext(FormFieldContext);
+
+  if (!fieldContext) {
+    throw new Error("FormControl must be used within a FormFieldProvider");
+  }
+
+  const errorMessage = formContext.errors[fieldContext.name]?.message as
+    | string
+    | undefined;
+
+  return (
+    <div>
+      {props.children}
+      {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
+    </div>
+  );
 }

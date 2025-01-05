@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const createProjectSchema = z.object({
-  name: z.string().max(50),
+  name: z.string().max(50).nonempty({ message: "Name is required" }),
   description: z.string().max(80).optional(),
 });
 

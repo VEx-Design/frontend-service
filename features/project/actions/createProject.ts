@@ -8,14 +8,16 @@ export default async function createProject(form: createProjectData) {
 
   if (!success) {
     throw new Error("Invalid form data");
-  } else {
-    service
-      .post("/api/v1/project", data)
-      .then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        throw new Error("failed to create workflow", error);
-      });
+  }
+
+  try {
+    const response = await service.post("/api/v1/project", data);
+    console.log(response);
+    return response; // You should return the response to satisfy the mutation
+  } catch (error) {
+    throw new Error(
+      "Failed to create workflow: " +
+        (error instanceof Error ? error.message : "Unknown error")
+    );
   }
 }
