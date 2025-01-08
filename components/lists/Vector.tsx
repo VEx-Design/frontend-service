@@ -1,25 +1,20 @@
+import Image from "next/image";
 import React from "react";
 import { GoKebabHorizontal } from "react-icons/go";
+import { createContext } from "vm";
 
-interface CardProjectProps {
-  project_name: string;
-  owner: string;
-  time_recent_access: string;
-  image_url: string;
-  can_edit: boolean;
+export const VectorContext = createContext();
+
+interface VectorProps {
+  view: "list" | "card";
+  children: React.ReactNode;
 }
 
-function CardProject({
-  project_name,
-  owner,
-  time_recent_access,
-  image_url,
-  can_edit,
-}: CardProjectProps) {
+export function Vector(props: VectorProps) {
   return (
     <div className="w-full sm:min-w-[230px] h-[300px] rounded-xl hover:bg-B1 transition">
       <div className="relative bg-gray-400 h-[230px] rounded-lg overflow-hidden">
-        <img
+        <Image
           src={image_url}
           alt="coverimages"
           className="w-full h-full object-cover"
@@ -48,4 +43,10 @@ function CardProject({
   );
 }
 
-export default CardProject;
+interface VectorNameProps {
+  name: string;
+}
+
+export function VectorName(props: VectorNameProps) {
+  return <div>{props.name}</div>;
+}
