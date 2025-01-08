@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body,
+:root {
+  height: 100%;
+}
+
 @font-face {
   font-family: "Lexend";
   src: url("/fonts/Lexend-VariableFont_wght.ttf") format("truetype");

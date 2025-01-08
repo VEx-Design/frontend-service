@@ -4,9 +4,10 @@ import axios from "axios";
 import Empty from "../_components/Empty";
 import Titlebar from "../_components/Titlebar";
 import React, { useEffect, useState } from "react";
-import CardProject from "../_components/_cards/CardProject";
-import ListProject from "../_components/_cards/ListProject";
+import CardProject from "../_components/card/CardProject";
+import ListProject from "../_components/card/ListProject";
 import { useUser } from "@clerk/nextjs";
+import { Loading } from "@/src/components/loading";
 
 interface Project {
   project_name: string;
@@ -64,9 +65,7 @@ export default function Project() {
   });
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-full">Loading...</div>
-    );
+    return <Loading />;
   }
 
   const sortProjects = (filteredProjects: Project[]) => {
@@ -108,11 +107,11 @@ export default function Project() {
         onFilterChange={setFilterOption}
         onSortChange={setSortOption}
       />
-      <div className="flex-1 h-[calc(100vh-235px)] p-2 overflow-y-auto ">
+      <div className="flex-1 w-full h-[calc(100vh-300px)] overflow-y-auto">
         {filteredAndSortedProjects.length === 0 ? (
           <Empty />
         ) : view === "card" ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 justify-items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 justify-items-center">
             {filteredAndSortedProjects.map((project, index) => (
               <CardProject key={index} {...project} />
             ))}

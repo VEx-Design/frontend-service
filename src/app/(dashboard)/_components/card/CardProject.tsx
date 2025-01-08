@@ -17,7 +17,7 @@ function CardProject({
   can_edit,
 }: CardProjectProps) {
   return (
-    <div className="w-full sm:min-w-[230px] h-[300px] rounded-xl hover:bg-B1 transition">
+    <div className="w-full sm:min-w-[230px] h-fit rounded-xl hover:bg-B1 transition p-2">
       <div className="relative bg-gray-400 h-[230px] rounded-lg overflow-hidden">
         <img
           src={image_url}
@@ -38,7 +38,7 @@ function CardProject({
       <div className="p-1 h-[70px] w-full overflow-hidden flex items-center">
         <div className="flex-1 flex flex-col gap-1">
           <span className="text-sm font-semibold">{project_name}</span>
-          <div className="text-[10px] flex flex-col justify-between whitespace-nowrap text-gray-400">
+          <div className="text-[10px] flex flex-col justify-between whitespace-nowrap text-ChildText">
             <span className="truncate">by {owner}</span>
             <span className="truncate">{time_recent_access}</span>
           </div>

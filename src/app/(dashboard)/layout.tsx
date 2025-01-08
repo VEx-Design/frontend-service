@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import Navbar from "./_components/Navbar";
-import Sidebar from "./_components/Sidebar";
+import Sidebar from "./_components/sidebar/main";
 
 export default async function DashboardLayout({
   children,
@@ -14,7 +14,7 @@ export default async function DashboardLayout({
   }
 
   return (
-    <section className="h-screen flex flex-col">
+    <section className="h-full flex flex-col">
       <div className="flex-none">
         <Navbar />
       </div>

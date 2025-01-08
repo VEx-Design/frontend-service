@@ -10,38 +10,38 @@ import Bookmark from "@/public/icons/Bookmark.svg";
 
 export default function Sidebar() {
   return (
-    <div className="min-h-full border-r px-5">
-      <ul>
-        <li className="p-4 hover:bg-B1 hover:rounded-md ">
-          <Link href="/project">
+    <div className="min-h-full border-r px-2">
+      <ul className="flex flex-col space-y-2">
+        <Link href="/project">
+          <li className="p-2 hover:bg-B1 hover:rounded-md ">
             <Image src={Home} alt="Home" width={24} height={24} />
-          </Link>
-        </li>
-        <li className="p-4 hover:bg-B1 hover:rounded-md">
-          <Link href="/library">
+          </li>
+        </Link>
+        <Link href="/library">
+          <li className="p-2 hover:bg-B1 hover:rounded-md">
             <Image src={Library} alt="Library" width={24} height={24} />
-          </Link>
-        </li>
-        <li className="p-4 hover:bg-B1 hover:rounded-md">
-          <Link href="/object">
+          </li>
+        </Link>
+        <Link href="/object">
+          <li className="p-2 hover:bg-B1 hover:rounded-md">
             <Image src={ObjectList} alt="ObjectList" width={24} height={24} />
-          </Link>
-        </li>
-        <li className="p-4 hover:bg-B1 hover:rounded-md">
-          <Link href="/warehouse">
+          </li>
+        </Link>
+        <Link href="/warehouse">
+          <li className="p-2 hover:bg-B1 hover:rounded-md">
             <Image src={Warehouse} alt="Warehouse" width={24} height={24} />
-          </Link>
-        </li>
-        <li className="p-4 hover:bg-B1 hover:rounded-md">
-          <Link href="/community">
+          </li>
+        </Link>
+        <Link href="/community">
+          <li className="p-2 hover:bg-B1 hover:rounded-md">
             <Image src={Community} alt="Community" width={24} height={24} />
-          </Link>
-        </li>
-        <li className="p-4 hover:bg-B1 hover:rounded-md">
-          <Link href="/bookmark">
+          </li>
+        </Link>
+        <Link href="/bookmark">
+          <li className="p-2 hover:bg-B1 hover:rounded-md">
             <Image src={Bookmark} alt="Bookmark" width={24} height={24} />
-          </Link>
-        </li>
+          </li>
+        </Link>
       </ul>
     </div>
   );

@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import React, { useState } from "react";
-import TypeForm from "./_forms/TypeForm";
+import TypeForm from "./form/TypeForm";
 import { IoClose } from "react-icons/io5";
 import { useRouter } from "next/navigation";
-import LibraryForm from "./_forms/LibraryForm";
+import LibraryForm from "./form/LibraryForm";
 import { RiStickyNoteAddFill } from "react-icons/ri";
-import FilterDropdown from "@/src/components/FilterDropdown";
-import SortDropdown from "@/src/components/SortDropdown";
+import FilterDropdown from "@/src/components/dropdown/FilterDropdown";
+import SortDropdown from "@/src/components/dropdown/SortDropdown";
 import ListDisplay from "@/public/icons/DisplayCardIcons/ph_list-light.svg";
 import CardDisplay from "@/public/icons/DisplayCardIcons/ri_gallery-view-2.svg";
 
@@ -36,7 +36,7 @@ function Titlebar({
 
   const handleButtonClick = () => {
     if (buttonAction === "redirect") {
-      router.push("/newproject");
+      router.push("/board");
     } else if (buttonAction === "popup") {
       setPopup(true);
     }
@@ -62,9 +62,9 @@ function Titlebar({
   };
 
   return (
-    <div>
-      <div className="flex flex-none items-center justify-between border-b pb-4">
-        <div className="text-H3 font-bold">{title}</div>
+    <div className="flex flex-col gap-2 pb-4">
+      <div className="flex flex-none items-center justify-between border-b pb-2">
+        <div className="text-lg font-bold">{title}</div>
         <button
           className="bg-C1 text-white p-2 rounded-lg hover:bg-blue-500"
           onClick={handleButtonClick}
@@ -72,11 +72,11 @@ function Titlebar({
           + {title}
         </button>
       </div>
-      <div className="flex flex-none items-end sm:items-center justify-between py-4 flex-col sm:flex-row">
+      <div className="flex flex-none items-end sm:items-center justify-between flex-col sm:flex-row">
         {/* Swap Display */}
         <div className="flex gap-1">
           <div
-            className={`p-2  hover:bg-B1 rounded-md transition delay-75 ${
+            className={`p-1  hover:bg-B1 rounded-md transition delay-75 aspect-square w-6 h-6 ${
               currentView === "card" ? "bg-B1" : ""
             }`}
             onClick={() => onViewChange("card")}
@@ -84,7 +84,7 @@ function Titlebar({
             <Image src={CardDisplay} alt="CardIcon" />
           </div>
           <div
-            className={`p-2  hover:bg-B1 rounded-md transition delay-75 ${
+            className={`p-1  hover:bg-B1 rounded-md transition delay-75 aspect-square w-6 h-6 ${
               currentView === "list" ? "bg-B1" : ""
             }`}
             onClick={() => onViewChange("list")}

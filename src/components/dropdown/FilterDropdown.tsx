@@ -32,15 +32,15 @@ function OwnDropdown({ onFilterChange }: OwnDropdownProps) {
   return (
     <div className="relative " onMouseLeave={OnMouseLeave}>
       <div
-        className={`flex p-2 hover:bg-B1 rounded-md ${isOpen ? "bg-B1" : ""}`}
+        className={`flex p-1 hover:bg-B1 rounded-md ${isOpen ? "bg-B1" : ""}`}
         onClick={ToggleDrop}
       >
         {isOpen ? (
-          <RiArrowDropDownLine size={24} />
+          <RiArrowDropDownLine size={20} />
         ) : (
-          <RiArrowDropUpLine size={24} />
+          <RiArrowDropUpLine size={20} />
         )}
-        <div>{option}</div>
+        <div className="text-sm">{option}</div>
       </div>
 
       {isOpen && (

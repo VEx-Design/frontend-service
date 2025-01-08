@@ -23,6 +23,7 @@ export default {
         B2: "#CCC5B9",
         G1: "#A7C957",
         M1: "#FFFCF2",
+        ChildText : "#555a6a",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
