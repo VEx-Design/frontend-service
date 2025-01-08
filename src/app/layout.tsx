@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
 import { AppProviders } from "@/components/providers/AppProviders";
 
 export const metadata: Metadata = {
@@ -14,12 +13,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={`font-lexend antialiased`}>
-          <AppProviders>{children}</AppProviders>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body className={`font-lexend antialiased`}>
+        <AppProviders>{children}</AppProviders>
+      </body>
+    </html>
   );
 }

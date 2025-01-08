@@ -6,7 +6,6 @@ import Titlebar from "../_components/Titlebar";
 import React, { useEffect, useState } from "react";
 import CardProject from "../_components/_cards/CardProject";
 import ListProject from "../_components/_cards/ListProject";
-import { useUser } from "@clerk/nextjs";
 
 interface Project {
   project_name: string;
@@ -26,7 +25,6 @@ export default function Project() {
   const [sortOption, setSortOption] = useState<
     "Last Modified" | "Created on" | "A - Z" | "Z - A"
   >("Last Modified");
-  const { user } = useUser();
 
   useEffect(() => {
     axios
@@ -54,12 +52,12 @@ export default function Project() {
   }, []);
 
   const filterProjects = projects.filter((project) => {
-    if (filterOption === "Own by me" && user) {
-      return project.owner === `${user.firstName} ${user.lastName}`;
-    }
-    if (filterOption === "Own by anyone" && user) {
-      return project.owner !== `${user.firstName} ${user.lastName}`;
-    }
+    // if (filterOption === "Own by me" && user) {
+    //   return project.owner === `${user.firstName} ${user.lastName}`;
+    // }
+    // if (filterOption === "Own by anyone" && user) {
+    //   return project.owner !== `${user.firstName} ${user.lastName}`;
+    // }
     return true;
   });
 

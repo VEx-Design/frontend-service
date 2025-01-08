@@ -2,12 +2,23 @@
 
 import Button from "@/components/Button";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export default function SignIn() {
+  const [redirectTo, setRedirectTo] = useState("");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const redirectToParam = params.get("redirect_to");
+    setRedirectTo(redirectToParam || "");
+  }, []);
+
   const googleLogin = () => {
-    window.location.href = "http://localhost:6740/auth/google";
+    if (redirectTo !== "")
+      window.location.href = `http://localhost:6740/auth/google?redirect_to=${redirectTo}`;
+    else window.location.href = `http://localhost:6740/auth/google`;
   };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-0 flex justify-center items-center z-50">
       <div className="relative bg-white rounded-lg shadow-lg min-w-[300px] max-w-[500px] md:min-w-[450px] py-8">

@@ -11,7 +11,13 @@ export default async function createProject(form: createProjectData) {
   }
 
   try {
-    const response = await service.post("/api/v1/project", data);
+    const response = await service.post(
+      "project-management-service/project",
+      data,
+      {
+        withCredentials: true,
+      }
+    );
     console.log(response);
     return response; // You should return the response to satisfy the mutation
   } catch (error) {
