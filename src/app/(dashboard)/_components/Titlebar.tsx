@@ -72,7 +72,7 @@ function Titlebar({
           + {title}
         </button>
       </div>
-      <div className="flex flex-none items-end sm:items-center justify-between flex-col sm:flex-row">
+      <div className="flex flex-none items-end gap-2 sm:items-center justify-between flex-col sm:flex-row">
         {/* Swap Display */}
         <div className="flex gap-1">
           <div

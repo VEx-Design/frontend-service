@@ -98,7 +98,7 @@ export default function Project() {
   const filteredAndSortedProjects = sortProjects(filterProjects);
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex flex-1 flex-col h-full">
       <Titlebar
         title="Project"
         buttonAction="redirect"
@@ -107,7 +107,8 @@ export default function Project() {
         onFilterChange={setFilterOption}
         onSortChange={setSortOption}
       />
-      <div className="flex-1 w-full h-[calc(100vh-300px)] overflow-y-auto">
+      {/* Display Project */}
+      <div className="w-full overflow-y-auto h-[calc(100vh-210px)] md:h-[calc(100vh-170px)]">
         {filteredAndSortedProjects.length === 0 ? (
           <Empty />
         ) : view === "card" ? (
