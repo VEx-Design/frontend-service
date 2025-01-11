@@ -15,8 +15,9 @@ export default function SignIn() {
 
   const googleLogin = () => {
     if (redirectTo !== "")
-      window.location.href = `http://localhost:6740/auth/google?redirect_to=${redirectTo}`;
-    else window.location.href = `http://localhost:6740/auth/google`;
+      window.location.href = `${process.env.NEXT_PUBLIC_AUTH_SERVICE}/auth/google?redirect_to=${redirectTo}`;
+    else
+      window.location.href = `${process.env.NEXT_PUBLIC_AUTH_SERVICE}/auth/google`;
   };
 
   return (
