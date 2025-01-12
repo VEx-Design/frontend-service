@@ -1,6 +1,8 @@
 import React from "react";
 import Image from "next/image";
 import Logo from "@/public/images/Logo.png";
+import currentUser from "@/features/auth/actions/user";
+import ProfilePicture from "@/features/auth/components/ProfilePicture";
 
 export default async function Header() {
   // const userId = await auth();
@@ -9,7 +11,7 @@ export default async function Header() {
   //   return <div>Error Auth in Header</div>;
   // }
 
-  // const user = await currentUser();
+  const user = await currentUser();
 
   return (
     <div className="bg-C1 text-M1 flex justify-between px-10 py-4 h-20">
@@ -20,9 +22,11 @@ export default async function Header() {
         <p className="font-bold text-3xl">VExDesign</p>
       </div>
       <div className="flex items-center gap-3 ">
-        {/* <div className="text-sm hidden md:block">
-          {user?.firstName} {user?.lastName?.charAt(0)} .
-        </div> */}
+        <div className="text-sm hidden md:block">
+          {/* {user?.firstName} {user?.lastName?.charAt(0)} . */}
+          {user?.name}
+        </div>
+        <ProfilePicture />
         {/* <UserButton
           appearance={{
             elements: {

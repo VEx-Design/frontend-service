@@ -1,7 +1,7 @@
 "use client";
 
 import { createProjectData, createProjectSchema } from "../schema/project";
-import { service } from "@/lib/service";
+import { client } from "@/lib/service";
 
 export default async function createProject(form: createProjectData) {
   const { success, data } = createProjectSchema.safeParse(form);
@@ -11,7 +11,7 @@ export default async function createProject(form: createProjectData) {
   }
 
   try {
-    const response = await service.post(
+    const response = await client.post(
       "project-management-service/project",
       data,
       {

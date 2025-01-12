@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
 
 module.exports = {
   images: {
-    domains: ["via.placeholder.com"], // Add your external image domain here
+    domains: ["via.placeholder.com", "lh3.googleusercontent.com"], // Add your external image domain here
   },
 };
 

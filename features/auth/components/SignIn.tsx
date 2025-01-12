@@ -2,7 +2,7 @@
 
 import Button from "@/components/Button";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function SignIn() {
   const [redirectTo, setRedirectTo] = useState("");

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppProviders } from "@/components/providers/AppProviders";
+import { AuthProvider } from "@/features/auth/provider/AuthProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,10 +14,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`font-lexend antialiased`}>
-        <AppProviders>{children}</AppProviders>
-      </body>
-    </html>
+    <AuthProvider>
+      <html lang="en">
+        <body className={`font-lexend antialiased`}>
+          <AppProviders>{children}</AppProviders>
+        </body>
+      </html>
+    </AuthProvider>
   );
 }

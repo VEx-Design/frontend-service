@@ -6,8 +6,9 @@ export function middleware(req: NextRequest) {
 
   // Public routes
   const publicRoutes = ["/", "/sign-in", "/sign-up"];
-  if (publicRoutes.includes(req.nextUrl.pathname)) {
-    return NextResponse.next();
+  if (publicRoutes.includes(req.nextUrl.pathname) && token) {
+    const projectUrl = new URL("/project", req.url);
+    return NextResponse.redirect(projectUrl);
   }
 
   // Validate token
