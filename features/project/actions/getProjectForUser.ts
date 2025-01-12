@@ -1,12 +1,12 @@
 "use client";
 
-import { service } from "@/lib/service";
+import { client } from "@/lib/service";
 
 export default async function getProject(): Promise<
   { [key: string]: string }[]
 > {
   try {
-    const response = await service.get(
+    const response = await client.get(
       "https://e539c140-f075-4734-8b17-2ba9d16399a6.mock.pstmn.io/TestFilter"
     );
     return response.data; // Assuming `response.data` contains the array of projects.

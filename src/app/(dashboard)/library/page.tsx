@@ -1,14 +1,14 @@
-import { currentUser } from "@clerk/nextjs/server";
+// import { currentUser } from "@clerk/nextjs/server";
 import React from "react";
 import Titlebar from "../_components/Titlebar";
 
 export default async function Library() {
-  const user = await currentUser();
-  //console.log(user);
+  // const user = await currentUser();
+  // //console.log(user);
 
-  if (!user) {
-    return <div>Loading...</div>;
-  }
+  // if (!user) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <div className="flex flex-col md:flex-row gap-5 w-full">
