@@ -27,7 +27,7 @@ export default function Dropdown(props: DropdownProps) {
   return (
     <div className="relative " onMouseLeave={OnMouseLeave}>
       <div
-        className={`flex p-2 hover:bg-B1 rounded-md ${
+        className={`flex p-1 hover:bg-B1 rounded-md ${
           isOpen ? "bg-B1" : ""
         } cursor-pointer`}
         onClick={() => setIsOpen(!isOpen)}
@@ -37,7 +37,7 @@ export default function Dropdown(props: DropdownProps) {
         ) : (
           <RiArrowDropUpLine size={24} />
         )}
-        <div>{option}</div>
+        <div className="text-sm">{option}</div>
       </div>
 
       {isOpen && (

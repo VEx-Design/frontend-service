@@ -1,6 +1,6 @@
 "use client";
 
-import Badge from "@/components/Badge";
+import Badge, { BadgeVariant } from "@/components/Badge";
 import { createContext, useContext, useMemo, useState } from "react";
 import { getChild, getChildren } from "../getChildren";
 import Image from "next/image";
@@ -17,27 +17,25 @@ export const ViewContext = createContext<ViewContextValue | undefined>(
   undefined
 );
 
+export type GetDataType = (key: string) => string;
+
 interface ViewProps {
   data: Data[];
-  children: React.ReactNode;
+  render: (view: { getData: GetDataType }) => React.ReactNode;
 }
 
 export function View(props: ViewProps) {
-  const item = useMemo(
-    () => getChild(props.children, ViewItem),
-    [props.children]
-  );
-
   if (props.data.length === 0) return <div></div>;
   else {
     return (
       <>
         {props.data.map((dataItem, index) => {
-          if (!item) return null;
-          return React.cloneElement(item, {
-            key: index,
-            data: dataItem,
-          });
+          return React.cloneElement(
+            props.render({
+              getData: (key: string) => dataItem[key],
+            }) as React.ReactElement,
+            { key: index, data: dataItem }
+          );
         })}
       </>
     );
@@ -48,6 +46,7 @@ interface ViewItemProps {
   children: React.ReactNode;
   type: ViewType;
   data?: Data;
+  onclick?: () => void;
 }
 
 export function ViewItem(props: ViewItemProps) {
@@ -73,50 +72,58 @@ export function ViewItem(props: ViewItemProps) {
     [props.children]
   );
   if (data !== undefined) {
-    switch (props.type) {
-      case "card":
-        return (
-          <ViewContext.Provider value={{ data: data }}>
-            <div className="w-full h-fit relative rounded-xl hover:cursor-pointer hover:bg-B1 transition">
-              {cover_img}
-              <div className="absolute top-2 left-2">{badges}</div>
-              <div className="p-2 w-full overflow-hidden flex items-center">
-                <div className="flex-1 flex flex-col gap-1">
-                  <span className="text-sm font-semibold">{title}</span>
-                  <div className="text-[10px] flex flex-col justify-between whitespace-nowrap text-gray-400">
-                    {contents}
+    return (
+      <ViewContext.Provider value={{ data: data }}>
+        {(() => {
+          switch (props.type) {
+            case "card":
+              return (
+                <div
+                  className="w-full h-fit relative rounded-xl hover:cursor-pointer hover:bg-B1 transition"
+                  onClick={props.onclick}
+                >
+                  {cover_img}
+                  <div className="absolute top-2 left-2">{badges}</div>
+                  <div className="p-2 w-full overflow-hidden flex items-center">
+                    <div className="flex-1 flex flex-col gap-1">
+                      <span className="text-sm font-semibold">{title}</span>
+                      <div className="text-[10px] flex flex-col justify-between whitespace-nowrap text-gray-400">
+                        {contents}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </ViewContext.Provider>
-        );
-      case "list":
-        return (
-          <ViewContext.Provider value={{ data: data }}>
-            <div className="flex items-center rounded-md p-2 text-sm hover:bg-B1 cursor-pointer">
-              <div className="flex border-r-2 px-3 flex-1 gap-3 flex-wrap justify-between">
-                {title}
-              </div>
-              {contents.map((element, index) => (
-                <span
-                  key={index}
-                  className="text-xs text-gray-400 border-r-2 px-3 flex-initial w-[150px] truncate hidden sm:block"
-                >
-                  {element}
-                </span>
-              ))}
-            </div>
-          </ViewContext.Provider>
-        );
-      default:
-        return <div></div>;
-    }
-  } else return <></>;
+              );
+            case "list":
+              return (
+                <div className="flex items-center rounded-md p-2 text-sm hover:bg-B1 cursor-pointer">
+                  <div className="flex border-r-2 px-3 flex-1 gap-3 flex-wrap justify-between">
+                    {title}
+                  </div>
+                  {contents.map((element, index) => (
+                    <span
+                      key={index}
+                      className="text-xs text-gray-400 border-r-2 px-3 flex-initial w-[150px] truncate hidden sm:block"
+                    >
+                      {element}
+                    </span>
+                  ))}
+                </div>
+              );
+            default:
+              return <div></div>;
+          }
+        })()}
+      </ViewContext.Provider>
+    );
+  } else {
+    return <></>;
+  }
 }
 
 interface ViewBadgeProps {
   register: string;
+  variant?: BadgeVariant;
 }
 
 export function ViewBadge(props: ViewBadgeProps) {
@@ -127,7 +134,7 @@ export function ViewBadge(props: ViewBadgeProps) {
   }
   console.log(context.data[props.register]);
 
-  return <Badge text={context.data[props.register]} variant="secondary" />;
+  return <Badge text={context.data[props.register]} variant={props.variant} />;
 }
 
 interface ViewTitleProps {

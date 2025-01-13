@@ -6,7 +6,6 @@ import Titlebar from "../_components/Titlebar";
 import React, { useEffect, useState } from "react";
 import CardProject from "../_components/card/CardProject";
 import ListProject from "../_components/card/ListProject";
-import { useUser } from "@clerk/nextjs";
 import { Loading } from "@/src/components/loading";
 
 interface Project {

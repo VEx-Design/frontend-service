@@ -2,9 +2,11 @@ import { cn } from "@/lib/utils";
 import React from "react";
 import { mainColors } from "./colors";
 
+export type BadgeVariant = "primary" | "secondary" | "sensitive";
+
 interface Props {
   text: string;
-  variant?: "primary" | "secondary" | "sensitive";
+  variant?: BadgeVariant;
 }
 
 export default function Badge(props: Props) {

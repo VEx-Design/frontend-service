@@ -71,7 +71,7 @@ export function ToggleItem(props: ToggleItemProps) {
 
   return (
     <div
-      className={`p-2  hover:bg-B1 rounded-md transition delay-75 ${
+      className={`p-1 hover:bg-B1 rounded-md transition delay-75 w-6 h-6 ${
         context.selectedName === props.name ? "bg-B1" : ""
       } cursor-pointer`}
       onClick={() => context.setSelectedName(props.name)}
