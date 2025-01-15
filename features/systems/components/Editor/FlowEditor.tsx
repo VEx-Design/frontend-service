@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   ReactFlow,
   Controls,
@@ -29,6 +29,10 @@ import {
 import { TypesResponse } from "../../actions/getTypes";
 import { getTypeById } from "../../libs/getTypeDetail";
 import ObjectNode from "../nodes/ObjectNode";
+import { ProjectContext } from "../Project";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import saveFlow from "../../actions/saveFlow";
 
 const rfStyle = {
   backgroundColor: "#FAFAFA",
@@ -47,7 +51,53 @@ const nodeTypes = {
 export default function FlowEditor(props: Props) {
   const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-  const { screenToFlowPosition, updateNodeData } = useReactFlow();
+  const { screenToFlowPosition, updateNodeData, setViewport } = useReactFlow();
+
+  const projectContext = useContext(ProjectContext);
+  if (!projectContext) {
+    throw new Error("EditorContext must be used within an EditorProvider");
+  }
+  const { projId, flowStr, setOnSave, setSavePending } = projectContext;
+
+  useEffect(() => {
+    try {
+      const flow = JSON.parse(flowStr);
+      if (!flow) return;
+      setNodes(flow.nodes || []);
+      setEdges(flow.edges || []);
+      if (!flow.viewport) return;
+      const { x = 0, y = 0, zoom = 1 } = flow.viewport;
+      setViewport({ x, y, zoom });
+    } catch (error) {
+      console.error("Failed to parse flow string:", error);
+    }
+  }, [flowStr, setEdges, setNodes, setViewport]);
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: ({
+      projId,
+      flow,
+    }: {
+      projId: string;
+      flow: { nodes: AppNode[]; edges: Edge[] };
+    }) => saveFlow(projId, flow),
+    onSuccess: () => {
+      toast.success("Project saved", { id: "save-project" });
+    },
+    onError: () => {
+      toast.error("Failed to save project", { id: "save-project" });
+    },
+  });
+
+  const onSubmit = useCallback(() => {
+    toast.loading("Saving project...", { id: "save-project" });
+    mutate({ projId, flow: { nodes, edges } });
+  }, [mutate, edges, nodes, projId]);
+
+  useEffect(() => {
+    setOnSave(() => () => onSubmit());
+    setSavePending(isPending);
+  }, [isPending, setSavePending, onSubmit, setOnSave]);
 
   const [contextMenuPosition, setContextMenuPosition] = useState<{
     x: number;

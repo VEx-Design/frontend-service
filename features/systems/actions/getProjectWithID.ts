@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 const GET_PROJECT = gql`
   query GetProject($id: String!) {
     project(id: $id) {
+      id
       name
       flow
     }
@@ -11,11 +12,13 @@ const GET_PROJECT = gql`
 `;
 
 type Project = {
+  id: string;
   name: string;
   flow: string;
 };
 
 export type ProjectResponse = {
+  id: string;
   name: string;
   flow: string;
 };
@@ -48,6 +51,7 @@ export default async function getProjectByID(
     const project = response.project;
 
     return {
+      id: project.id,
       name: project.name,
       flow: project.flow,
     };

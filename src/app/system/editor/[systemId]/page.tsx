@@ -1,7 +1,5 @@
 import getProjectByID from "@/features/systems/actions/getProjectWithID";
-import Editor from "@/features/systems/components/Editor";
-import EditorNavbar from "@/features/systems/components/Editor/EditorNavbar";
-import { ReactFlowProvider } from "@xyflow/react";
+import Project from "@/features/systems/components/Project";
 import React from "react";
 
 export default async function Page({
@@ -15,13 +13,13 @@ export default async function Page({
   // Fetch the project data
   const project = await getProjectByID(systemId);
 
+  if (!project) {
+    return <div>Project not found</div>;
+  }
+
   return (
     <div className="flex h-screen flex-col">
-      {/* Navbar */}
-      <EditorNavbar title={project?.name} />
-      <ReactFlowProvider>
-        <Editor />
-      </ReactFlowProvider>
+      <Project project={project} />
     </div>
   );
 }

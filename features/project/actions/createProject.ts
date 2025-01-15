@@ -1,14 +1,14 @@
 "use client";
 
-import { ObjectNode } from "@/features/systems/types/object";
 import { createProjectData, createProjectSchema } from "../schema/project";
 import { client } from "@/lib/service";
 import { Edge } from "@xyflow/react";
+import { AppNode } from "@/features/systems/types/appNode";
 
 export default async function createProject(form: createProjectData) {
   const { success, data } = createProjectSchema.safeParse(form);
 
-  const initialFlow: { nodes: ObjectNode[]; edges: Edge[] } = {
+  const initialFlow: { nodes: AppNode[]; edges: Edge[] } = {
     nodes: [],
     edges: [],
   };
@@ -24,6 +24,7 @@ export default async function createProject(form: createProjectData) {
         name: data.name,
         description: data.description,
         flow: JSON.stringify(initialFlow),
+        configurationID: data.configurationID,
       },
       {
         withCredentials: true,
