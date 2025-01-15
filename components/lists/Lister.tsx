@@ -58,6 +58,8 @@ export function Lister(props: ListerProps) {
   useEffect(() => {
     if (props.modifyData) {
       setModifyData(props.modifyData(data));
+    } else {
+      setModifyData(data);
     }
   }, [data, props]);
 
@@ -96,7 +98,7 @@ export function Lister(props: ListerProps) {
 
 interface ListerHeaderProps {
   title: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export function ListerHeader(props: ListerHeaderProps) {
@@ -243,7 +245,10 @@ export function ListerContentLoading(props: ListerContentLoadingProps) {
   return <div className="flex flex-1">{props.children}</div>;
 }
 
+export type ListerDisplay = { [key in ViewType]?: string };
+
 interface ListerContentViewProps {
+  listDisplay: ListerDisplay;
   render: (view: {
     data: { [Key: string]: string }[];
     type: ViewType;
@@ -280,7 +285,7 @@ export function ListerContentView(props: ListerContentViewProps) {
     <div ref={parentRef} className="flex flex-1">
       <ScrollArea className="w-full" style={{ height: parentHeight }}>
         {context.currentView === "card" && (
-          <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 justify-items-center">
+          <div className={props.listDisplay.card || ""}>
             {props.render({
               data: context.data,
               type: context.currentView,
@@ -288,7 +293,7 @@ export function ListerContentView(props: ListerContentViewProps) {
           </div>
         )}
         {context.currentView === "list" && (
-          <div className="flex flex-col flex-1 gap-3">
+          <div className={props.listDisplay.list || ""}>
             {props.render({
               data: context.data,
               type: context.currentView,

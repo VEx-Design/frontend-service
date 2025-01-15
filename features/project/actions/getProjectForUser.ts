@@ -5,7 +5,7 @@ import { gql, GraphQLClient } from "graphql-request";
 import { format } from "date-fns"; // Import date-fns for formatting
 
 const GET_PROJECTS = gql`
-  query GetProjects($ownerID: String) {
+  query GetProjects($ownerID: String!) {
     projects(ownerID: $ownerID) {
       id
       name
@@ -35,7 +35,7 @@ type Response = {
   role: string;
 };
 
-export default async function getProject(): Promise<Response[]> {
+export default async function getMyProjects(): Promise<Response[]> {
   const client = new GraphQLClient(
     `${process.env.NEXT_PUBLIC_API_GATEWAY}/project-management-service/query`,
     { credentials: "include" }

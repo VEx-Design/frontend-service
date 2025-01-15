@@ -12,6 +12,7 @@ import {
   ListerControl,
   ListerControlLeft,
   ListerControlRight,
+  ListerDisplay,
   ListerHeader,
   ListerHeaderControl,
 } from "@/components/lists/Lister";
@@ -31,7 +32,7 @@ import {
   ViewItem,
   ViewTitle,
 } from "@/components/views/View";
-import getProject from "../actions/getProjectForUser";
+import getMyProjects from "../actions/getProjectForUser";
 import { Loading } from "@/src/components/loading";
 import { sortString } from "@/components/lists/sorting";
 import { useUser } from "@/features/auth/provider/AuthProvider";
@@ -56,7 +57,7 @@ export default function ProjectLister() {
 
   async function fetchProjects() {
     try {
-      const data = await getProject();
+      const data = await getMyProjects();
       return data;
     } catch (error) {
       console.error("Error fetching projects:", error);
@@ -109,6 +110,11 @@ export default function ProjectLister() {
     },
   ];
 
+  const display: ListerDisplay = {
+    card: "w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 justify-items-center",
+    list: "flex flex-col flex-1 gap-3",
+  };
+
   return (
     <Lister mutation={fetchProjects} modifyData={(data) => filter(sort(data))}>
       <ListerHeader title="Project">
@@ -146,6 +152,7 @@ export default function ProjectLister() {
           <Loading />
         </ListerContentLoading>
         <ListerContentView
+          listDisplay={display}
           render={({ data, type }) => (
             <View
               data={data}

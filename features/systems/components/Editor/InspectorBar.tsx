@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
-import { ObjectNode } from "../types/object";
+import { ObjectNode } from "../../types/object";
 import { PyramidIcon } from "lucide-react";
-import Input from "./Input";
+import Input from "../Input";
 
 interface Props {
   data: ObjectNode;
