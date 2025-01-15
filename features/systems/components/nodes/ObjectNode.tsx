@@ -18,7 +18,7 @@ const NodeComponent = memo((props: NodeProps) => {
   const { focusNode, setFocusNode } = context;
 
   const handleOnClick = () => {
-    setFocusNode({ id: props.id, data: nodeData });
+    setFocusNode({ id: props.id, type: props.type, data: nodeData });
   };
 
   const selected = useMemo(

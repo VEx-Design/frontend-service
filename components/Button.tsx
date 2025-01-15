@@ -9,6 +9,7 @@ interface Props {
   children: React.ReactNode;
   handleButtonClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   variant?: "primary" | "secondary" | "sensitive";
+  className?: string;
 }
 
 export default function Button(props: Props) {
@@ -16,7 +17,11 @@ export default function Button(props: Props) {
   return (
     <button
       type={props.type}
-      className={cn("px-4 py-2 rounded-lg", mainColors[variant])}
+      className={cn(
+        "px-4 py-2 rounded-lg",
+        mainColors[variant],
+        props.className
+      )}
       onClick={props.handleButtonClick}
     >
       {props.children}

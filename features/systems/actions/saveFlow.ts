@@ -1,12 +1,12 @@
 "use client";
 
 import { client } from "@/lib/service";
-import { Edge } from "@xyflow/react";
 import { AppNode } from "../types/appNode";
+import { AppEdge } from "../types/appEdge";
 
 export default async function saveFlow(
   projId: string,
-  flow: { nodes: AppNode[]; edges: Edge[] }
+  flow: { nodes: AppNode[]; edges: AppEdge[] }
 ) {
   try {
     const response = await client.put(

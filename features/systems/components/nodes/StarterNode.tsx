@@ -1,11 +1,36 @@
-import React from "react";
+import React, { memo, useContext, useMemo } from "react";
 import { LogInIcon } from "lucide-react";
-import { Handle, Position } from "@xyflow/react";
+import { Handle, NodeProps, Position } from "@xyflow/react";
 import { cn } from "@/lib/utils";
+import { NodeData } from "../../types/object";
+import { EditorContext } from "../Editor";
 
-function StarterNode() {
+const StarterNode = memo((props: NodeProps) => {
+  const nodeData = props.data.data as NodeData;
+
+  const context = useContext(EditorContext);
+  if (!context) {
+    throw new Error("EditorContext must be used within an EditorProvider");
+  }
+  const { focusNode, setFocusNode } = context;
+
+  const handleOnClick = () => {
+    setFocusNode({ id: props.id, type: props.type, data: nodeData });
+  };
+
+  const selected = useMemo(
+    () => focusNode?.id === props.id,
+    [focusNode, props.id]
+  );
+
   return (
-    <div className="p-6 bg-green-500 rounded-full justify-center items-center">
+    <div
+      className={cn(
+        "p-6 bg-green-500 rounded-full justify-center items-center border-2 border-white",
+        selected && "bg-green-600"
+      )}
+      onClick={handleOnClick}
+    >
       <Handle
         type="source"
         position={Position.Right}
@@ -17,6 +42,7 @@ function StarterNode() {
       <LogInIcon size={36} className="stroke-white" />
     </div>
   );
-}
+});
 
 export default StarterNode;
+StarterNode.displayName = "StarterNode";

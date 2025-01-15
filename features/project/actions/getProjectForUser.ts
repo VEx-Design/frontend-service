@@ -78,7 +78,7 @@ export default async function getMyProjects(): Promise<Response[]> {
         id: project.id,
         name: project.name,
         owner: project.owner.name,
-        image_url: "https://via.placeholder.com/150", // Placeholder image URL
+        image_url: "", // Placeholder image URL
         updatedAt: formattedDate, // Formatted date
         role: "Can Edit",
       };
