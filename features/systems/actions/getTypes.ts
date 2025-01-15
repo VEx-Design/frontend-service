@@ -24,7 +24,7 @@ type Types = {
   variables: {
     id: string;
     name: string;
-    sysbol: string;
+    symbol: string;
   }[];
   input: string;
   output: string;
@@ -37,10 +37,10 @@ export type TypesResponse = {
   variables: {
     id: string;
     name: string;
-    sysbol: string;
+    symbol: string;
   }[];
-  input: string;
-  output: string;
+  input: number;
+  output: number;
 };
 
 export default async function getTypes(): Promise<TypesResponse[] | undefined> {
@@ -65,8 +65,8 @@ export default async function getTypes(): Promise<TypesResponse[] | undefined> {
         name: type.name,
         picture: type.picture,
         variables: type.variables,
-        input: type.input,
-        output: type.output,
+        input: +type.input,
+        output: +type.output,
       };
     });
   } catch (error) {

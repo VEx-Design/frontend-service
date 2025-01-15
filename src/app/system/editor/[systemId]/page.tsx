@@ -1,6 +1,8 @@
 import getProjectByID from "@/features/systems/actions/getProjectWithID";
 import Editor from "@/features/systems/components/Editor";
 import EditorNavbar from "@/features/systems/components/Editor/EditorNavbar";
+import { ReactFlowProvider } from "@xyflow/react";
+import React from "react";
 
 export default async function Page({
   params,
@@ -17,7 +19,9 @@ export default async function Page({
     <div className="flex h-screen flex-col">
       {/* Navbar */}
       <EditorNavbar title={project?.name} />
-      <Editor />
+      <ReactFlowProvider>
+        <Editor />
+      </ReactFlowProvider>
     </div>
   );
 }

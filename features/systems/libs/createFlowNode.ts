@@ -1,30 +1,36 @@
+import { TypesResponse } from "../actions/getTypes";
 import { AppNode } from "../types/appNode";
-import { TaskType } from "../types/task";
 
 export function CreateObjectNode(
-  nodeType: TaskType,
+  type: TypesResponse,
   position?: { x: number; y: number }
 ): AppNode {
   return {
     id: crypto.randomUUID(),
-    type: "FlowScrapeNode",
-    dragHandle: ".drag-handle",
+    type: "ObjectNode",
     data: {
-      type: nodeType,
-      inputs: {},
+      data: {
+        type: type,
+        object: {
+          name: type.name,
+          vars: type.variables.map((variable) => ({
+            id: variable.id,
+            name: variable.name,
+            symbol: variable.symbol,
+            value: "0",
+          })),
+        },
+      },
     },
     position: position ?? { x: 0, y: 0 },
   };
 }
 
-export function CreateStarterNode(position?: {
-  x: number;
-  y: number;
-}): AppNode {
+export function CreateStarterNode(position: { x: number; y: number }): AppNode {
   return {
     id: crypto.randomUUID(),
     type: "starter",
-    data: {},
+    data: { data: {} },
     position: position ?? { x: 0, y: 0 },
   };
 }
@@ -36,7 +42,7 @@ export function CreateTerminalNode(position?: {
   return {
     id: crypto.randomUUID(),
     type: "terminal",
-    data: {},
+    data: { data: {} },
     position: position ?? { x: 0, y: 0 },
   };
 }

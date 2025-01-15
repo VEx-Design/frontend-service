@@ -9,6 +9,7 @@ import {
   useReactFlow,
   Connection,
   addEdge,
+  BackgroundVariant,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import StarterNode from "../nodes/StarterNode";
@@ -21,17 +22,29 @@ import {
 } from "@/components/ui/context-menu";
 import { AppNode } from "../../types/appNode";
 import {
+  CreateObjectNode,
   CreateStarterNode,
   CreateTerminalNode,
 } from "../../libs/createFlowNode";
+import { TypesResponse } from "../../actions/getTypes";
+import { getTypeById } from "../../libs/getTypeDetail";
+import ObjectNode from "../nodes/ObjectNode";
 
 const rfStyle = {
-  backgroundColor: "#FDFDFD",
+  backgroundColor: "#FAFAFA",
 };
 
-const nodeTypes = { starter: StarterNode, terminal: TerminalNode };
+interface Props {
+  types: TypesResponse[] | undefined;
+}
 
-export default function FlowEditor() {
+const nodeTypes = {
+  starter: StarterNode,
+  terminal: TerminalNode,
+  ObjectNode: ObjectNode,
+};
+
+export default function FlowEditor(props: Props) {
   const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { screenToFlowPosition, updateNodeData } = useReactFlow();
@@ -82,6 +95,31 @@ export default function FlowEditor() {
     [setEdges, nodes, updateNodeData]
   );
 
+  const onDragOver = useCallback((event: React.DragEvent) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+  }, []);
+
+  const onDrop = useCallback(
+    (event: React.DragEvent) => {
+      event.preventDefault();
+      const id = event.dataTransfer.getData("application/reactflow");
+
+      const type = getTypeById(id, props.types ?? []);
+
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+
+      if (type) {
+        const newNode = CreateObjectNode(type, position);
+        setNodes((nds) => nds.concat(newNode));
+      }
+    },
+    [setNodes, screenToFlowPosition, props.types]
+  );
+
   return (
     <div className="h-full" onContextMenu={handleContextMenu}>
       <ContextMenu>
@@ -93,12 +131,14 @@ export default function FlowEditor() {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            onDragOver={onDragOver}
+            onDrop={onDrop}
             style={rfStyle}
             fitView
             fitViewOptions={{ maxZoom: 0.8 }}
           >
             <Controls />
-            <Background />
+            <Background variant={BackgroundVariant.Dots} gap={12} size={2} />
           </ReactFlow>
         </ContextMenuTrigger>
         <ContextMenuContent className="w-64">

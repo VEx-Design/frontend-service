@@ -1,7 +1,9 @@
 import { Node } from "@xyflow/react";
 import { TaskParam } from "./task";
+import { NodeData } from "./object";
 
 export interface AppNodeData {
+  data: NodeData;
   [key: string]: string | number | boolean | object;
 }
 

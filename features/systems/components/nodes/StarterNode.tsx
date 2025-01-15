@@ -11,7 +11,7 @@ function StarterNode() {
         position={Position.Right}
         className={cn(
           "!bg-muted-foreground !border-2 !border-background !w-4 !h-4",
-          "!bg-sky-400"
+          "!bg-gray-400"
         )}
       />
       <LogInIcon size={36} className="stroke-white" />

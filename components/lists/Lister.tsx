@@ -37,11 +37,13 @@ export function Lister(props: ListerProps) {
   const [currentView, setView] = useState<ViewType>("card");
   const [loading, setLoading] = useState<boolean>(true);
 
+  const { mutation, modifyData: modifyDataProp } = props;
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const result = await props.mutation();
+        const result = await mutation();
         if (result) {
           setData(result);
         }
@@ -53,15 +55,15 @@ export function Lister(props: ListerProps) {
     };
 
     fetchData();
-  }, [props]);
+  }, [mutation]);
 
   useEffect(() => {
-    if (props.modifyData) {
-      setModifyData(props.modifyData(data));
+    if (modifyDataProp) {
+      setModifyData(modifyDataProp(data));
     } else {
       setModifyData(data);
     }
-  }, [data, props]);
+  }, [data, modifyDataProp]);
 
   const header = useMemo(
     () => getChild(props.children, ListerHeader),

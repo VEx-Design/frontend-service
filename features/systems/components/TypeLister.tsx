@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 import {
   Lister,
@@ -12,31 +12,16 @@ import {
 import Empty from "@/src/app/(dashboard)/_components/Empty";
 import { Loading } from "@/src/components/loading";
 import {
+  GetDataType,
   View,
-  ViewBadge,
-  ViewContent,
   ViewCover,
   ViewItem,
   ViewTitle,
 } from "@/components/views/View";
-import getTypes, { TypesResponse } from "../actions/getTypes";
+import getTypes from "../actions/getTypes";
+
 export default function TypeLister() {
-  const [types, setTypes] = useState<TypesResponse[] | undefined>(undefined);
-
-  async function fetchTypes() {
-    try {
-      const data = await getTypes();
-      setTypes(data);
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-    }
-  }
-
-  useEffect(() => {
-    fetchTypes();
-  }, []);
-
-  async function fetchTypesforList() {
+  const fetchTypesforList = React.useCallback(async () => {
     try {
       const types = await getTypes();
       return types?.map((type) => {
@@ -49,7 +34,12 @@ export default function TypeLister() {
     } catch (error) {
       console.error("Error fetching projects for listing:", error);
     }
-  }
+  }, []);
+
+  const onDragStart = (event: React.DragEvent, getData: GetDataType) => {
+    event.dataTransfer.setData("application/reactflow", getData("id"));
+    event.dataTransfer.effectAllowed = "move";
+  };
 
   const display: ListerDisplay = {};
 
@@ -65,16 +55,16 @@ export default function TypeLister() {
         </ListerContentLoading>
         <ListerContentView
           listDisplay={display}
-          render={({ data, type }) => (
+          render={({ data }) => (
             <View
               data={data}
-              render={() => (
-                <ViewItem type={type}>
-                  <ViewBadge register="role" />
+              render={({ getData }) => (
+                <ViewItem
+                  type="normal"
+                  onDragStart={(event) => onDragStart(event, getData)}
+                >
                   <ViewTitle register="name" />
                   <ViewCover register="image_url" />
-                  <ViewContent register="owner" />
-                  <ViewContent register="updatedAt" />
                 </ViewItem>
               )}
             />

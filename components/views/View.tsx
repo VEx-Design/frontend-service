@@ -7,7 +7,7 @@ import Image from "next/image";
 import React from "react";
 
 type Data = { [key: string]: string };
-export type ViewType = "card" | "list";
+export type ViewType = "card" | "list" | "normal";
 
 interface ViewContextValue {
   data: Data;
@@ -47,6 +47,7 @@ interface ViewItemProps {
   type: ViewType;
   data?: Data;
   onclick?: () => void;
+  onDragStart?: (event: React.DragEvent) => void;
 }
 
 export function ViewItem(props: ViewItemProps) {
@@ -82,7 +83,7 @@ export function ViewItem(props: ViewItemProps) {
                   className="w-full h-fit relative rounded-xl hover:cursor-pointer hover:bg-B1 transition"
                   onClick={props.onclick}
                 >
-                  {cover_img}
+                  <div style={{ height: "250px" }}>{cover_img}</div>
                   <div className="absolute top-2 left-2">{badges}</div>
                   <div className="p-2 w-full overflow-hidden flex items-center">
                     <div className="flex-1 flex flex-col gap-1">
@@ -110,6 +111,20 @@ export function ViewItem(props: ViewItemProps) {
                   ))}
                 </div>
               );
+            case "normal":
+              return (
+                <div
+                  className="flex items-center rounded-md p-2 text-sm hover:bg-B1 cursor-pointer"
+                  onDragStart={props.onDragStart}
+                  draggable={!!props.onDragStart}
+                >
+                  <div className="h-4 w-4">{cover_img}</div>
+                  <div className="flex border-r-2 px-3 flex-1 gap-3 flex-wrap justify-between">
+                    {title}
+                  </div>
+                </div>
+              );
+
             default:
               return <div></div>;
           }
@@ -166,17 +181,23 @@ export function ViewCover(props: ViewCoverProps) {
     throw new Error("ViewCover must be used within a ViewContext.Provider");
   }
 
+  const placeholderImage = "https://i.sstatic.net/y9DpT.jpg";
+
   return (
-    <div className="rounded-lg overflow-hidden">
-      <Image
-        src={context.data[props.register]}
-        alt=""
-        width={500}
-        height={250}
-        quality={100}
-        style={{ width: "100%", height: "250px", objectFit: "cover" }}
-      />
-    </div>
+    <Image
+      src={
+        context.data[props.register]
+          ? context.data[props.register] !== ""
+            ? context.data[props.register]
+            : placeholderImage
+          : placeholderImage
+      }
+      alt=""
+      width={0}
+      height={0}
+      quality={100}
+      style={{ objectFit: "cover", width: "100%", height: "100%" }}
+    />
   );
 }
 

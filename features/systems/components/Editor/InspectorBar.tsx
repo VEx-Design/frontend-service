@@ -1,38 +1,15 @@
-import React, { useCallback, useState } from "react";
-import { ObjectNode } from "../../types/object";
+import React, { useContext } from "react";
 import { PyramidIcon } from "lucide-react";
 import Input from "../Input";
+import { editObjectValueById } from "../../libs/editObjectDetail";
+import { EditorContext } from "../Editor";
 
-interface Props {
-  data: ObjectNode;
-  updateData: (newData: ObjectNode) => void;
-}
-
-export default function InspectorBar(props: Props) {
-  const [name, setName] = useState(props.data.name);
-
-  const handleNameChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const updatedName = e.target.value;
-      setName(updatedName);
-      if (props.data.name) {
-        props.updateData({ ...props.data, name: updatedName });
-      }
-    },
-    [props]
-  );
-
-  const handleVarChange = useCallback(
-    (index: number, value: number) => {
-      const updatedVars = [...props.data.type.vars];
-      updatedVars[index].value = value;
-      props.updateData({
-        ...props.data,
-        type: { ...props.data.type, vars: updatedVars },
-      });
-    },
-    [props]
-  );
+export default function InspectorBar() {
+  const context = useContext(EditorContext);
+  if (!context) {
+    throw new Error("EditorContext must be used within an EditorProvider");
+  }
+  const { focusNode, setFocusNode } = context;
 
   return (
     <div className="flex flex-1 flex-col h-full bg-editbar text-foreground border-l-1 border-editbar-border py-4 overflow-y-auto">
@@ -46,23 +23,33 @@ export default function InspectorBar(props: Props) {
             id="name"
             className="border-2 border-editbar-border rounded-md p-1 bg-white text-sm w-full"
             placeholder="Enter object name"
-            value={name}
-            onChange={handleNameChange}
+            value="Lens 1"
           />
         </div>
         <div className="flex bg-slate-100 p-1 justify-center rounded-lg text-sm">
-          {props.data.type.name}
+          {focusNode?.data.object?.name}
         </div>
       </div>
       <div className="flex flex-col pt-5 gap-2 px-6">
-        {props.data.type.vars.map((variable, index) => (
-          <Input
-            key={index}
-            title={variable.name} // Display variable's name
-            value={`${variable.value}`}
-            onChange={(e) => handleVarChange(index, +e.target.value)} // Update value for the variable
-          />
-        ))}
+        {focusNode?.data.object &&
+          focusNode.data.object.vars.map((variable, index) => (
+            <Input
+              type="number"
+              key={index}
+              title={`${variable.name} [${variable.symbol}]`}
+              value={`${variable.value}`}
+              onChange={(e) => {
+                setFocusNode({
+                  ...focusNode,
+                  data: editObjectValueById(
+                    variable.id,
+                    e.target.value,
+                    focusNode.data
+                  ),
+                });
+              }}
+            />
+          ))}
       </div>
     </div>
   );

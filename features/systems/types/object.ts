@@ -1,17 +1,18 @@
-export interface ObjectNode {
-  name: string;
-  type: ObjectType;
+import { TypesResponse } from "../actions/getTypes";
+
+export interface NodeData {
+  type?: TypesResponse;
+  object?: ObjectType;
 }
 
 interface ObjectType {
   name: string;
-  vars: {
-    name: string;
-    value: number;
-  }[];
+  vars: ObjectVariableType[];
 }
 
-export interface ProjectNode {
-  ID: string;
+export interface ObjectVariableType {
+  id: string;
   name: string;
+  symbol: string;
+  value: string;
 }
