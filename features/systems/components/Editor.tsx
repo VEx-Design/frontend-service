@@ -13,6 +13,7 @@ import { useReactFlow } from "@xyflow/react";
 import getTypes, { TypesResponse } from "../actions/getTypes";
 import InspectorBar from "./Editor/InspectorBar";
 import { EdgeData } from "../types/light";
+import { ParamsResponse } from "../actions/getParameter";
 
 type FocusNode = {
   id: string;
@@ -24,9 +25,11 @@ type FocusEdge = {
   id: string;
   type: string;
   data: EdgeData;
+  source: string;
 };
 
 interface EditorContextValue {
+  params: ParamsResponse[] | undefined;
   focusNode: FocusNode | undefined;
   setFocusNode: (node: FocusNode | undefined) => void;
   focusEdge: FocusEdge | undefined;
@@ -40,6 +43,7 @@ export const EditorContext = createContext<EditorContextValue | undefined>(
 
 export default function Editor() {
   const [types, setTypes] = useState<TypesResponse[] | undefined>(undefined);
+  const [params, setParams] = useState<ParamsResponse[] | undefined>(undefined);
   const [focusNode, setFocusNode] = useState<FocusNode | undefined>(undefined);
   const [focusEdge, setFocusEdge] = useState<FocusEdge | undefined>(undefined);
 
@@ -85,13 +89,36 @@ export default function Editor() {
     }
   }
 
+  async function fetchParams() {
+    setParams([
+      {
+        id: "1",
+        name: "beam radius",
+        symbol: "r",
+      },
+      {
+        id: "2",
+        name: "beam angles",
+        symbol: "θ",
+      },
+    ]);
+  }
+
   useEffect(() => {
     fetchTypes();
+    fetchParams();
   }, []);
 
   return (
     <EditorContext.Provider
-      value={{ focusNode, setFocusNode, focusEdge, setFocusEdge, updateNodeId }}
+      value={{
+        params,
+        focusNode,
+        setFocusNode,
+        focusEdge,
+        setFocusEdge,
+        updateNodeId,
+      }}
     >
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
@@ -99,7 +126,7 @@ export default function Editor() {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={65} minSize={15}>
-          <FlowEditor types={types} />
+          <FlowEditor types={types} params={params} />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>

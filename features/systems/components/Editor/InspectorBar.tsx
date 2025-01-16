@@ -5,9 +5,11 @@ import { editObjectValueById } from "../../libs/editObjectDetail";
 import { EditorContext } from "../Editor";
 import Button from "@/components/Button";
 import { useReactFlow } from "@xyflow/react";
+import { Slider } from "@/components/ui/slider";
+import { AppNodeData } from "../../types/appNode";
 
 export default function InspectorBar() {
-  const { deleteElements } = useReactFlow();
+  const { deleteElements, getNode } = useReactFlow();
 
   const context = useContext(EditorContext);
   if (!context) {
@@ -70,6 +72,36 @@ export default function InspectorBar() {
                     </div>
                   </>
                 );
+              case "starter":
+                return (
+                  <div className="flex flex-col pt-5 gap-2 px-6">
+                    {focusNode.data.output?.map((param, index) => (
+                      <Input
+                        type="number"
+                        key={index}
+                        title={`${param.name} [${param.symbol}]`}
+                        value={`${param.value}`}
+                        onChange={(e) => {
+                          setFocusNode({
+                            ...focusNode,
+                            data: {
+                              ...focusNode.data,
+                              output: focusNode.data.output?.map((p, i) => {
+                                if (i === index) {
+                                  return {
+                                    ...p,
+                                    value: e.target.value,
+                                  };
+                                }
+                                return p;
+                              }),
+                            },
+                          });
+                        }}
+                      />
+                    ))}
+                  </div>
+                );
               default:
                 return (
                   <div className="flex flex-col items-center pt-4">
@@ -105,25 +137,66 @@ export default function InspectorBar() {
               case "default":
                 return (
                   <>
-                    <div className="flex flex-col pt-5 gap-2 px-6">
-                      <Input
-                        type="number"
-                        title={`Distance (cm)`}
-                        value={`${focusEdge.data.light?.distance ?? ""}`}
-                        onChange={(e) => {
-                          setFocusEdge({
-                            ...focusEdge,
-                            data: {
-                              ...focusEdge.data,
-                              light: {
-                                distance: e.target.value,
-                                locked: focusEdge.data.light?.locked ?? false,
+                    {focusEdge.data.light && (
+                      <div className="flex flex-col pt-5 gap-2 px-6">
+                        <Input
+                          type="number"
+                          title={`Distance (cm)`}
+                          value={`${focusEdge.data.light.distance ?? ""}`}
+                          onChange={(e) => {
+                            setFocusEdge({
+                              ...focusEdge,
+                              data: {
+                                ...focusEdge.data,
+                                light: {
+                                  distance: e.target.value,
+                                  focusDistance:
+                                    focusEdge.data.light?.focusDistance ?? 0,
+                                  locked: focusEdge.data.light?.locked ?? false,
+                                },
                               },
-                            },
-                          });
-                        }}
-                      />
-                    </div>
+                            });
+                          }}
+                        />
+                        <p className="mt-4">light properties</p>
+                        <div className="flex items-center gap-2">
+                          <Slider
+                            defaultValue={[focusEdge.data.light.focusDistance]}
+                            max={+focusEdge.data.light.distance}
+                            step={1}
+                            onValueChange={(value) => {
+                              setFocusEdge({
+                                ...focusEdge,
+                                data: {
+                                  ...focusEdge.data,
+                                  light: {
+                                    distance:
+                                      focusEdge.data.light?.distance ?? "25",
+                                    focusDistance: value[0],
+                                    locked:
+                                      focusEdge.data.light?.locked ?? false,
+                                  },
+                                },
+                              });
+                            }}
+                          />
+                          <p className="text-sm flex-none">
+                            {focusEdge.data.light.focusDistance} cm
+                          </p>
+                        </div>
+                        {(
+                          getNode(focusEdge.source)?.data as AppNodeData
+                        ).data.output?.map((param, index) => (
+                          <Input
+                            type="number"
+                            key={index}
+                            title={`${param.name} [${param.symbol}]`}
+                            value={`${param.value}`}
+                            disabled
+                          />
+                        ))}
+                      </div>
+                    )}
                   </>
                 );
               default:
@@ -136,23 +209,6 @@ export default function InspectorBar() {
                 );
             }
           })()}
-          {/* <div className="flex mt-4 mx-6 justify-center items-center">
-            <Button
-              variant="secondary"
-              handleButtonClick={() => {
-                deleteElements({
-                  nodes: [{ id: focusNode.id }],
-                });
-                setFocusNode(undefined);
-              }}
-              className="flex w-full justify-center"
-            >
-              <div className="flex items-center gap-1">
-                <TrashIcon size={14} />{" "}
-                <p className="text-sm">Delete this node</p>
-              </div>
-            </Button>
-          </div> */}
         </>
       ) : (
         <div className="flex flex-col items-center py-4">

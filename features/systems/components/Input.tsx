@@ -6,6 +6,7 @@ interface InputProps {
   value: string;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   type?: string;
+  disabled?: boolean;
 }
 
 function Input(props: InputProps) {
@@ -19,6 +20,7 @@ function Input(props: InputProps) {
         placeholder={props.placeholder}
         value={props.value}
         onChange={props.onChange}
+        disabled={props.disabled}
       />
     </div>
   );

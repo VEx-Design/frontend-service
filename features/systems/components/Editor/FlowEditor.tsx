@@ -42,6 +42,7 @@ import saveFlow from "../../actions/saveFlow";
 import { EditorContext } from "../Editor";
 import LightEdge from "../edges/LightEdge";
 import { AppEdge } from "../../types/appEdge";
+import { ParamsResponse } from "../../actions/getParameter";
 
 const rfStyle = {
   backgroundColor: "#FAFAFA",
@@ -49,6 +50,7 @@ const rfStyle = {
 
 interface Props {
   types: TypesResponse[] | undefined;
+  params: ParamsResponse[] | undefined;
 }
 
 const nodeTypes = {
@@ -81,6 +83,20 @@ export default function FlowEditor(props: Props) {
   const handleBackgroundClick = () => {
     setFocusNode(undefined);
   };
+
+  useEffect(() => {
+    try {
+      const flow = JSON.parse(flowStr);
+      if (!flow) return;
+      setNodes(flow.nodes || []);
+      setEdges(flow.edges || []);
+      if (!flow.viewport) return;
+      const { x = 0, y = 0, zoom = 1 } = flow.viewport;
+      setViewport({ x, y, zoom });
+    } catch (error) {
+      console.error("Failed to parse flow string:", error);
+    }
+  }, [flowStr, setEdges, setNodes, setViewport]);
 
   useEffect(() => {
     try {
@@ -167,6 +183,7 @@ export default function FlowEditor(props: Props) {
               data: {
                 light: {
                   distance: "25",
+                  focusDistance: 0,
                   locked: false,
                 },
               },
@@ -231,6 +248,7 @@ export default function FlowEditor(props: Props) {
           id: changes.edges[0].id,
           type: "default",
           data: changes.edges[0].data?.data ?? {},
+          source: changes.edges[0].source,
         });
       } else {
         setFocusEdge(undefined);
@@ -258,6 +276,7 @@ export default function FlowEditor(props: Props) {
             fitViewOptions={{ maxZoom: 0.8 }}
             onPaneClick={handleBackgroundClick}
             onSelectionChange={handleSelectionChange}
+            deleteKeyCode={[]}
           >
             <Controls />
             <Background variant={BackgroundVariant.Dots} gap={12} size={2} />

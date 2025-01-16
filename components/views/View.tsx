@@ -118,7 +118,7 @@ export function ViewItem(props: ViewItemProps) {
                   onDragStart={props.onDragStart}
                   draggable={!!props.onDragStart}
                 >
-                  <div className="h-4 w-4">{cover_img}</div>
+                  <div className="h-8 w-8">{cover_img}</div>
                   <div className="flex border-r-2 px-3 flex-1 gap-3 flex-wrap justify-between">
                     {title}
                   </div>

@@ -4,5 +4,6 @@ export interface EdgeData {
 
 interface LightType {
   distance: string;
+  focusDistance: number;
   locked: boolean;
 }
