@@ -2,7 +2,7 @@ import React, { memo, useContext, useEffect, useMemo } from "react";
 import { LogInIcon } from "lucide-react";
 import { Handle, NodeProps, Position, useReactFlow } from "@xyflow/react";
 import { cn } from "@/lib/utils";
-import { NodeData } from "../../types/object";
+import { NodeData, NodeTransferType } from "../../types/object";
 import { EditorContext } from "../Editor";
 import { createNewTransfer } from "../../libs/createNewTransfer";
 import { AppNode } from "../../types/appNode";
@@ -28,7 +28,13 @@ const StarterNode = memo((props: NodeProps) => {
 
   useEffect(() => {
     if (params) {
-      const newOutput = createNewTransfer(params, nodeData.output || []);
+      const newOutput: NodeTransferType[] = [
+        {
+          handleId: "1",
+          param: createNewTransfer(params, nodeData.output?.[0]?.param ?? []),
+        },
+      ];
+
       setNodes((nds) =>
         (nds as AppNode[]).map((node) => {
           if (node.id === props.id) {
@@ -63,6 +69,7 @@ const StarterNode = memo((props: NodeProps) => {
           "!bg-muted-foreground !border-2 !border-background !w-4 !h-4",
           "!bg-gray-400"
         )}
+        id="1"
       />
       <LogInIcon size={36} className="stroke-white" />
     </div>

@@ -3,7 +3,6 @@ import { TypesResponse } from "../actions/getTypes";
 export interface NodeData {
   type?: TypesResponse;
   object?: ObjectType;
-  input?: NodeTransferType[];
   output?: NodeTransferType[];
 }
 
@@ -20,6 +19,11 @@ export interface ObjectVariableType {
 }
 
 export interface NodeTransferType {
+  handleId: string;
+  param: NodeParamType[];
+}
+
+export interface NodeParamType {
   id: string;
   name: string;
   symbol: string;

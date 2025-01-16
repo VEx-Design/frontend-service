@@ -34,11 +34,11 @@ const NodeComponent = memo((props: NodeProps) => {
       )}
       onClick={handleOnClick}
     >
-      {[...Array(nodeData.type?.input)].map((_, id) => (
+      {[...Array(nodeData.type?.input)].map((id, index) => (
         <Handle
-          key={id}
+          key={index}
           type="target"
-          id={id.toString()}
+          id={index.toString()}
           position={Position.Left}
           className={cn(
             "!bg-muted-foreground !border-2 !border-background !w-4 !h-4",

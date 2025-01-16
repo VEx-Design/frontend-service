@@ -173,6 +173,10 @@ export default function FlowEditor(props: Props) {
 
   const onConnect = useCallback(
     (connection: Connection) => {
+      // Validate the connection to ensure targetHandle is available
+      if (!connection.targetHandle) return;
+
+      // Add the new edge with animation and unique ID
       setEdges((eds) =>
         addEdge(
           {
@@ -193,26 +197,22 @@ export default function FlowEditor(props: Props) {
         )
       );
 
-      if (!connection.targetHandle) return;
-
-      // Retrieve the node using the optimized lookup
+      // Retrieve the target node and ensure it exists
       const node = nodesMap[connection.target];
       if (!node) return;
 
-      const nodeInputs =
-        typeof node.data.inputs === "object" && node.data.inputs !== null
-          ? node.data.inputs
-          : {}; // Ensure nodeInputs is always an object
+      // Ensure nodeInputs is always an object and handle missing inputs
+      const nodeInputs = node.data.inputs ?? {};
 
-      // Update the node with the new inputs
+      // Update the node data with the new input for the targetHandle
       updateNodeData(node.id, {
         inputs: {
-          ...nodeInputs,
+          ...(typeof nodeInputs === "object" ? nodeInputs : {}),
           [connection.targetHandle]: "", // Clear the input value for the targetHandle
         },
       });
     },
-    [setEdges, nodesMap, updateNodeData] // Use nodesMap in the dependencies
+    [setEdges, nodesMap, updateNodeData]
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -249,6 +249,7 @@ export default function FlowEditor(props: Props) {
           type: "default",
           data: changes.edges[0].data?.data ?? {},
           source: changes.edges[0].source,
+          sourceHandle: changes.edges[0].sourceHandle ?? "",
         });
       } else {
         setFocusEdge(undefined);

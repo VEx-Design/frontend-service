@@ -75,7 +75,7 @@ export default function InspectorBar() {
               case "starter":
                 return (
                   <div className="flex flex-col pt-5 gap-2 px-6">
-                    {focusNode.data.output?.map((param, index) => (
+                    {focusNode.data.output?.[0]?.param?.map((param, index) => (
                       <Input
                         type="number"
                         key={index}
@@ -186,15 +186,19 @@ export default function InspectorBar() {
                         </div>
                         {(
                           getNode(focusEdge.source)?.data as AppNodeData
-                        ).data.output?.map((param, index) => (
-                          <Input
-                            type="number"
-                            key={index}
-                            title={`${param.name} [${param.symbol}]`}
-                            value={`${param.value}`}
-                            disabled
-                          />
-                        ))}
+                        ).data.output
+                          ?.filter(
+                            (t) => t.handleId === focusEdge.sourceHandle
+                          )?.[0]
+                          ?.param.map((param, index) => (
+                            <Input
+                              type="number"
+                              key={index}
+                              title={`${param.name} [${param.symbol}]`}
+                              value={`${param.value}`}
+                              disabled
+                            />
+                          ))}
                       </div>
                     )}
                   </>

@@ -14,6 +14,7 @@ import getTypes, { TypesResponse } from "../actions/getTypes";
 import InspectorBar from "./Editor/InspectorBar";
 import { EdgeData } from "../types/light";
 import { ParamsResponse } from "../actions/getParameter";
+import { ExprsResponse } from "../actions/getExpression";
 
 type FocusNode = {
   id: string;
@@ -26,6 +27,7 @@ type FocusEdge = {
   type: string;
   data: EdgeData;
   source: string;
+  sourceHandle: string;
 };
 
 interface EditorContextValue {
@@ -44,6 +46,7 @@ export const EditorContext = createContext<EditorContextValue | undefined>(
 export default function Editor() {
   const [types, setTypes] = useState<TypesResponse[] | undefined>(undefined);
   const [params, setParams] = useState<ParamsResponse[] | undefined>(undefined);
+  const [exprs, setExprs] = useState<ExprsResponse[] | undefined>(undefined);
   const [focusNode, setFocusNode] = useState<FocusNode | undefined>(undefined);
   const [focusEdge, setFocusEdge] = useState<FocusEdge | undefined>(undefined);
 
@@ -90,6 +93,21 @@ export default function Editor() {
   }
 
   async function fetchParams() {
+    setParams([
+      {
+        id: "1",
+        name: "beam radius",
+        symbol: "r",
+      },
+      {
+        id: "2",
+        name: "beam angles",
+        symbol: "θ",
+      },
+    ]);
+  }
+
+  async function fetchExprs() {
     setParams([
       {
         id: "1",
