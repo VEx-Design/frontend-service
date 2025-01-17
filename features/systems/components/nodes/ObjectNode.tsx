@@ -60,69 +60,80 @@ const NodeComponent = memo((props: NodeProps) => {
   }, [params, props.id, setNodes]);
 
   return (
-    <div
-      className={cn(
-        "flex p-4 bg-white justify-center items-center flex-col gap-2 rounded-lg border-2 border-gray-200",
-        selected && "border-sky-400"
-      )}
-      style={{ height: `${nodeHeight}px` }}
-      onClick={handleOnClick}
-    >
-      {[...Array(nodeData.type?.input)].map((id, index) => (
-        <Handle
-          key={index}
-          type="target"
-          id={index.toString()}
-          position={Position.Left}
+    <>
+      <div
+        className={cn(
+          "flex p-4 bg-white justify-center items-center flex-col gap-2 rounded-lg border-2 border-gray-200",
+          selected && "border-sky-400"
+        )}
+        style={{ height: `${nodeHeight}px` }}
+        onClick={handleOnClick}
+      >
+        <p
+          className="absolute text-lg text-black font-bold"
           style={{
-            top: `${
-              ((index + 1) * nodeHeight) / ((nodeData.type?.input ?? 0) + 1)
-            }px`, // Dynamically offset handles
+            top: `-28px`, // Dynamically offset handles
           }}
-          className={cn(
-            "!bg-muted-foreground !border-2 !border-background !w-4 !h-4",
-            "!bg-gray-400"
-          )}
-        />
-      ))}
-      <Image
-        src={
-          nodeData.type?.picture
-            ? nodeData.type?.picture !== ""
-              ? nodeData.type?.picture
+        >
+          {nodeData.type?.name === "Lens" &&
+            `f: ${nodeData.object?.vars[0].value}`}
+        </p>
+        {[...Array(nodeData.type?.input)].map((id, index) => (
+          <Handle
+            key={index}
+            type="target"
+            id={index.toString()}
+            position={Position.Left}
+            style={{
+              top: `${
+                ((index + 1) * nodeHeight) / ((nodeData.type?.input ?? 0) + 1)
+              }px`, // Dynamically offset handles
+            }}
+            className={cn(
+              "!bg-muted-foreground !border-2 !border-background !w-4 !h-4",
+              "!bg-gray-400"
+            )}
+          />
+        ))}
+        <Image
+          src={
+            nodeData.type?.picture
+              ? nodeData.type?.picture !== ""
+                ? nodeData.type?.picture
+                : placeholderImage
               : placeholderImage
-            : placeholderImage
-        }
-        alt={nodeData.type?.name || "Placeholder"}
-        width={30}
-        height={30}
-        quality={100}
-        priority
-        style={{
-          objectFit: "contain", // Ensures the image fits within the container
-          width: "50px",
-          height: "50px",
-        }}
-      />
-      <p>{nodeData.type?.name}</p>
-      {[...Array(nodeData.type?.output)].map((_, index) => (
-        <Handle
-          key={`handle-${index}`}
-          type="source"
-          id={`source-handle-${index}`}
-          position={Position.Right}
+          }
+          alt={nodeData.type?.name || "Placeholder"}
+          width={30}
+          height={30}
+          quality={100}
+          priority
           style={{
-            top: `${
-              ((index + 1) * nodeHeight) / ((nodeData.type?.output ?? 0) + 1)
-            }px`, // Dynamically offset handles
+            objectFit: "contain", // Ensures the image fits within the container
+            width: "50px",
+            height: "50px",
           }}
-          className={cn(
-            "!bg-muted-foreground !border-2 !border-background !w-4 !h-4",
-            "!bg-gray-400"
-          )}
         />
-      ))}
-    </div>
+        <p>{nodeData.type?.name}</p>
+        {[...Array(nodeData.type?.output)].map((_, index) => (
+          <Handle
+            key={`handle-${index}`}
+            type="source"
+            id={`source-handle-${index}`}
+            position={Position.Right}
+            style={{
+              top: `${
+                ((index + 1) * nodeHeight) / ((nodeData.type?.output ?? 0) + 1)
+              }px`, // Dynamically offset handles
+            }}
+            className={cn(
+              "!bg-muted-foreground !border-2 !border-background !w-4 !h-4",
+              "!bg-gray-400"
+            )}
+          />
+        ))}
+      </div>
+    </>
   );
 });
 
