@@ -12,6 +12,7 @@ module.exports = {
       "lh3.googleusercontent.com",
       "static-00.iconduck.com",
       "i.sstatic.net",
+      "localhost",
     ], // Add your external image domain here
   },
 };

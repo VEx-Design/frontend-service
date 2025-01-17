@@ -196,7 +196,7 @@ export function ViewCover(props: ViewCoverProps) {
       width={0}
       height={0}
       quality={100}
-      style={{ objectFit: "cover", width: "100%", height: "100%" }}
+      style={{ objectFit: "contain", width: "100%", height: "100%" }}
     />
   );
 }

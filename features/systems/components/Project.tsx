@@ -13,6 +13,7 @@ interface Props {
 interface ProjectContextValue {
   projId: string;
   flowStr: string;
+  onSave: () => void;
   setOnSave: (onSave: () => void) => void;
   setSavePending: (isPending: boolean) => void;
 }
@@ -30,6 +31,7 @@ export default function Project(props: Props) {
       value={{
         projId: props.project.id,
         flowStr: props.project.flow,
+        onSave,
         setOnSave,
         setSavePending,
       }}

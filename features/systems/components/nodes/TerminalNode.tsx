@@ -9,6 +9,7 @@ function TerminalNode() {
       <Handle
         type="target"
         position={Position.Left}
+        id="1"
         className={cn(
           "!bg-muted-foreground !border-2 !border-background !w-4 !h-4",
           "!bg-gray-400"

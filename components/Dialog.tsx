@@ -1,7 +1,7 @@
 "use client";
 
 import { getChild } from "@/components/getChildren";
-import React, { createContext, useState, useContext, useMemo } from "react";
+import React, { createContext, useContext, useMemo } from "react";
 import { IoClose } from "react-icons/io5";
 import { RiStickyNoteAddFill } from "react-icons/ri";
 
@@ -12,18 +12,14 @@ const DialogContext = createContext<{
 
 interface DialogProps {
   title: string;
-  onClose?: () => void;
+  isOpen: boolean;
+  openDialog: () => void;
+  closeDialog: () => void;
   children: React.ReactNode;
 }
 
 export function Dialog(props: DialogProps) {
-  const [isOpen, setOpen] = useState(false);
-
-  const openDialog = () => setOpen(true);
-  const closeDialog = () => {
-    setOpen(false);
-    props.onClose?.();
-  };
+  const { isOpen, openDialog, closeDialog } = props;
 
   const trigger = useMemo(
     () => getChild(props.children, DialogTrigger),

@@ -7,14 +7,21 @@ import {
 } from "@/components/ui/resizable";
 import FlowEditor from "@/features/systems/components/Editor/FlowEditor";
 import { NodeData } from "@/features/systems/types/object";
-import { createContext, useCallback, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import SelectionSide from "./Editor/SelectionSide";
 import { useReactFlow } from "@xyflow/react";
 import getTypes, { TypesResponse } from "../actions/getTypes";
 import InspectorBar from "./Editor/InspectorBar";
 import { EdgeData } from "../types/light";
 import { ParamsResponse } from "../actions/getParameter";
-import { ExprsResponse } from "../actions/getExpression";
+import { ProjectContext } from "./Project";
+// import { ExprsResponse } from "../actions/getExpression";
 
 type FocusNode = {
   id: string;
@@ -44,9 +51,15 @@ export const EditorContext = createContext<EditorContextValue | undefined>(
 );
 
 export default function Editor() {
+  const projectContext = useContext(ProjectContext);
+
+  if (!projectContext) {
+    throw new Error("ProjectContext must be used within an ProjectProvider");
+  }
+
   const [types, setTypes] = useState<TypesResponse[] | undefined>(undefined);
   const [params, setParams] = useState<ParamsResponse[] | undefined>(undefined);
-  const [exprs, setExprs] = useState<ExprsResponse[] | undefined>(undefined);
+  // const [exprs, setExprs] = useState<ExprsResponse[] | undefined>(undefined);
   const [focusNode, setFocusNode] = useState<FocusNode | undefined>(undefined);
   const [focusEdge, setFocusEdge] = useState<FocusEdge | undefined>(undefined);
 
@@ -107,20 +120,20 @@ export default function Editor() {
     ]);
   }
 
-  async function fetchExprs() {
-    setParams([
-      {
-        id: "1",
-        name: "beam radius",
-        symbol: "r",
-      },
-      {
-        id: "2",
-        name: "beam angles",
-        symbol: "θ",
-      },
-    ]);
-  }
+  // async function fetchExprs() {
+  //   setParams([
+  //     {
+  //       id: "1",
+  //       name: "beam radius",
+  //       symbol: "r",
+  //     },
+  //     {
+  //       id: "2",
+  //       name: "beam angles",
+  //       symbol: "θ",
+  //     },
+  //   ]);
+  // }
 
   useEffect(() => {
     fetchTypes();

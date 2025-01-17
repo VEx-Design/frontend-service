@@ -40,6 +40,10 @@ import { compareString } from "@/components/lists/filter";
 import { useRouter } from "next/navigation";
 
 export default function ProjectLister() {
+  // const [fetchFunction, setFetchFunction] = useState<
+  //   () => Promise<Data[] | undefined>
+  // >(() => async () => undefined);
+
   const { user } = useUser();
 
   const router = useRouter();
@@ -63,6 +67,10 @@ export default function ProjectLister() {
       console.error("Error fetching projects:", error);
     }
   }
+
+  // useEffect(() => {
+  //   setFetchFunction(fetchProjects);
+  // }, []);
 
   const ownerItems = [
     {
@@ -119,7 +127,12 @@ export default function ProjectLister() {
     <Lister mutation={fetchProjects} modifyData={(data) => filter(sort(data))}>
       <ListerHeader title="Project">
         <ListerHeaderControl>
-          <CreateProjectDialog />
+          <CreateProjectDialog
+          // onCreated={() => {
+          //   setFetchFunction(() => async () => undefined);
+          //   setFetchFunction(fetchFunction);
+          // }}
+          />
         </ListerHeaderControl>
       </ListerHeader>
       <ListerControl>

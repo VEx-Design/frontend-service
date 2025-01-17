@@ -86,15 +86,23 @@ export default function InspectorBar() {
                             ...focusNode,
                             data: {
                               ...focusNode.data,
-                              output: focusNode.data.output?.map((p, i) => {
-                                if (i === index) {
-                                  return {
-                                    ...p,
-                                    value: e.target.value,
-                                  };
-                                }
-                                return p;
-                              }),
+                              output: [
+                                {
+                                  handleId: "1",
+                                  param:
+                                    focusNode.data.output?.[0].param?.map(
+                                      (p, i) => {
+                                        if (i === index) {
+                                          return {
+                                            ...p,
+                                            value: e.target.value,
+                                          };
+                                        }
+                                        return p;
+                                      }
+                                    ) ?? [],
+                                },
+                              ],
                             },
                           });
                         }}
@@ -141,7 +149,7 @@ export default function InspectorBar() {
                       <div className="flex flex-col pt-5 gap-2 px-6">
                         <Input
                           type="number"
-                          title={`Distance (cm)`}
+                          title={`Distance (mm)`}
                           value={`${focusEdge.data.light.distance ?? ""}`}
                           onChange={(e) => {
                             setFocusEdge({
@@ -161,7 +169,7 @@ export default function InspectorBar() {
                         <p className="mt-4">light properties</p>
                         <div className="flex items-center gap-2">
                           <Slider
-                            defaultValue={[focusEdge.data.light.focusDistance]}
+                            value={[focusEdge.data.light.focusDistance]}
                             max={+focusEdge.data.light.distance}
                             step={1}
                             onValueChange={(value) => {
@@ -181,7 +189,7 @@ export default function InspectorBar() {
                             }}
                           />
                           <p className="text-sm flex-none">
-                            {focusEdge.data.light.focusDistance} cm
+                            {focusEdge.data.light.focusDistance} mm
                           </p>
                         </div>
                         {(

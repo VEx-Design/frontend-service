@@ -64,7 +64,7 @@ export default function TypeLister() {
                   onDragStart={(event) => onDragStart(event, getData)}
                 >
                   <ViewTitle register="name" />
-                  <ViewCover register="image_url" />
+                  <ViewCover register="picture" />
                 </ViewItem>
               )}
             />

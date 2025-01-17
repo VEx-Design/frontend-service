@@ -67,6 +67,9 @@ export default function FlowEditor(props: Props) {
   const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<AppEdge>([]);
   const { screenToFlowPosition, updateNodeData, setViewport } = useReactFlow();
+  const [connectedHandles, setConnectedHandles] = useState<Set<string>>(
+    new Set()
+  );
 
   const projectContext = useContext(ProjectContext);
   if (!projectContext) {
@@ -176,6 +179,13 @@ export default function FlowEditor(props: Props) {
       // Validate the connection to ensure targetHandle is available
       if (!connection.targetHandle) return;
 
+      // if (
+      //   connectedHandles.has(`${connection.targetHandle}-${connection.target}`)
+      // ) {
+      //   alert("This handle is already connected!");
+      //   return; // Prevent new connections to this handle
+      // }
+
       // Add the new edge with animation and unique ID
       setEdges((eds) =>
         addEdge(
@@ -211,8 +221,13 @@ export default function FlowEditor(props: Props) {
           [connection.targetHandle]: "", // Clear the input value for the targetHandle
         },
       });
+
+      setConnectedHandles(
+        (prev) =>
+          new Set(prev.add(`${connection.targetHandle}-${connection.target}`))
+      );
     },
-    [setEdges, nodesMap, updateNodeData]
+    [setEdges, nodesMap, updateNodeData, connectedHandles]
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {

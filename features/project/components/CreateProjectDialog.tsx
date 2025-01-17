@@ -11,7 +11,7 @@ import {
   FormSubmit,
 } from "@/components/Form";
 import Input from "@/components/inputs/Input";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createProjectData, createProjectSchema } from "../schema/project";
@@ -20,7 +20,19 @@ import createProject from "../actions/createProject";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
-export default function CreateProjectDialog() {
+interface CreateProjectDialogProps {
+  onCreated?: () => void;
+}
+
+export default function CreateProjectDialog(props: CreateProjectDialogProps) {
+  const [isOpen, setOpen] = useState(false);
+  const { onCreated } = props;
+
+  const openDialog = () => setOpen(true);
+  const closeDialog = () => {
+    setOpen(false);
+  };
+
   const form = useForm<createProjectData>({
     resolver: zodResolver(createProjectSchema),
     defaultValues: {},
@@ -40,12 +52,22 @@ export default function CreateProjectDialog() {
     (values: createProjectData) => {
       toast.loading("Creating project...", { id: "create-project" });
       mutate(values);
+      form.reset();
+      closeDialog();
+      if (onCreated) {
+        onCreated();
+      }
     },
-    [mutate]
+    [mutate, form, onCreated]
   );
 
   return (
-    <Dialog title="New Project">
+    <Dialog
+      title="New Project"
+      isOpen={isOpen}
+      openDialog={openDialog}
+      closeDialog={closeDialog}
+    >
       <DialogTrigger>
         <button className="bg-C1 text-white p-2 rounded-lg hover:bg-blue-500">
           + Project

@@ -62,7 +62,7 @@ export default function LightEdge(props: EdgeProps) {
           }}
         >
           <div className="text-sm font-semibold mb-1">
-            {`${edgeData.light?.distance} cm` || "Edge Label"}{" "}
+            {`${edgeData.light?.distance} mm` || "Edge Label"}{" "}
             {/* Display label */}
           </div>
         </div>

@@ -72,6 +72,7 @@ interface FormFieldProps<TFormValues extends FieldValues> {
     field: UseFormRegisterReturn;
     isError: boolean;
   }) => React.ReactNode;
+  required?: boolean;
 }
 
 export function FormField<TFormValues extends FieldValues>(

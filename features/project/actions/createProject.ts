@@ -24,7 +24,7 @@ export default async function createProject(form: createProjectData) {
         name: data.name,
         description: data.description,
         flow: JSON.stringify(initialFlow),
-        configurationID: data.configurationID,
+        configurationID: 1,
       },
       {
         withCredentials: true,
