@@ -1,6 +1,6 @@
 "use client";
 
-import { getChild } from "@/components/getChildren";
+import { getChild } from "@/components/libs/getChildren";
 import React, {
   createContext,
   useContext,
@@ -32,7 +32,6 @@ interface ListerProps {
 }
 
 export function Lister(props: ListerProps) {
-  const [data, setData] = useState<Data[]>([]);
   const [modifyData, setModifyData] = useState<Data[]>([]);
   const [currentView, setView] = useState<ViewType>("card");
   const [loading, setLoading] = useState<boolean>(true);
@@ -45,7 +44,13 @@ export function Lister(props: ListerProps) {
       try {
         const result = await mutation();
         if (result) {
-          setData(result);
+          if (modifyDataProp) {
+            setModifyData(modifyDataProp(result || []));
+          } else {
+            setModifyData(result ?? []);
+          }
+        } else {
+          setModifyData([]);
         }
       } catch (error) {
         console.error("Failed to fetch data:", error);
@@ -53,17 +58,8 @@ export function Lister(props: ListerProps) {
         setLoading(false);
       }
     };
-
     fetchData();
-  }, [mutation]);
-
-  useEffect(() => {
-    if (modifyDataProp) {
-      setModifyData(modifyDataProp(data));
-    } else {
-      setModifyData(data);
-    }
-  }, [data, modifyDataProp]);
+  }, [mutation, modifyDataProp]);
 
   const header = useMemo(
     () => getChild(props.children, ListerHeader),

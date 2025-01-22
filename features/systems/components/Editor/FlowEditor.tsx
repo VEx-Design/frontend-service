@@ -289,7 +289,7 @@ export default function FlowEditor(props: Props) {
             onDrop={onDrop}
             style={rfStyle}
             fitView
-            fitViewOptions={{ maxZoom: 0.8 }}
+            fitViewOptions={{ maxZoom: 0.8, minZoom: 0.005, padding: 0.25 }}
             onPaneClick={handleBackgroundClick}
             onSelectionChange={handleSelectionChange}
             deleteKeyCode={[]}

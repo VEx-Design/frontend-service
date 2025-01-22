@@ -2,7 +2,7 @@
 
 import Badge, { BadgeVariant } from "@/components/Badge";
 import { createContext, useContext, useMemo, useState } from "react";
-import { getChild, getChildren } from "../getChildren";
+import { getChild, getChildren } from "../libs/getChildren";
 import Image from "next/image";
 import React from "react";
 

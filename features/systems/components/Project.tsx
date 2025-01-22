@@ -5,6 +5,15 @@ import EditorNavbar from "./Editor/EditorNavbar";
 import { ReactFlowProvider } from "@xyflow/react";
 import Editor from "./Editor";
 import { ProjectResponse } from "../actions/getProjectWithID";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  TabsTriggerIcon,
+} from "@/components/Tabs";
+import { FileSliders, GitGraph } from "lucide-react";
+import Configuration from "./Configuration";
 
 interface Props {
   project: ProjectResponse;
@@ -41,9 +50,28 @@ export default function Project(props: Props) {
         onSave={onSave}
         savePending={savePending}
       />
-      <ReactFlowProvider>
-        <Editor />
-      </ReactFlowProvider>
+      <Tabs type="side">
+        <TabsList>
+          <TabsTrigger name="Flow">
+            <TabsTriggerIcon>
+              <GitGraph />
+            </TabsTriggerIcon>
+          </TabsTrigger>
+          <TabsTrigger name="Configuration">
+            <TabsTriggerIcon>
+              <FileSliders />
+            </TabsTriggerIcon>
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent name="Flow">
+          <ReactFlowProvider>
+            <Editor />
+          </ReactFlowProvider>
+        </TabsContent>
+        <TabsContent name="Configuration">
+          <Configuration />
+        </TabsContent>
+      </Tabs>
     </ProjectContext.Provider>
   );
 }

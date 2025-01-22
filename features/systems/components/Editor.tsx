@@ -117,6 +117,16 @@ export default function Editor() {
         name: "beam angles",
         symbol: "θ",
       },
+      // {
+      //   id: "3",
+      //   name: "Field vector X",
+      //   symbol: "Ex",
+      // },
+      // {
+      //   id: "4",
+      //   name: "Field vector Y",
+      //   symbol: "Ey",
+      // },
     ]);
   }
 
@@ -152,7 +162,7 @@ export default function Editor() {
       }}
     >
       <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
+        <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
           <SelectionSide />
         </ResizablePanel>
         <ResizableHandle />

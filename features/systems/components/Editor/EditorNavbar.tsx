@@ -1,5 +1,4 @@
-import Button from "@/components/Button";
-import { Loader2 } from "lucide-react";
+import Image from "next/image";
 import React from "react";
 
 interface EditorNavbarProps {
@@ -10,14 +9,34 @@ interface EditorNavbarProps {
 
 export default function EditorNavbar(props: EditorNavbarProps) {
   return (
-    <div className="flex py-4 px-5 bg-C1 justify-between items-center">
-      <p className="text-M1">{props.title || "Untitled"}</p>
+    <div className="flex justify-between items-center border-b px-2 py-2 h-[55px]">
       <div className="flex gap-2">
-        <Button variant="secondary" handleButtonClick={props.onSave}>
-          {!props.savePending && "Save"}
-          {props.savePending && <Loader2 className="animate-spin" />}
-        </Button>
-        <Button variant="sensitive">{"Execute"}</Button>
+        <Image
+          src="/VExDesign.svg"
+          alt="Logo"
+          width={70}
+          height={200}
+          layout="intrinsic"
+        />
+        <div className="flex flex-col">
+          <input
+            type="text"
+            className="input text-sm ps-2 focus:border-none focus:border-gray-200"
+            value={props.title || "Untitled"}
+            onChange={() => {}}
+          />
+          <div className="flex">
+            <div
+              className="text-xs px-2 py-1 hover:bg-slate-100 rounded-sm cursor-pointer"
+              onClick={props.onSave}
+            >
+              Save
+            </div>
+            <div className="text-xs px-2 py-1 hover:bg-slate-100 rounded-sm cursor-pointer">
+              Execute
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

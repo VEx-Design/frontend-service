@@ -10,7 +10,7 @@ import {
   UseFormRegisterReturn,
   UseFormReturn,
 } from "react-hook-form";
-import { getChild, getChildren } from "./getChildren";
+import { getChild, getChildren } from "./libs/getChildren";
 
 interface FormContextType<TFieldValues extends FieldValues> {
   errors: FieldErrors<TFieldValues>;

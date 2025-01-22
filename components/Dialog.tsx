@@ -1,6 +1,6 @@
 "use client";
 
-import { getChild } from "@/components/getChildren";
+import { getChild } from "@/components/libs/getChildren";
 import React, { createContext, useContext, useMemo } from "react";
 import { IoClose } from "react-icons/io5";
 import { RiStickyNoteAddFill } from "react-icons/ri";

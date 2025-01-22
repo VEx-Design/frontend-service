@@ -7,7 +7,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { getChildren } from "./getChildren";
+import { getChildren } from "./libs/getChildren";
 
 interface ToggleListContextType {
   selectedName: string;

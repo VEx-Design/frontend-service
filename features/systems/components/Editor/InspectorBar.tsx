@@ -122,7 +122,7 @@ export default function InspectorBar() {
           })()}
           <div className="flex mt-4 mx-6 justify-center items-center">
             <Button
-              variant="secondary"
+              variant="danger"
               handleButtonClick={() => {
                 deleteElements({
                   nodes: [{ id: focusNode.id }],
