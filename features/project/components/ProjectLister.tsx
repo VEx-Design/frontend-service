@@ -170,7 +170,7 @@ export default function ProjectLister() {
             <View
               data={data}
               render={({ getData }) => (
-                <ViewItem type={type} onclick={() => itemClick(getData)}>
+                <ViewItem type={type} onClick={() => itemClick(getData)}>
                   <ViewBadge register="role" />
                   <ViewTitle register="name" />
                   <ViewCover register="image_url" />

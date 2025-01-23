@@ -46,7 +46,7 @@ interface ViewItemProps {
   children: React.ReactNode;
   type: ViewType;
   data?: Data;
-  onclick?: () => void;
+  onClick?: () => void;
   onDragStart?: (event: React.DragEvent) => void;
 }
 
@@ -75,60 +75,59 @@ export function ViewItem(props: ViewItemProps) {
   if (data !== undefined) {
     return (
       <ViewContext.Provider value={{ data: data }}>
-        {(() => {
-          switch (props.type) {
-            case "card":
-              return (
-                <div
-                  className="w-full h-fit relative rounded-xl hover:cursor-pointer hover:bg-B1 transition"
-                  onClick={props.onclick}
-                >
-                  <div style={{ height: "250px" }}>{cover_img}</div>
-                  <div className="absolute top-2 left-2">{badges}</div>
-                  <div className="p-2 w-full overflow-hidden flex items-center">
-                    <div className="flex-1 flex flex-col gap-1">
-                      <span className="text-sm font-semibold">{title}</span>
-                      <div className="text-[10px] flex flex-col justify-between whitespace-nowrap text-gray-400">
-                        {contents}
+        <div
+          onClick={props.onClick}
+          onDragStart={props.onDragStart}
+          draggable={!!props.onDragStart}
+        >
+          {(() => {
+            switch (props.type) {
+              case "card":
+                return (
+                  <div className="w-full h-fit relative rounded-xl hover:cursor-pointer hover:bg-B1 transition">
+                    <div style={{ height: "250px" }}>{cover_img}</div>
+                    <div className="absolute top-2 left-2">{badges}</div>
+                    <div className="p-2 w-full overflow-hidden flex items-center">
+                      <div className="flex-1 flex flex-col gap-1">
+                        <span className="text-sm font-semibold">{title}</span>
+                        <div className="text-[10px] flex flex-col justify-between whitespace-nowrap text-gray-400">
+                          {contents}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            case "list":
-              return (
-                <div className="flex items-center rounded-md p-2 text-sm hover:bg-B1 cursor-pointer">
-                  <div className="flex border-r-2 px-3 flex-1 gap-3 flex-wrap justify-between">
-                    {title}
+                );
+              case "list":
+                return (
+                  <div className="flex items-center rounded-md p-2 text-sm hover:bg-B1 cursor-pointer">
+                    <div className="flex border-r-2 px-3 flex-1 gap-3 flex-wrap justify-between">
+                      {title}
+                    </div>
+                    {contents.map((element, index) => (
+                      <span
+                        key={index}
+                        className="text-xs text-gray-400 border-r-2 px-3 flex-initial w-[150px] truncate hidden sm:block"
+                      >
+                        {element}
+                      </span>
+                    ))}
                   </div>
-                  {contents.map((element, index) => (
-                    <span
-                      key={index}
-                      className="text-xs text-gray-400 border-r-2 px-3 flex-initial w-[150px] truncate hidden sm:block"
-                    >
-                      {element}
-                    </span>
-                  ))}
-                </div>
-              );
-            case "normal":
-              return (
-                <div
-                  className="flex items-center rounded-md p-2 text-sm hover:bg-B1 cursor-pointer"
-                  onDragStart={props.onDragStart}
-                  draggable={!!props.onDragStart}
-                >
-                  <div className="h-8 w-8">{cover_img}</div>
-                  <div className="flex border-r-2 px-3 flex-1 gap-3 flex-wrap justify-between">
-                    {title}
+                );
+              case "normal":
+                return (
+                  <div className="flex items-center rounded-md p-2 text-sm hover:bg-B1 cursor-pointer">
+                    {cover_img && <div className="h-8 w-8">{cover_img}</div>}
+                    <div className="flex border-r-2 px-3 flex-1 gap-3 flex-wrap justify-between">
+                      {title}
+                    </div>
                   </div>
-                </div>
-              );
+                );
 
-            default:
-              return <div></div>;
-          }
-        })()}
+              default:
+                return <div></div>;
+            }
+          })()}
+        </div>
       </ViewContext.Provider>
     );
   } else {
@@ -147,7 +146,6 @@ export function ViewBadge(props: ViewBadgeProps) {
   if (!context) {
     throw new Error("ViewBadge must be used within a ViewContext.Provider");
   }
-  console.log(context.data[props.register]);
 
   return <Badge text={context.data[props.register]} variant={props.variant} />;
 }

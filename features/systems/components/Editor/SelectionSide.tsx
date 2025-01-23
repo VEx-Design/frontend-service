@@ -1,5 +1,5 @@
 import React from "react";
-import TypeLister from "../TypeLister";
+import TypeLister from "./TypeLister";
 
 export default function SelectionSide() {
   return (

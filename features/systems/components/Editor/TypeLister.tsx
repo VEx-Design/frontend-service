@@ -18,7 +18,7 @@ import {
   ViewItem,
   ViewTitle,
 } from "@/components/views/View";
-import getTypes from "../actions/getTypes";
+import getTypes from "../../actions/getTypes";
 
 export default function TypeLister() {
   const fetchTypesforList = React.useCallback(async () => {
@@ -45,7 +45,7 @@ export default function TypeLister() {
 
   return (
     <Lister mutation={fetchTypesforList}>
-      <ListerHeader title="Type" />
+      <ListerHeader title="Type" size="small" />
       <ListerContent>
         <ListerContentEmpty>
           <Empty />

@@ -6,11 +6,12 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { ViewType } from "../views/View";
 import { ScrollArea } from "../ui/scroll-area";
+import { cn } from "@/lib/utils";
+import { useResizeDetector } from "react-resize-detector";
 
 export type Data = { [Key: string]: string };
 
@@ -85,7 +86,7 @@ export function Lister(props: ListerProps) {
         data: modifyData,
       }}
     >
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-col h-full w-full">
         {header}
         {control}
         {content}
@@ -94,9 +95,15 @@ export function Lister(props: ListerProps) {
   );
 }
 
+const headerSize = {
+  big: "text-H3 font-bold",
+  small: "text-H4 font-bold",
+};
+
 interface ListerHeaderProps {
   title: string;
   children?: React.ReactNode;
+  size?: "big" | "small";
 }
 
 export function ListerHeader(props: ListerHeaderProps) {
@@ -107,7 +114,7 @@ export function ListerHeader(props: ListerHeaderProps) {
 
   return (
     <div className="flex flex-none items-center justify-between border-b pb-4">
-      <div className="text-H3 font-bold">{props.title}</div>
+      <div className={cn(headerSize[props.size || "big"])}>{props.title}</div>
       {control}
     </div>
   );
@@ -215,7 +222,7 @@ export function ListerContent(props: ListerContentProps) {
   }
 
   return (
-    <div className="flex flex-1 p-2 overflow-y-auto ">
+    <div className="flex h-full w-full p-2">
       {context.loading ? (
         loading
       ) : context.data.length === 0 ? (
@@ -262,26 +269,18 @@ export function ListerContentView(props: ListerContentViewProps) {
     );
   }
 
-  const parentRef = useRef<HTMLDivElement>(null); // Ref to the parent container
-  const [parentHeight, setParentHeight] = useState(0); // State to store parent height
+  const { ref, height } = useResizeDetector();
+  const [parentHeight, setParentHeight] = useState<number>(0);
 
-  // Update parent height on mount and resize
   useEffect(() => {
-    const updateHeight = () => {
-      if (parentRef.current) {
-        setParentHeight(parentRef.current.offsetHeight);
-      }
-    };
-
-    updateHeight();
-
-    window.addEventListener("resize", updateHeight);
-    return () => window.removeEventListener("resize", updateHeight);
-  }, []);
+    if (height) {
+      setParentHeight(height); // Update height automatically
+    }
+  }, [height]);
 
   return (
-    <div ref={parentRef} className="flex flex-1">
-      <ScrollArea className="w-full" style={{ height: parentHeight }}>
+    <div ref={ref} className="flex flex-1">
+      <ScrollArea className="w-full" style={{ height: parentHeight - 15 }}>
         {context.currentView === "card" && (
           <div className={props.listDisplay.card || ""}>
             {props.render({

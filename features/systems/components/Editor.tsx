@@ -166,7 +166,7 @@ export default function Editor() {
           <SelectionSide />
         </ResizablePanel>
         <ResizableHandle />
-        <ResizablePanel defaultSize={65} minSize={15}>
+        <ResizablePanel defaultSize={70} minSize={15}>
           <FlowEditor types={types} params={params} />
         </ResizablePanel>
         <ResizableHandle />
