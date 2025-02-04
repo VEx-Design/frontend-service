@@ -7,6 +7,7 @@ const GET_PROJECT = gql`
       id
       name
       flow
+      typeConfig
     }
   }
 `;
@@ -15,12 +16,14 @@ type Project = {
   id: string;
   name: string;
   flow: string;
+  typeConfig: string;
 };
 
 export type ProjectResponse = {
   id: string;
   name: string;
   flow: string;
+  config: string;
 };
 
 export default async function getProjectByID(
@@ -54,6 +57,7 @@ export default async function getProjectByID(
       id: project.id,
       name: project.name,
       flow: project.flow,
+      config: project.typeConfig,
     };
   } catch (error) {
     console.error("Error fetching projects:", error);

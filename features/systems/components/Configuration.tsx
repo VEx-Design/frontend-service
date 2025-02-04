@@ -5,8 +5,8 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import TypeLister from "./Configuration/TypeLister";
-import ParamLister from "./Configuration/ParamLister";
+import TypeLister from "./Configuration/type/TypeLister";
+import ParamLister from "./Configuration/parameter/ParamLister";
 import ConfigTerminal from "./Configuration/ConfigTerminal";
 import React from "react";
 

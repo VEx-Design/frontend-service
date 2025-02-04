@@ -8,14 +8,12 @@ import React, {
 import {
   ReactFlow,
   Controls,
-  Background,
   Edge,
   useEdgesState,
   useNodesState,
   useReactFlow,
   Connection,
   addEdge,
-  BackgroundVariant,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import StarterNode from "../nodes/StarterNode";
@@ -32,7 +30,6 @@ import {
   CreateStarterNode,
   CreateTerminalNode,
 } from "../../libs/createFlowNode";
-import { TypesResponse } from "../../actions/getTypes";
 import { getTypeById } from "../../libs/getTypeDetail";
 import ObjectNode from "../nodes/ObjectNode";
 import { ProjectContext } from "../Project";
@@ -43,13 +40,15 @@ import { EditorContext } from "../Editor";
 import LightEdge from "../edges/LightEdge";
 import { AppEdge } from "../../types/appEdge";
 import { ParamsResponse } from "../../actions/getParameter";
+import saveConfig from "../../actions/saveConfig";
+import { Config, Type } from "../../types/config";
 
 const rfStyle = {
   backgroundColor: "#FAFAFA",
 };
 
 interface Props {
-  types: TypesResponse[] | undefined;
+  types: Type[] | undefined;
   params: ParamsResponse[] | undefined;
 }
 
@@ -75,7 +74,7 @@ export default function FlowEditor(props: Props) {
   if (!projectContext) {
     throw new Error("ProjectContext must be used within an ProjectProvider");
   }
-  const { projId, flowStr, setOnSave, setSavePending } = projectContext;
+  const { projId, flowStr, config, setOnSave, setSavePending } = projectContext;
 
   const editorContext = useContext(EditorContext);
   if (!editorContext) {
@@ -116,13 +115,18 @@ export default function FlowEditor(props: Props) {
   }, [flowStr, setEdges, setNodes, setViewport]);
 
   const { mutate, isPending } = useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       projId,
       flow,
+      config,
     }: {
       projId: string;
       flow: { nodes: AppNode[]; edges: AppEdge[] };
-    }) => saveFlow(projId, flow),
+      config: Config;
+    }) => {
+      await saveFlow(projId, flow);
+      await saveConfig(projId, config);
+    },
     onSuccess: () => {
       toast.success("Project saved", { id: "save-project" });
     },
@@ -133,8 +137,8 @@ export default function FlowEditor(props: Props) {
 
   const onSubmit = useCallback(() => {
     toast.loading("Saving project...", { id: "save-project" });
-    mutate({ projId, flow: { nodes, edges } });
-  }, [mutate, edges, nodes, projId]);
+    mutate({ projId, flow: { nodes, edges }, config });
+  }, [mutate, edges, nodes, projId, config]);
 
   useEffect(() => {
     setOnSave(() => () => onSubmit());
@@ -192,7 +196,7 @@ export default function FlowEditor(props: Props) {
           {
             ...connection,
             animated: true,
-            id: crypto.randomUUID(), // Unique ID for each connection
+            id: crypto.randomUUID(),
             data: {
               data: {
                 light: {
@@ -295,7 +299,6 @@ export default function FlowEditor(props: Props) {
             deleteKeyCode={[]}
           >
             <Controls />
-            <Background variant={BackgroundVariant.Dots} gap={12} size={2} />
           </ReactFlow>
         </ContextMenuTrigger>
         <ContextMenuContent className="w-64">

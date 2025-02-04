@@ -28,39 +28,25 @@ export const ListerContext = createContext<ListerContextValue | undefined>(
 
 interface ListerProps {
   children: React.ReactNode;
-  mutation: () => Promise<Data[] | undefined>;
-  modifyData?: (data: Data[]) => Data[];
+  data: Data[];
+  loading: boolean;
+  sortFunction?: (data: Data[]) => Data[];
+  filterFunction?: (data: Data[]) => Data[];
 }
 
 export function Lister(props: ListerProps) {
-  const [modifyData, setModifyData] = useState<Data[]>([]);
-  const [currentView, setView] = useState<ViewType>("card");
-  const [loading, setLoading] = useState<boolean>(true);
+  const { data, loading, sortFunction, filterFunction } = props;
 
-  const { mutation, modifyData: modifyDataProp } = props;
+  const [modifyData, setModifyData] = useState<Data[]>(data);
+  const [currentView, setView] = useState<ViewType>("card");
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const result = await mutation();
-        if (result) {
-          if (modifyDataProp) {
-            setModifyData(modifyDataProp(result || []));
-          } else {
-            setModifyData(result ?? []);
-          }
-        } else {
-          setModifyData([]);
-        }
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [mutation, modifyDataProp]);
+    setModifyData(
+      (filterFunction ? filterFunction : (data: Data[]) => data)(
+        (sortFunction ? sortFunction : (data: Data[]) => data)(data)
+      )
+    );
+  }, [data, sortFunction, filterFunction]);
 
   const header = useMemo(
     () => getChild(props.children, ListerHeader),
@@ -83,7 +69,7 @@ export function Lister(props: ListerProps) {
         currentView: currentView,
         setView: setView,
         loading: loading,
-        data: modifyData,
+        data: modifyData || [],
       }}
     >
       <div className="flex flex-col h-full w-full">

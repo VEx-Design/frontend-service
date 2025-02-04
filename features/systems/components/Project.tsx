@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useEffect, useState } from "react";
-import EditorNavbar from "./Editor/EditorNavbar";
+import ProjectNavbar from "./ProjectNavbar";
 import { ReactFlowProvider } from "@xyflow/react";
 import Editor from "./Editor";
 import { ProjectResponse } from "../actions/getProjectWithID";
@@ -13,8 +13,8 @@ import {
   TabsTriggerIcon,
 } from "@/components/Tabs";
 import { FileSliders, GitGraph } from "lucide-react";
+import { Config, Type } from "../types/config";
 import Configuration from "./Configuration";
-import getTypes, { TypesResponse } from "../actions/getTypes";
 
 interface Props {
   project: ProjectResponse;
@@ -26,45 +26,40 @@ interface ProjectContextValue {
   onSave: () => void;
   setOnSave: (onSave: () => void) => void;
   setSavePending: (isPending: boolean) => void;
+  config: Config;
+  setConfig: (config: Config) => void;
+  currentType: Type | undefined;
+  setCurrentType: (type: Type) => void;
 }
 
 export const ProjectContext = createContext<ProjectContextValue | undefined>(
   undefined
 );
 
-interface ConfigurationContextValue {
-  types: TypesResponse[] | undefined;
-  currentType: TypesResponse | undefined;
-  setCurrentType: (type: TypesResponse) => void;
-}
-
-export const ConfigurationContext = createContext<
-  ConfigurationContextValue | undefined
->(undefined);
-
 export default function Project(props: Props) {
   const [onSave, setOnSave] = useState<() => void>(() => () => {});
   const [savePending, setSavePending] = useState(false);
-
-  const [currentType, setCurrentType] = useState<TypesResponse | undefined>(
-    undefined
-  );
-  const [types, setTypes] = useState<TypesResponse[]>();
-
-  const fetchTypesforList = React.useCallback(async () => {
+  const [config, setConfig] = useState<Config>(() => {
     try {
-      const types = await getTypes();
-      return types;
-    } catch (error) {
-      console.error("Error fetching projects for listing:", error);
+      return JSON.parse(props.project.config) || {};
+    } catch (e) {
+      console.error("Failed to parse config:", e);
+      return {};
     }
-  }, []);
+  });
+
+  const [currentType, setCurrentType] = useState<Type | undefined>(undefined);
 
   useEffect(() => {
-    fetchTypesforList().then((types) => {
-      setTypes(types);
-    });
-  }, [fetchTypesforList]);
+    if (currentType) {
+      setConfig((prevConfig) => ({
+        ...prevConfig,
+        types: prevConfig.types.map((type) =>
+          type.id === currentType.id ? currentType : type
+        ),
+      }));
+    }
+  }, [currentType]);
 
   return (
     <ProjectContext.Provider
@@ -74,39 +69,41 @@ export default function Project(props: Props) {
         onSave,
         setOnSave,
         setSavePending,
+        config,
+        setConfig: (newConfig) => {
+          setConfig((prev) => ({ ...prev, ...newConfig }));
+        },
+        currentType,
+        setCurrentType,
       }}
     >
-      <ConfigurationContext.Provider
-        value={{ types, currentType, setCurrentType }}
-      >
-        <EditorNavbar
-          title={props.project.name}
-          onSave={onSave}
-          savePending={savePending}
-        />
-        <Tabs type="side">
-          <TabsList>
-            <TabsTrigger name="Flow">
-              <TabsTriggerIcon>
-                <GitGraph />
-              </TabsTriggerIcon>
-            </TabsTrigger>
-            <TabsTrigger name="Configuration">
-              <TabsTriggerIcon>
-                <FileSliders />
-              </TabsTriggerIcon>
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent name="Flow">
-            <ReactFlowProvider>
-              <Editor />
-            </ReactFlowProvider>
-          </TabsContent>
-          <TabsContent name="Configuration">
-            <Configuration />
-          </TabsContent>
-        </Tabs>
-      </ConfigurationContext.Provider>
+      <ProjectNavbar
+        title={props.project.name}
+        onSave={onSave}
+        savePending={savePending}
+      />
+      <Tabs type="side">
+        <TabsList>
+          <TabsTrigger name="Flow">
+            <TabsTriggerIcon>
+              <GitGraph />
+            </TabsTriggerIcon>
+          </TabsTrigger>
+          <TabsTrigger name="Configuration">
+            <TabsTriggerIcon>
+              <FileSliders />
+            </TabsTriggerIcon>
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent name="Flow">
+          <ReactFlowProvider>
+            <Editor />
+          </ReactFlowProvider>
+        </TabsContent>
+        <TabsContent name="Configuration">
+          <Configuration />
+        </TabsContent>
+      </Tabs>
     </ProjectContext.Provider>
   );
 }

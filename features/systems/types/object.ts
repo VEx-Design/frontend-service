@@ -1,7 +1,7 @@
-import { TypesResponse } from "../actions/getTypes";
+import { Type } from "./config";
 
 export interface NodeData {
-  type?: TypesResponse;
+  type?: Type;
   object?: ObjectType;
   output?: NodeTransferType[];
 }

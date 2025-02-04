@@ -87,7 +87,6 @@ export function FormField<TFormValues extends FieldValues>(
 
   const error = formContext.errors[props.name];
   const isError = !(error === undefined);
-  console.log(isError);
 
   return (
     <FormFieldContext.Provider value={{ name: props.name }}>

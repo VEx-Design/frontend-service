@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 
 import {
   Lister,
@@ -9,7 +9,6 @@ import {
   ListerDisplay,
   ListerHeader,
 } from "@/components/lists/Lister";
-import Empty from "@/src/app/(dashboard)/_components/Empty";
 import { Loading } from "@/src/components/loading";
 import {
   GetDataType,
@@ -18,23 +17,28 @@ import {
   ViewItem,
   ViewTitle,
 } from "@/components/views/View";
-import getTypes from "../../actions/getTypes";
+import { ProjectContext } from "../Project";
 
 export default function TypeLister() {
-  const fetchTypesforList = React.useCallback(async () => {
-    try {
-      const types = await getTypes();
-      return types?.map((type) => {
-        return {
-          id: type.id,
-          name: type.name,
-          picture: type.picture,
-        };
-      });
-    } catch (error) {
-      console.error("Error fetching projects for listing:", error);
+  const projectContext = useContext(ProjectContext);
+  if (!projectContext) {
+    throw new Error("ProjectContext must be used within an ProjectProvider");
+  }
+  const { config } = projectContext;
+
+  type TypeData = {
+    id: string;
+    name: string;
+    picture: string;
+  };
+
+  const [types, setTypes] = React.useState<TypeData[]>([]);
+
+  useEffect(() => {
+    if (config) {
+      setTypes(config.types);
     }
-  }, []);
+  }, [config]);
 
   const onDragStart = (event: React.DragEvent, getData: GetDataType) => {
     event.dataTransfer.setData("application/reactflow", getData("id"));
@@ -44,11 +48,13 @@ export default function TypeLister() {
   const display: ListerDisplay = {};
 
   return (
-    <Lister mutation={fetchTypesforList}>
+    <Lister data={types} loading={false}>
       <ListerHeader title="Type" size="small" />
       <ListerContent>
         <ListerContentEmpty>
-          <Empty />
+          <p className="p-3 text-sm text-gray-500 text-center">
+            Your project type is empty. Start by creating a new type
+          </p>
         </ListerContentEmpty>
         <ListerContentLoading>
           <Loading />

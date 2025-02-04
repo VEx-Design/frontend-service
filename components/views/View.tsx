@@ -29,12 +29,12 @@ export function View(props: ViewProps) {
   else {
     return (
       <>
-        {props.data.map((dataItem, index) => {
+        {props.data.map((dataItem) => {
           return React.cloneElement(
             props.render({
               getData: (key: string) => dataItem[key],
             }) as React.ReactElement,
-            { key: index, data: dataItem }
+            { key: dataItem.id, data: dataItem }
           );
         })}
       </>

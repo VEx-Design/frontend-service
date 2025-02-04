@@ -5,7 +5,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import FlowEditor from "@/features/systems/components/Editor/FlowEditor";
+import FlowEditor from "@/features/systems/components/editor/FlowEditor";
 import { NodeData } from "@/features/systems/types/object";
 import {
   createContext,
@@ -14,14 +14,12 @@ import {
   useEffect,
   useState,
 } from "react";
-import SelectionSide from "./Editor/SelectionSide";
+import SelectionSide from "./editor/SelectionSide";
 import { useReactFlow } from "@xyflow/react";
-import getTypes, { TypesResponse } from "../actions/getTypes";
-import InspectorBar from "./Editor/InspectorBar";
+import InspectorBar from "./editor/InspectorBar";
 import { EdgeData } from "../types/light";
 import { ParamsResponse } from "../actions/getParameter";
 import { ProjectContext } from "./Project";
-// import { ExprsResponse } from "../actions/getExpression";
 
 type FocusNode = {
   id: string;
@@ -52,14 +50,11 @@ export const EditorContext = createContext<EditorContextValue | undefined>(
 
 export default function Editor() {
   const projectContext = useContext(ProjectContext);
-
   if (!projectContext) {
     throw new Error("ProjectContext must be used within an ProjectProvider");
   }
+  const { config } = projectContext;
 
-  const [types, setTypes] = useState<TypesResponse[] | undefined>(undefined);
-  const [params, setParams] = useState<ParamsResponse[] | undefined>(undefined);
-  // const [exprs, setExprs] = useState<ExprsResponse[] | undefined>(undefined);
   const [focusNode, setFocusNode] = useState<FocusNode | undefined>(undefined);
   const [focusEdge, setFocusEdge] = useState<FocusEdge | undefined>(undefined);
 
@@ -96,40 +91,6 @@ export default function Editor() {
     if (focusEdge) updateEdgeId(focusEdge?.id || "", focusEdge?.data || {});
   }, [focusNode, focusEdge, updateNodeId, updateEdgeId]);
 
-  async function fetchTypes() {
-    try {
-      const data = await getTypes();
-      setTypes(data);
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-    }
-  }
-
-  async function fetchParams() {
-    setParams([
-      {
-        id: "1",
-        name: "beam radius",
-        symbol: "r",
-      },
-      {
-        id: "2",
-        name: "beam angles",
-        symbol: "θ",
-      },
-      // {
-      //   id: "3",
-      //   name: "Field vector X",
-      //   symbol: "Ex",
-      // },
-      // {
-      //   id: "4",
-      //   name: "Field vector Y",
-      //   symbol: "Ey",
-      // },
-    ]);
-  }
-
   // async function fetchExprs() {
   //   setParams([
   //     {
@@ -145,15 +106,10 @@ export default function Editor() {
   //   ]);
   // }
 
-  useEffect(() => {
-    fetchTypes();
-    fetchParams();
-  }, []);
-
   return (
     <EditorContext.Provider
       value={{
-        params,
+        params: config.parameters,
         focusNode,
         setFocusNode,
         focusEdge,
@@ -167,7 +123,7 @@ export default function Editor() {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={70} minSize={15}>
-          <FlowEditor types={types} params={params} />
+          <FlowEditor types={config.types} params={config.parameters} />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>

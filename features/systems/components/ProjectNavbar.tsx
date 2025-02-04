@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 interface EditorNavbarProps {
@@ -8,6 +9,8 @@ interface EditorNavbarProps {
 }
 
 export default function EditorNavbar(props: EditorNavbarProps) {
+  const router = useRouter();
+
   return (
     <div className="flex justify-between items-center border-b px-2 py-2 h-[55px]">
       <div className="flex gap-2">
@@ -17,6 +20,8 @@ export default function EditorNavbar(props: EditorNavbarProps) {
           width={70}
           height={200}
           layout="intrinsic"
+          onClick={() => router.push("/project")}
+          className="cursor-pointer"
         />
         <div className="flex flex-col">
           <input

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import {
   Data,
@@ -34,16 +34,14 @@ import {
 } from "@/components/views/View";
 import getMyProjects from "../actions/getProjectForUser";
 import { Loading } from "@/src/components/loading";
-import { sortString } from "@/components/lists/sorting";
+import { sortDate, sortString } from "@/components/lists/sorting";
 import { useUser } from "@/features/auth/provider/AuthProvider";
 import { compareString } from "@/components/lists/filter";
 import { useRouter } from "next/navigation";
 
 export default function ProjectLister() {
-  // const [fetchFunction, setFetchFunction] = useState<
-  //   () => Promise<Data[] | undefined>
-  // >(() => async () => undefined);
-
+  const [projects, setProjects] = useState<Data[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const { user } = useUser();
 
   const router = useRouter();
@@ -59,62 +57,66 @@ export default function ProjectLister() {
     () => (data: Data[]) => data
   );
 
-  async function fetchProjects() {
-    try {
-      const data = await getMyProjects();
-      return data;
-    } catch (error) {
-      console.error("Error fetching projects:", error);
+  useEffect(() => {
+    async function fetchProjects() {
+      setLoading(true);
+      try {
+        const data = await getMyProjects();
+        setProjects(data);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      } finally {
+        setLoading(false);
+      }
     }
-  }
 
-  // useEffect(() => {
-  //   setFetchFunction(fetchProjects);
-  // }, []);
+    fetchProjects();
+  }, []);
+
+  const setSortFunction = useCallback((fn: (data: Data[]) => Data[]) => {
+    setSort(() => fn);
+  }, []);
+
+  const setFilterFunction = useCallback((fn: (data: Data[]) => Data[]) => {
+    setFilter(() => fn);
+  }, []);
 
   const ownerItems = [
     {
       name: "All",
-      onClick: () => {},
+      onClick: () => setFilterFunction((data) => data),
     },
     {
-      name: "Own by me",
-      onClick: () => {
-        setFilter(
-          () => (data: Data[]) => compareString(data, "name", user?.name ?? "")
-        );
-      },
+      name: "Owned by me",
+      onClick: () =>
+        setFilterFunction((data) =>
+          compareString(data, "owner", user?.name ?? "")
+        ),
     },
     {
-      name: "Own by anyone",
-      onClick: () => {
-        setFilter(
-          () => (data: Data[]) => compareString(data, "name", user?.name ?? "")
-        );
-      },
+      name: "Owned by anyone",
+      onClick: () => setFilterFunction((data) => data),
     },
   ];
 
   const sortItems = [
     {
       name: "Last Modified",
-      onClick: () => {},
+      onClick: () =>
+        setSortFunction((data) => sortDate(data, "updatedTime", false)),
     },
     {
       name: "Created on",
-      onClick: () => {},
+      onClick: () =>
+        setSortFunction((data) => sortDate(data, "createdTime", false)),
     },
     {
       name: "A - Z",
-      onClick: () => {
-        setSort(() => (data: Data[]) => sortString(data, "name", true));
-      },
+      onClick: () => setSortFunction((data) => sortString(data, "name", true)),
     },
     {
       name: "Z - A",
-      onClick: () => {
-        setSort(() => (data: Data[]) => sortString(data, "name", false));
-      },
+      onClick: () => setSortFunction((data) => sortString(data, "name", false)),
     },
   ];
 
@@ -124,15 +126,15 @@ export default function ProjectLister() {
   };
 
   return (
-    <Lister mutation={fetchProjects} modifyData={(data) => filter(sort(data))}>
+    <Lister
+      data={projects}
+      loading={loading}
+      sortFunction={sort}
+      filterFunction={filter}
+    >
       <ListerHeader title="Project">
         <ListerHeaderControl>
-          <CreateProjectDialog
-          // onCreated={() => {
-          //   setFetchFunction(() => async () => undefined);
-          //   setFetchFunction(fetchFunction);
-          // }}
-          />
+          <CreateProjectDialog />
         </ListerHeaderControl>
       </ListerHeader>
       <ListerControl>

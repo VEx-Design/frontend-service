@@ -10,7 +10,37 @@ import { AppNode } from "../../types/appNode";
 const NodeComponent = memo((props: NodeProps) => {
   const nodeData = props.data.data as NodeData;
   const { setNodes } = useReactFlow();
-  const nodeHeight = 110; // Height of the node container
+  const connection = nodeData.type?.interface || [];
+
+  const connectionLenght = {
+    [Position.Top]: 0,
+    [Position.Bottom]: 0,
+    [Position.Left]: 0,
+    [Position.Right]: 0,
+  };
+
+  connection.forEach((item) => {
+    connectionLenght[item.location] += 1;
+  });
+
+  const lengthHori = Math.max(
+    connectionLenght[Position.Top],
+    connectionLenght[Position.Bottom]
+  );
+  const lengthVerti = Math.max(
+    connectionLenght[Position.Left],
+    connectionLenght[Position.Right]
+  );
+
+  const nodeHeight = Math.max(52 * lengthVerti + 90, 180);
+  const nodeWidth = Math.max(72 * lengthHori, 110);
+
+  const connectionCount = {
+    [Position.Top]: 0,
+    [Position.Bottom]: 0,
+    [Position.Left]: 0,
+    [Position.Right]: 0,
+  };
 
   const placeholderImage =
     "https://static-00.iconduck.com/assets.00/placeholder-icon-2048x2048-48kucnce.png";
@@ -33,7 +63,7 @@ const NodeComponent = memo((props: NodeProps) => {
   useEffect(() => {
     if (params) {
       const newOutput: NodeTransferType[] = Array.from(
-        { length: nodeData.type?.output || 0 },
+        { length: nodeData.type?.interface?.length || 0 },
         (_, i) => ({
           handleId: i.toString(),
           param: createNewTransfer(params, nodeData.output?.[i]?.param ?? []),
@@ -63,75 +93,68 @@ const NodeComponent = memo((props: NodeProps) => {
     <>
       <div
         className={cn(
-          "flex p-4 bg-white justify-center items-center flex-col gap-2 rounded-lg border-2 border-gray-200",
+          "flex p-4 flex-1 bg-white justify-center items-center flex-col rounded-lg border-2 border-gray-200",
           selected && "border-sky-400"
         )}
-        style={{ height: `${nodeHeight}px` }}
+        style={{
+          height: `${nodeHeight}px`,
+          ...(lengthHori > 0 && { width: `${nodeWidth}px` }),
+        }}
         onClick={handleOnClick}
       >
-        <p
-          className="absolute text-lg text-black font-bold"
-          style={{
-            top: `-28px`, // Dynamically offset handles
-          }}
-        >
-          {nodeData.type?.name === "Lens" &&
-            `f: ${nodeData.object?.vars[0].value}`}
-        </p>
-        {[...Array(nodeData.type?.input)].map((id, index) => (
-          <Handle
-            key={index}
-            type="target"
-            id={index.toString()}
-            position={Position.Left}
-            style={{
-              top: `${
-                ((index + 1) * nodeHeight) / ((nodeData.type?.input ?? 0) + 1)
-              }px`, // Dynamically offset handles
-            }}
-            className={cn(
-              "!bg-muted-foreground !border-2 !border-background !w-4 !h-4",
-              "!bg-gray-400"
-            )}
+        <div className="flex flex-col justify-center items-center gap-2">
+          <Image
+            src={nodeData.type?.picture || placeholderImage}
+            alt={nodeData.type?.name || "Placeholder"}
+            width={30}
+            height={30}
+            quality={100}
+            priority
+            className="object-contain"
           />
-        ))}
-        <Image
-          src={
-            nodeData.type?.picture
-              ? nodeData.type?.picture !== ""
-                ? nodeData.type?.picture
-                : placeholderImage
-              : placeholderImage
-          }
-          alt={nodeData.type?.name || "Placeholder"}
-          width={30}
-          height={30}
-          quality={100}
-          priority
-          style={{
-            objectFit: "contain", // Ensures the image fits within the container
-            width: "50px",
-            height: "50px",
-          }}
-        />
-        <p>{nodeData.type?.name}</p>
-        {[...Array(nodeData.type?.output)].map((_, index) => (
-          <Handle
-            key={`handle-${index}`}
-            type="source"
-            id={`source-handle-${index}`}
-            position={Position.Right}
-            style={{
-              top: `${
-                ((index + 1) * nodeHeight) / ((nodeData.type?.output ?? 0) + 1)
-              }px`, // Dynamically offset handles
-            }}
-            className={cn(
-              "!bg-muted-foreground !border-2 !border-background !w-4 !h-4",
-              "!bg-gray-400"
-            )}
-          />
-        ))}
+          <p className="font-semibold text-lg text-center">
+            {nodeData.type?.name}
+          </p>
+        </div>
+        {connection.map((item, index) => {
+          connectionCount[item.location] += 1;
+
+          const positionCount = connectionCount[item.location];
+          const centerVerti =
+            (positionCount * nodeHeight) /
+            (connectionLenght[item.location] + 1);
+          const centerHori =
+            (positionCount * nodeWidth) / (connectionLenght[item.location] + 1);
+
+          return (
+            <div key={`handle-${index}`}>
+              <Handle
+                type="target"
+                id={`target-handle-${index}`}
+                position={item.location}
+                style={
+                  item.location === Position.Left ||
+                  item.location === Position.Right
+                    ? { top: `${centerVerti + 12}px` }
+                    : { left: `${centerHori + 12}px` }
+                }
+                className="!bg-gray-400 !border-2 !border-background !w-4 !h-4"
+              />
+              <Handle
+                type="source"
+                id={`source-handle-${index}`}
+                position={item.location}
+                style={
+                  item.location === Position.Left ||
+                  item.location === Position.Right
+                    ? { top: `${centerVerti - 12}px` }
+                    : { left: `${centerHori - 12}px` }
+                }
+                className="!bg-C1 !border-2 !border-background !w-4 !h-4"
+              />
+            </div>
+          );
+        })}
       </div>
     </>
   );

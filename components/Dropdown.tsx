@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
 
 interface DropdownItem {
@@ -10,13 +10,24 @@ interface DropdownItem {
 
 interface DropdownProps {
   items: DropdownItem[];
+  value?: string;
 }
 
 export default function Dropdown(props: DropdownProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [option, setOption] = useState<string>(
-    props.items.length > 0 ? props.items[0].name : ""
+    props.items.length > 0 ? props.value ?? props.items[0].name : ""
   );
+
+  useEffect(() => {
+    if (props.items.length > 0) {
+      if (props.value) {
+        setOption(props.value);
+      } else {
+        props.items[0].onClick();
+      }
+    }
+  }, []);
 
   const OnMouseLeave = () => {
     setTimeout(() => {

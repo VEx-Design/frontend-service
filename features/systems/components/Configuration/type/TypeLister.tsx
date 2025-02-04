@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 
 import {
   Lister,
@@ -8,8 +8,8 @@ import {
   ListerContentView,
   ListerDisplay,
   ListerHeader,
+  ListerHeaderControl,
 } from "@/components/lists/Lister";
-import Empty from "@/src/app/(dashboard)/_components/Empty";
 import { Loading } from "@/src/components/loading";
 import {
   GetDataType,
@@ -18,27 +18,31 @@ import {
   ViewItem,
   ViewTitle,
 } from "@/components/views/View";
-import { ConfigurationContext } from "../Project";
+import CreateTypeDialog from "./CreateTypeDialog";
+import { ProjectContext } from "../../Project";
 
 export default function TypeLister() {
-  const context = React.useContext(ConfigurationContext);
+  const context = useContext(ProjectContext);
   if (!context) {
-    throw new Error("TypeLister must be used within a ConfigurationContext");
+    throw new Error("TypeLister must be used within a ProjectContext");
   }
 
-  const fetchTypesforList = React.useCallback(async () => {
-    const types = context.types;
-    return types?.map((type) => {
-      return {
-        id: type.id,
-        name: type.name,
-        picture: type.picture,
-      };
-    });
-  }, [context.types]);
+  type TypeData = {
+    id: string;
+    name: string;
+    picture: string;
+  };
+
+  const [types, setTypes] = React.useState<TypeData[]>([]);
+
+  useEffect(() => {
+    if (context.config) {
+      setTypes(context.config.types);
+    }
+  }, [context.config]);
 
   const onClick = (getData: GetDataType) => {
-    const type = context.types?.find((type) => type.id === getData("id"));
+    const type = context.config?.types.find((t) => t.id === getData("id"));
     if (type) {
       context.setCurrentType(type);
     }
@@ -47,11 +51,17 @@ export default function TypeLister() {
   const display: ListerDisplay = {};
 
   return (
-    <Lister mutation={fetchTypesforList}>
-      <ListerHeader title="Type" size="small" />
+    <Lister data={types} loading={false}>
+      <ListerHeader title="Type" size="small">
+        <ListerHeaderControl>
+          <CreateTypeDialog />
+        </ListerHeaderControl>
+      </ListerHeader>
       <ListerContent>
         <ListerContentEmpty>
-          <Empty />
+          <p className="p-3 text-sm text-gray-500 text-center">
+            Your project type is empty. Start by creating a new type
+          </p>
         </ListerContentEmpty>
         <ListerContentLoading>
           <Loading />
