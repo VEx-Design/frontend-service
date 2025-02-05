@@ -5,9 +5,9 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import TypeLister from "./Configuration/type/TypeLister";
-import ParamLister from "./Configuration/parameter/ParamLister";
-import ConfigTerminal from "./Configuration/ConfigTerminal";
+import TypeLister from "../components/configuration/type/TypeLister";
+import ParamLister from "../components/configuration/parameter/ParamLister";
+import ConfigTerminal from "../components/configuration/ConfigConsole";
 import React from "react";
 
 export default function Configuration() {

@@ -1,10 +1,9 @@
 "use client";
 
-import React, { createContext, useEffect, useState } from "react";
-import ProjectNavbar from "./ProjectNavbar";
+import React, { useEffect, useState } from "react";
+import ProjectNavbar from "../../components/ProjectNavbar";
 import { ReactFlowProvider } from "@xyflow/react";
-import Editor from "./Editor";
-import { ProjectResponse } from "../actions/getProjectWithID";
+import { ProjectResponse } from "../../actions/getProjectWithID";
 import {
   Tabs,
   TabsContent,
@@ -13,28 +12,14 @@ import {
   TabsTriggerIcon,
 } from "@/components/Tabs";
 import { FileSliders, GitGraph } from "lucide-react";
-import { Config, Type } from "../types/config";
-import Configuration from "./Configuration";
+import { Config, Type } from "../../types/config";
+import { ProjectContext } from "../../contexts/ProjectContext";
+import Editor from "../Editor";
+import Configuration from "../Configuration";
 
 interface Props {
   project: ProjectResponse;
 }
-
-interface ProjectContextValue {
-  projId: string;
-  flowStr: string;
-  onSave: () => void;
-  setOnSave: (onSave: () => void) => void;
-  setSavePending: (isPending: boolean) => void;
-  config: Config;
-  setConfig: (config: Config) => void;
-  currentType: Type | undefined;
-  setCurrentType: (type: Type) => void;
-}
-
-export const ProjectContext = createContext<ProjectContextValue | undefined>(
-  undefined
-);
 
 export default function Project(props: Props) {
   const [onSave, setOnSave] = useState<() => void>(() => () => {});

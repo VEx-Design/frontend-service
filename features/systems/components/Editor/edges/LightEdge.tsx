@@ -6,8 +6,8 @@ import {
   useReactFlow,
   type EdgeProps,
 } from "@xyflow/react";
-import { EdgeData } from "../../types/light";
-import { EditorContext } from "../Editor";
+import { EditorContext } from "@/features/systems/pages/Editor";
+import { EdgeData } from "@/features/systems/types/light";
 
 export default function LightEdge(props: EdgeProps) {
   const edgeData = props.data?.data as EdgeData;

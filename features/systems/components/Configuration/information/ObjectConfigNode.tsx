@@ -1,9 +1,9 @@
 import { Handle, NodeProps, Position } from "@xyflow/react";
 import Image from "next/image";
-import { NodeData } from "../../types/object";
 import { cn } from "@/lib/utils";
 import React, { memo } from "react";
-import { ConfigContext } from "../Configuration/ConfigTerminal";
+import { NodeData } from "@/features/systems/types/object";
+import { ConfigContext } from "@/features/systems/contexts/ConfigConsoleContext";
 
 const NodeComponent = memo((props: NodeProps) => {
   const configContext = React.useContext(ConfigContext);

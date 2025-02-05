@@ -1,25 +1,18 @@
-import React, { createContext, useEffect, useState } from "react";
-import { ProjectContext } from "../Project";
+import React, { useEffect, useState } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import MainInfo from "./information/MainInfo";
 import { ReactFlowProvider } from "@xyflow/react";
-import InterfaceLister from "./terminal/InterfaceLister";
-import FormulaLister from "./terminal/FormulaLister";
 import { Interface } from "../../types/config";
+import MainInfo from "./information/MainInfo";
+import FormulaLister from "./terminal/FormulaLister";
+import InterfaceLister from "./terminal/InterfaceLister";
+import { ProjectContext } from "../../contexts/ProjectContext";
+import { ConfigContext } from "../../contexts/ConfigConsoleContext";
 
-interface ConfigContextValue {
-  currentInterface: Interface | undefined;
-  setCurrentInterface: (type: Interface) => void;
-}
-
-export const ConfigContext = createContext<ConfigContextValue | undefined>(
-  undefined
-);
-
+/**  */
 export default function ConfigTerminal() {
   const context = React.useContext(ProjectContext);
 
@@ -35,6 +28,7 @@ export default function ConfigTerminal() {
     if (context.currentType) {
       setCurrentInterface(context.currentType.interface[0]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [context.currentType?.id]);
 
   if (!context.currentType) {

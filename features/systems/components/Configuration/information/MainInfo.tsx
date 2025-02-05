@@ -1,9 +1,7 @@
 import { ReactFlow, useNodesState, useReactFlow } from "@xyflow/react";
 import React, { useEffect, useContext } from "react";
 import { AppNode } from "../../../types/appNode";
-import { ProjectContext } from "../../Project";
 import { CreateObjectConfigNode } from "../../../libs/createFlowNode";
-import ObjectConfigNode from "../../nodes/ObjectConfigNode";
 import Input from "../_input/Input";
 import {
   ResizableHandle,
@@ -11,6 +9,8 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import PropertiesLister from "./PropertiesLister";
+import ObjectConfigNode from "./ObjectConfigNode";
+import { ProjectContext } from "@/features/systems/contexts/ProjectContext";
 
 const rfStyle = {
   backgroundColor: "#FAFAFA",

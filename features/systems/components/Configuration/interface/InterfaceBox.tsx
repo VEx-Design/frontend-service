@@ -1,10 +1,10 @@
 import Dropdown from "@/components/Dropdown";
 import { Position } from "@xyflow/react";
 import React from "react";
-import { ProjectContext } from "../../Project";
 import { Interface } from "@/features/systems/types/config";
-import { ConfigContext } from "../ConfigTerminal";
 import { cn } from "@/lib/utils";
+import { ProjectContext } from "@/features/systems/contexts/ProjectContext";
+import { ConfigContext } from "@/features/systems/contexts/ConfigConsoleContext";
 
 interface Props {
   id: string;

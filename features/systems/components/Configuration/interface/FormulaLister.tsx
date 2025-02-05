@@ -1,6 +1,6 @@
+import { ConfigContext } from "@/features/systems/contexts/ConfigConsoleContext";
+import { ProjectContext } from "@/features/systems/contexts/ProjectContext";
 import React from "react";
-import { ProjectContext } from "../../Project";
-import { ConfigContext } from "../ConfigTerminal";
 
 export default function FormulaLister() {
   const context = React.useContext(ProjectContext);

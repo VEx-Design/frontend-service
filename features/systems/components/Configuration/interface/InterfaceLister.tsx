@@ -10,12 +10,12 @@ import {
   ListerHeaderControl,
 } from "@/components/lists/Lister";
 import { Loading } from "@/src/components/loading";
-import { ProjectContext } from "../../Project";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import createInterface from "@/features/systems/libs/createInterface";
+import createInterface from "@/features/systems/libs/ClassInterface/createInterface";
 import InterfaceBox from "./InterfaceBox";
 import { Position } from "@xyflow/react";
+import { ProjectContext } from "@/features/systems/contexts/ProjectContext";
 
 export default function InterfaceLister() {
   const context = React.useContext(ProjectContext);

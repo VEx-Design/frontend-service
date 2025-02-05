@@ -1,11 +1,12 @@
 import { Handle, NodeProps, Position, useReactFlow } from "@xyflow/react";
 import Image from "next/image";
 import { memo, useContext, useEffect, useMemo } from "react";
-import { NodeData, NodeTransferType } from "../../types/object";
 import { cn } from "@/lib/utils";
-import { EditorContext } from "../Editor";
-import { createNewTransfer } from "../../libs/createNewTransfer";
-import { AppNode } from "../../types/appNode";
+import { NodeTransferType } from "@/features/systems/types/object";
+import { NodeData } from "@/features/systems/types/object";
+import { AppNode } from "@/features/systems/types/appNode";
+import { createNewTransfer } from "@/features/systems/libs/createNewTransfer";
+import { EditorContext } from "@/features/systems/pages/Editor";
 
 const NodeComponent = memo((props: NodeProps) => {
   const nodeData = props.data.data as NodeData;

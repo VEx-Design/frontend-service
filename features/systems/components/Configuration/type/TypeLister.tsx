@@ -19,7 +19,7 @@ import {
   ViewTitle,
 } from "@/components/views/View";
 import CreateTypeDialog from "./CreateTypeDialog";
-import { ProjectContext } from "../../Project";
+import { ProjectContext } from "@/features/systems/contexts/ProjectContext";
 
 export default function TypeLister() {
   const context = useContext(ProjectContext);

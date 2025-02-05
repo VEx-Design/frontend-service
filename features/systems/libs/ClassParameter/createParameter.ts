@@ -1,8 +1,8 @@
 import {
   createParameterData,
   createParameterSchema,
-} from "../schema/parameter";
-import { Config } from "../types/config";
+} from "../../schema/parameter";
+import { Config } from "../../types/config";
 
 export default function createParameter(
   form: createParameterData,

@@ -14,12 +14,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
-import { ProjectContext } from "../../Project";
 import {
   createTypeData,
   createTypeSchema,
 } from "@/features/systems/schema/type";
-import createType from "@/features/systems/libs/createType";
+import createType from "@/features/systems/libs/ClassType/createType";
+import { ProjectContext } from "@/features/systems/contexts/ProjectContext";
 
 interface CreateProjectDialogProps {
   onCreated?: () => void;

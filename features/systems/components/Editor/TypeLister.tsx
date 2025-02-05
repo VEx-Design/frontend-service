@@ -1,5 +1,7 @@
 import React, { useContext, useEffect } from "react";
 
+import { ProjectContext } from "../../contexts/ProjectContext";
+
 import {
   Lister,
   ListerContent,
@@ -17,7 +19,6 @@ import {
   ViewItem,
   ViewTitle,
 } from "@/components/views/View";
-import { ProjectContext } from "../Project";
 
 export default function TypeLister() {
   const projectContext = useContext(ProjectContext);
@@ -48,35 +49,37 @@ export default function TypeLister() {
   const display: ListerDisplay = {};
 
   return (
-    <Lister data={types} loading={false}>
-      <ListerHeader title="Type" size="small" />
-      <ListerContent>
-        <ListerContentEmpty>
-          <p className="p-3 text-sm text-gray-500 text-center">
-            Your project type is empty. Start by creating a new type
-          </p>
-        </ListerContentEmpty>
-        <ListerContentLoading>
-          <Loading />
-        </ListerContentLoading>
-        <ListerContentView
-          listDisplay={display}
-          render={({ data }) => (
-            <View
-              data={data}
-              render={({ getData }) => (
-                <ViewItem
-                  type="normal"
-                  onDragStart={(event) => onDragStart(event, getData)}
-                >
-                  <ViewTitle register="name" />
-                  <ViewCover register="picture" />
-                </ViewItem>
-              )}
-            />
-          )}
-        />
-      </ListerContent>
-    </Lister>
+    <div className="flex flex-1 flex-col h-full bg-editbar text-foreground border-l-1 border-editbar-border py-4 px-3 overflow-y-auto">
+      <Lister data={types} loading={false}>
+        <ListerHeader title="Type" size="small" />
+        <ListerContent>
+          <ListerContentEmpty>
+            <p className="p-3 text-sm text-gray-500 text-center">
+              Your project type is empty. Start by creating a new type
+            </p>
+          </ListerContentEmpty>
+          <ListerContentLoading>
+            <Loading />
+          </ListerContentLoading>
+          <ListerContentView
+            listDisplay={display}
+            render={({ data }) => (
+              <View
+                data={data}
+                render={({ getData }) => (
+                  <ViewItem
+                    type="normal"
+                    onDragStart={(event) => onDragStart(event, getData)}
+                  >
+                    <ViewTitle register="name" />
+                    <ViewCover register="picture" />
+                  </ViewItem>
+                )}
+              />
+            )}
+          />
+        </ListerContent>
+      </Lister>
+    </div>
   );
 }

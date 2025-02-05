@@ -5,7 +5,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import FlowEditor from "@/features/systems/components/editor/FlowEditor";
+import FlowEditor from "@/features/systems/components/editor/FlowDiagram";
 import { NodeData } from "@/features/systems/types/object";
 import {
   createContext,
@@ -14,12 +14,12 @@ import {
   useEffect,
   useState,
 } from "react";
-import SelectionSide from "./editor/SelectionSide";
 import { useReactFlow } from "@xyflow/react";
-import InspectorBar from "./editor/InspectorBar";
 import { EdgeData } from "../types/light";
 import { ParamsResponse } from "../actions/getParameter";
-import { ProjectContext } from "./Project";
+import { ProjectContext } from "../contexts/ProjectContext";
+import TypeLister from "../components/editor/TypeLister";
+import InspectorBar from "../components/editor/InspectorBar";
 
 type FocusNode = {
   id: string;
@@ -119,7 +119,7 @@ export default function Editor() {
     >
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
-          <SelectionSide />
+          <TypeLister />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={70} minSize={15}>

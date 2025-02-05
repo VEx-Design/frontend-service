@@ -1,5 +1,5 @@
 import getProjectByID from "@/features/systems/actions/getProjectWithID";
-import Project from "@/features/systems/components/Project";
+import Project from "@/features/systems/pages/main/Project";
 import React from "react";
 
 export default async function Page({

@@ -1,12 +1,12 @@
 import React, { useContext, useState } from "react";
 import { PyramidIcon, TrashIcon } from "lucide-react";
-import Input from "../Input";
+import Input from "./InspectorInput";
 import { editObjectValueById } from "../../libs/editObjectDetail";
-import { EditorContext } from "../Editor";
 import Button from "@/components/Button";
 import { useReactFlow } from "@xyflow/react";
 import { Slider } from "@/components/ui/slider";
 import { AppNodeData } from "../../types/appNode";
+import { EditorContext } from "../../pages/Editor";
 
 export default function InspectorBar() {
   const { deleteElements, getNode } = useReactFlow();

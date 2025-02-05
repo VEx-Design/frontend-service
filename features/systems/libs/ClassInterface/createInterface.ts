@@ -1,5 +1,5 @@
 import { Position } from "@xyflow/react";
-import { Type } from "../types/config";
+import { Type } from "../../types/config";
 
 export default function createInterface(currentType: Type): Promise<Type> {
   currentType.interface.push({

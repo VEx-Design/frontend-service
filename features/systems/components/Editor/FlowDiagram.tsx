@@ -16,8 +16,8 @@ import {
   addEdge,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import StarterNode from "../nodes/StarterNode";
-import TerminalNode from "../nodes/TerminalNode";
+import StarterNode from "./nodes/StarterNode";
+import TerminalNode from "./nodes/TerminalNode";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -31,17 +31,17 @@ import {
   CreateTerminalNode,
 } from "../../libs/createFlowNode";
 import { getTypeById } from "../../libs/getTypeDetail";
-import ObjectNode from "../nodes/ObjectNode";
-import { ProjectContext } from "../Project";
+import ObjectNode from "./nodes/ObjectNode";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import saveFlow from "../../actions/saveFlow";
-import { EditorContext } from "../Editor";
-import LightEdge from "../edges/LightEdge";
+import LightEdge from "./edges/LightEdge";
 import { AppEdge } from "../../types/appEdge";
 import { ParamsResponse } from "../../actions/getParameter";
 import saveConfig from "../../actions/saveConfig";
 import { Config, Type } from "../../types/config";
+import { ProjectContext } from "../../contexts/ProjectContext";
+import { EditorContext } from "../../pages/Editor";
 
 const rfStyle = {
   backgroundColor: "#FAFAFA",

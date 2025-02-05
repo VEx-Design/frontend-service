@@ -1,5 +1,5 @@
-import { createTypeData, createTypeSchema } from "../schema/type";
-import { Config } from "../types/config";
+import { createTypeData, createTypeSchema } from "../../schema/type";
+import { Config } from "../../types/config";
 
 export default function createType(
   form: createTypeData,

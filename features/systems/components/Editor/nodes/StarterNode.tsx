@@ -2,10 +2,11 @@ import React, { memo, useContext, useEffect, useMemo } from "react";
 import { LogInIcon } from "lucide-react";
 import { Handle, NodeProps, Position, useReactFlow } from "@xyflow/react";
 import { cn } from "@/lib/utils";
-import { NodeData, NodeTransferType } from "../../types/object";
-import { EditorContext } from "../Editor";
-import { createNewTransfer } from "../../libs/createNewTransfer";
-import { AppNode } from "../../types/appNode";
+import { NodeTransferType } from "@/features/systems/types/object";
+import { NodeData } from "@/features/systems/types/object";
+import { AppNode } from "@/features/systems/types/appNode";
+import { createNewTransfer } from "@/features/systems/libs/createNewTransfer";
+import { EditorContext } from "@/features/systems/pages/Editor";
 
 const StarterNode = memo((props: NodeProps) => {
   const nodeData = props.data.data as NodeData;

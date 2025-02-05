@@ -12,8 +12,8 @@ import {
 } from "@/components/lists/Lister";
 import { Loading } from "@/src/components/loading";
 import CreateParameterDialog from "./CreateParameterDialog";
-import { ProjectContext } from "../../Project";
 import { Parameter } from "@/features/systems/types/config";
+import { ProjectContext } from "@/features/systems/contexts/ProjectContext";
 
 export default function ParamLister() {
   const context = useContext(ProjectContext);
