@@ -2,23 +2,20 @@ import {
   createParameterData,
   createParameterSchema,
 } from "../../schema/parameter";
-import { Config } from "../../types/config";
+import { Parameter } from "./types/Parameter";
 
 export default function createParameter(
-  form: createParameterData,
-  config: Config
-): Promise<Config> {
+  form: createParameterData
+): Promise<Parameter> {
   const { success, data } = createParameterSchema.safeParse(form);
 
   if (!success) {
     throw new Error("Invalid form data");
   }
 
-  config.parameters.push({
+  return Promise.resolve({
     id: crypto.randomUUID(),
     name: data.name,
     symbol: data.symbol,
   });
-
-  return Promise.resolve(config);
 }

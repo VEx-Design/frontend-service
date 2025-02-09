@@ -1,7 +1,7 @@
 "use client";
 
 import { client } from "@/lib/service";
-import { Config } from "../types/config";
+import { Config } from "../libs/ClassConfig/types/Config";
 
 export default async function saveConfig(projId: string, config: Config) {
   try {
@@ -15,7 +15,6 @@ export default async function saveConfig(projId: string, config: Config) {
         withCredentials: true,
       }
     );
-    console.log(response);
     return response; // You should return the response to satisfy the mutation
   } catch (error) {
     throw new Error(

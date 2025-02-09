@@ -2,17 +2,17 @@ import { Handle, NodeProps, Position } from "@xyflow/react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import React, { memo } from "react";
-import { NodeData } from "@/features/systems/types/object";
-import { ConfigContext } from "@/features/systems/contexts/ConfigConsoleContext";
+import { useConfig } from "@/features/systems/contexts/ConfigContext";
+import { NodeData } from "@/features/systems/libs/ClassNode/types/AppNode";
+import { useProject } from "@/features/systems/contexts/ProjectContext";
 
 const NodeComponent = memo((props: NodeProps) => {
-  const configContext = React.useContext(ConfigContext);
-  if (!configContext)
-    throw new Error("InterfaceBox must be used within a ConfigContext");
-  const { currentInterface } = configContext;
+  const { configAction } = useProject();
+  const { currentInterface } = useConfig();
 
-  const nodeData = props.data.data as NodeData;
-  const connection = nodeData.type?.interface || [];
+  const { object } = props.data.data as NodeData;
+  const objectType = configAction.getType(object.typeId);
+  const connection = objectType.interface || [];
 
   const connectionLenght = {
     [Position.Top]: 0,
@@ -57,17 +57,15 @@ const NodeComponent = memo((props: NodeProps) => {
     >
       <div className="flex flex-col justify-center items-center gap-2">
         <Image
-          src={nodeData.type?.picture || placeholderImage}
-          alt={nodeData.type?.name || "Placeholder"}
+          src={objectType.picture || placeholderImage}
+          alt={objectType.name || "Placeholder"}
           width={30}
           height={30}
           quality={100}
           priority
           className="object-contain"
         />
-        <p className="font-semibold text-lg text-center">
-          {nodeData.type?.name}
-        </p>
+        <p className="font-semibold text-lg text-center">{objectType.name}</p>
       </div>
       {connection.map((item, index) => {
         connectionCount[item.location] += 1;

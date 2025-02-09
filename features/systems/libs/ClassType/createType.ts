@@ -1,24 +1,19 @@
 import { createTypeData, createTypeSchema } from "../../schema/type";
-import { Config } from "../../types/config";
+import { Type } from "./types/Type";
 
-export default function createType(
-  form: createTypeData,
-  config: Config
-): Promise<Config> {
+export default function createType(form: createTypeData): Promise<Type> {
   const { success, data } = createTypeSchema.safeParse(form);
 
   if (!success) {
     throw new Error("Invalid form data");
   }
 
-  config.types.push({
+  return Promise.resolve({
     id: crypto.randomUUID(),
     name: data.name,
     description: data.description,
     picture: "",
-    variables: [],
+    properties: [],
     interface: [],
   });
-
-  return Promise.resolve(config);
 }

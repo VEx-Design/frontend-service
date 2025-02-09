@@ -1,6 +1,6 @@
-import React, { useContext, useEffect } from "react";
+import React from "react";
 
-import { ProjectContext } from "../../contexts/ProjectContext";
+import { useProject } from "../../contexts/ProjectContext";
 
 import {
   Lister,
@@ -18,31 +18,13 @@ import {
   ViewCover,
   ViewItem,
   ViewTitle,
-} from "@/components/views/View";
+} from "@/components/lists/views/View";
 
 export default function TypeLister() {
-  const projectContext = useContext(ProjectContext);
-  if (!projectContext) {
-    throw new Error("ProjectContext must be used within an ProjectProvider");
-  }
-  const { config } = projectContext;
-
-  type TypeData = {
-    id: string;
-    name: string;
-    picture: string;
-  };
-
-  const [types, setTypes] = React.useState<TypeData[]>([]);
-
-  useEffect(() => {
-    if (config) {
-      setTypes(config.types);
-    }
-  }, [config]);
+  const { config } = useProject();
 
   const onDragStart = (event: React.DragEvent, getData: GetDataType) => {
-    event.dataTransfer.setData("application/reactflow", getData("id"));
+    event.dataTransfer.setData("application/reactflow", String(getData("id")));
     event.dataTransfer.effectAllowed = "move";
   };
 
@@ -50,7 +32,7 @@ export default function TypeLister() {
 
   return (
     <div className="flex flex-1 flex-col h-full bg-editbar text-foreground border-l-1 border-editbar-border py-4 px-3 overflow-y-auto">
-      <Lister data={types} loading={false}>
+      <Lister data={config.types} loading={false}>
         <ListerHeader title="Type" size="small" />
         <ListerContent>
           <ListerContentEmpty>

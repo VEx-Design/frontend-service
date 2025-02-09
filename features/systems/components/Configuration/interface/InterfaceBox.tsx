@@ -1,10 +1,10 @@
 import Dropdown from "@/components/Dropdown";
 import { Position } from "@xyflow/react";
 import React from "react";
-import { Interface } from "@/features/systems/types/config";
 import { cn } from "@/lib/utils";
-import { ProjectContext } from "@/features/systems/contexts/ProjectContext";
-import { ConfigContext } from "@/features/systems/contexts/ConfigConsoleContext";
+import { useConfig } from "@/features/systems/contexts/ConfigContext";
+import editLocation from "@/features/systems/libs/ClassInterface/editLocation";
+import { Interface } from "@/features/systems/libs/ClassInterface/types/Interface";
 
 interface Props {
   id: string;
@@ -13,39 +13,28 @@ interface Props {
 }
 
 export default function InterfaceBox({ id, name, location }: Props) {
-  const context = React.useContext(ProjectContext);
-  if (!context)
-    throw new Error("InterfaceBox must be used within a ProjectContext");
+  const { currentType, currentInterface, setCurrentInterface, typeAction } =
+    useConfig();
 
-  const configContext = React.useContext(ConfigContext);
-  if (!configContext)
-    throw new Error("InterfaceBox must be used within a ConfigContext");
-  const { currentInterface } = configContext;
-
-  const onInterfaceClick = () => {
-    const selectedInterface = context.currentType?.interface.find(
-      (item: Interface) => item.id === id
-    );
-    if (selectedInterface) {
-      configContext.setCurrentInterface(selectedInterface);
-    }
-  };
-
+  /** dropdown handler */
   const updateLocation = (newLocation: Position) => {
-    if (!context.currentType) return;
-
-    context.setCurrentType({
-      ...context.currentType,
-      interface: context.currentType.interface.map((item: Interface) =>
-        item.id === id ? { ...item, location: newLocation } : item
-      ),
-    });
+    if (!currentType) return;
+    typeAction.editInterface(id, editLocation(currentInterface!, newLocation));
   };
 
   const ownerItems = Object.values(Position).map((pos) => ({
     name: pos,
     onClick: () => updateLocation(pos),
   }));
+
+  const onInterfaceClick = () => {
+    const selectedInterface = currentType?.interface.find(
+      (item: Interface) => item.id === id
+    );
+    if (selectedInterface) {
+      setCurrentInterface(selectedInterface);
+    }
+  };
 
   return (
     <div

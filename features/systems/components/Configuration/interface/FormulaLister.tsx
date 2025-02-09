@@ -1,16 +1,10 @@
-import { ConfigContext } from "@/features/systems/contexts/ConfigConsoleContext";
-import { ProjectContext } from "@/features/systems/contexts/ProjectContext";
+import { useConfig } from "@/features/systems/contexts/ConfigContext";
+import { useProject } from "@/features/systems/contexts/ProjectContext";
 import React from "react";
 
 export default function FormulaLister() {
-  const context = React.useContext(ProjectContext);
-  if (!context)
-    throw new Error("InterfaceBox must be used within a ProjectContext");
-
-  const configContext = React.useContext(ConfigContext);
-  if (!configContext)
-    throw new Error("InterfaceBox must be used within a ConfigContext");
-  const { currentInterface } = configContext;
+  const { config } = useProject();
+  const { currentInterface } = useConfig();
 
   return (
     <div>
@@ -18,7 +12,7 @@ export default function FormulaLister() {
         <div className="text-H5 font-bold">{currentInterface?.name}</div>
       </div>
       <div className="flex flex-col mt-4 gap-2">
-        {context.config.parameters.map((item) => (
+        {config.parameters.map((item) => (
           <div
             key={item.id}
             className="flex flex-col justify-between py-3 px-3 border border-editbar-border rounded-xl cursor-pointer gap-2"

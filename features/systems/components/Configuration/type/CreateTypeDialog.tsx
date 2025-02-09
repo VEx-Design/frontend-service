@@ -1,5 +1,7 @@
+import React, { useCallback, useState } from "react";
 import Button from "@/components/Button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/Dialog";
+import Input from "@/components/inputs/Input";
 import {
   Form,
   FormControl,
@@ -8,31 +10,25 @@ import {
   FormLabel,
   FormSubmit,
 } from "@/components/Form";
-import Input from "@/components/inputs/Input";
-import React, { useCallback, useState } from "react";
+import { Plus } from "lucide-react";
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { Plus } from "lucide-react";
 import {
   createTypeData,
   createTypeSchema,
 } from "@/features/systems/schema/type";
-import createType from "@/features/systems/libs/ClassType/createType";
-import { ProjectContext } from "@/features/systems/contexts/ProjectContext";
+import { toast } from "sonner";
 
-interface CreateProjectDialogProps {
+import createType from "@/features/systems/libs/ClassType/createType";
+import { useProject } from "@/features/systems/contexts/ProjectContext";
+
+interface CreateTypeDialogProps {
   onCreated?: () => void;
 }
 
-export default function CreateTypeDialog(props: CreateProjectDialogProps) {
-  const context = React.useContext(ProjectContext);
-  if (!context) {
-    throw new Error("CreateTypeDialog must be used within a ProjectContext");
-  }
-
+export default function CreateTypeDialog({}: CreateTypeDialogProps) {
   const [isOpen, setOpen] = useState(false);
-  const { onCreated } = props;
 
   const openDialog = () => setOpen(true);
   const closeDialog = () => {
@@ -44,28 +40,23 @@ export default function CreateTypeDialog(props: CreateProjectDialogProps) {
     defaultValues: {},
   });
 
+  const { configAction } = useProject();
+
   const onSubmit = useCallback(
     (values: createTypeData) => {
       toast.loading("Creating Type...", { id: "create-type" });
-
-      if (!context.config) {
-        toast.error("Configuration is missing", { id: "create-type" });
-        return;
-      }
-
-      createType(values, context.config)
+      createType(values)
         .then((result) => {
-          context.setConfig(result);
+          configAction.addType(result);
           toast.success("Type Created!", { id: "create-type" });
-          closeDialog();
           form.reset();
-          onCreated?.();
+          closeDialog();
         })
         .catch((error: Error) => {
           toast.error(error.message, { id: "create-type" });
         });
     },
-    [context, form, onCreated]
+    [form, configAction]
   );
 
   return (

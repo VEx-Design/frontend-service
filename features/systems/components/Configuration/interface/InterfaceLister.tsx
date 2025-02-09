@@ -12,39 +12,24 @@ import {
 import { Loading } from "@/src/components/loading";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import createInterface from "@/features/systems/libs/ClassInterface/createInterface";
 import InterfaceBox from "./InterfaceBox";
 import { Position } from "@xyflow/react";
-import { ProjectContext } from "@/features/systems/contexts/ProjectContext";
+import { useConfig } from "@/features/systems/contexts/ConfigContext";
 
 export default function InterfaceLister() {
-  const context = React.useContext(ProjectContext);
-  if (!context)
-    throw new Error("ConfigTerminal must be used within a ProjectContext");
+  const { currentType, typeAction } = useConfig();
 
   const onClick = useCallback(() => {
-    toast.loading("Creating Interface...", { id: "create-interface" });
-
-    if (context.currentType) {
-      createInterface(context.currentType)
-        .then((result) => {
-          context.setCurrentType({ ...result }); // Ensure new reference
-          toast.success("Interface Created!", { id: "create-interface" });
-        })
-        .catch((error: Error) => {
-          toast.error(error.message, { id: "create-interface" });
-        });
-    } else {
-      toast.error("Current type is missing", { id: "create-interface" });
-    }
-  }, [context]);
+    typeAction.addInterface();
+    toast.success("Interface Created!", { id: "create-interface" });
+  }, [typeAction]);
 
   const display: ListerDisplay = {};
 
   return (
     <Lister
-      key={context.currentType?.interface?.length || 0}
-      data={context.currentType?.interface || []}
+      key={currentType?.interface?.length || 0}
+      data={currentType?.interface || []}
       loading={false}
     >
       <ListerHeader title="Interface" size="small">
@@ -73,9 +58,9 @@ export default function InterfaceLister() {
             <div className="flex flex-1 flex-col gap-2">
               {data.map((item) => (
                 <InterfaceBox
-                  key={item.id}
-                  id={item.id}
-                  name={item.name}
+                  key={item.id?.toString()}
+                  id={item.id?.toString()}
+                  name={item.name?.toString()}
                   location={item.location as Position}
                 />
               ))}

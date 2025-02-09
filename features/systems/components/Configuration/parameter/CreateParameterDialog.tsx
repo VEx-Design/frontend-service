@@ -1,5 +1,7 @@
+import React, { useCallback, useState } from "react";
 import Button from "@/components/Button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/Dialog";
+import Input from "@/components/inputs/Input";
 import {
   Form,
   FormControl,
@@ -8,31 +10,25 @@ import {
   FormLabel,
   FormSubmit,
 } from "@/components/Form";
-import Input from "@/components/inputs/Input";
-import React, { useCallback, useState } from "react";
+import { Plus } from "lucide-react";
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { Plus } from "lucide-react";
 import {
   createParameterData,
   createParameterSchema,
 } from "@/features/systems/schema/parameter";
+import { toast } from "sonner";
+
 import createParameter from "@/features/systems/libs/ClassParameter/createParameter";
-import { ProjectContext } from "@/features/systems/contexts/ProjectContext";
+import { useProject } from "@/features/systems/contexts/ProjectContext";
 
 interface CreateProjectDialogProps {
   onCreated?: () => void;
 }
 
-export default function CreateParameterDialog(props: CreateProjectDialogProps) {
-  const context = React.useContext(ProjectContext);
-  if (!context) {
-    throw new Error("CreateTypeDialog must be used within a ProjectContext");
-  }
-
+export default function CreateParameterDialog({}: CreateProjectDialogProps) {
   const [isOpen, setOpen] = useState(false);
-  const { onCreated } = props;
 
   const openDialog = () => setOpen(true);
   const closeDialog = () => {
@@ -44,27 +40,23 @@ export default function CreateParameterDialog(props: CreateProjectDialogProps) {
     defaultValues: {},
   });
 
+  const { configAction } = useProject();
+
   const onSubmit = useCallback(
     (values: createParameterData) => {
       toast.loading("Creating Parameter...", { id: "create-parameter" });
-
-      if (!context.config) {
-        toast.error("Configuration is missing", { id: "create-parameter" });
-        return;
-      }
-      createParameter(values, context.config)
+      createParameter(values)
         .then((result) => {
-          context.setConfig(result);
+          configAction.addParameter(result);
           toast.success("Parameter Created!", { id: "create-parameter" });
-          closeDialog();
           form.reset();
-          onCreated?.();
+          closeDialog();
         })
         .catch((error: Error) => {
           toast.error(error.message, { id: "create-parameter" });
         });
     },
-    [context, form, onCreated]
+    [configAction, form]
   );
 
   return (

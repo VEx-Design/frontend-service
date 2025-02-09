@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React from "react";
 
 import {
   Lister,
@@ -17,41 +17,26 @@ import {
   ViewCover,
   ViewItem,
   ViewTitle,
-} from "@/components/views/View";
+} from "@/components/lists/views/View";
 import CreateTypeDialog from "./CreateTypeDialog";
-import { ProjectContext } from "@/features/systems/contexts/ProjectContext";
+import { useProject } from "@/features/systems/contexts/ProjectContext";
+import { useConfig } from "@/features/systems/contexts/ConfigContext";
 
 export default function TypeLister() {
-  const context = useContext(ProjectContext);
-  if (!context) {
-    throw new Error("TypeLister must be used within a ProjectContext");
-  }
-
-  type TypeData = {
-    id: string;
-    name: string;
-    picture: string;
-  };
-
-  const [types, setTypes] = React.useState<TypeData[]>([]);
-
-  useEffect(() => {
-    if (context.config) {
-      setTypes(context.config.types);
-    }
-  }, [context.config]);
+  const { config } = useProject();
+  const { setCurrentType } = useConfig();
 
   const onClick = (getData: GetDataType) => {
-    const type = context.config?.types.find((t) => t.id === getData("id"));
+    const type = config.types.find((ty) => ty.id === getData("id"));
     if (type) {
-      context.setCurrentType(type);
+      setCurrentType(type);
     }
   };
 
   const display: ListerDisplay = {};
 
   return (
-    <Lister data={types} loading={false}>
+    <Lister data={config.types} loading={false}>
       <ListerHeader title="Type" size="small">
         <ListerHeaderControl>
           <CreateTypeDialog />
@@ -71,7 +56,7 @@ export default function TypeLister() {
           render={({ data }) => (
             <View
               data={data}
-              render={({ getData }) => (
+              render={({ getData }: { getData: GetDataType }) => (
                 <ViewItem type="normal" onClick={() => onClick(getData)}>
                   <ViewTitle register="name" />
                   <ViewCover register="picture" />

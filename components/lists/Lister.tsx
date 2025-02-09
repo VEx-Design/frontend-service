@@ -8,12 +8,13 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { ViewType } from "../views/View";
 import { ScrollArea } from "../ui/scroll-area";
-import { cn } from "@/lib/utils";
 import { useResizeDetector } from "react-resize-detector";
+import { cn } from "@/lib/utils";
 
-export type Data = { [Key: string]: string };
+// type
+import { Data } from "./types/Data";
+import { ViewType } from "./views/View";
 
 interface ListerContextValue {
   currentView: ViewType;
@@ -240,10 +241,7 @@ export type ListerDisplay = { [key in ViewType]?: string };
 
 interface ListerContentViewProps {
   listDisplay: ListerDisplay;
-  render: (view: {
-    data: { [Key: string]: string }[];
-    type: ViewType;
-  }) => React.ReactNode;
+  render: (view: { data: Data[]; type: ViewType }) => React.ReactNode;
 }
 
 export function ListerContentView(props: ListerContentViewProps) {

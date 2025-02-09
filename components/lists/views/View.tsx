@@ -2,11 +2,11 @@
 
 import Badge, { BadgeVariant } from "@/components/Badge";
 import { createContext, useContext, useMemo, useState } from "react";
-import { getChild, getChildren } from "../libs/getChildren";
+import { getChild, getChildren } from "../..//libs/getChildren";
 import Image from "next/image";
 import React from "react";
+import { Data, Value } from "../types/Data";
 
-type Data = { [key: string]: string };
 export type ViewType = "card" | "list" | "normal";
 
 interface ViewContextValue {
@@ -17,7 +17,7 @@ export const ViewContext = createContext<ViewContextValue | undefined>(
   undefined
 );
 
-export type GetDataType = (key: string) => string;
+export type GetDataType = (key: string) => Value;
 
 interface ViewProps {
   data: Data[];
@@ -34,7 +34,7 @@ export function View(props: ViewProps) {
             props.render({
               getData: (key: string) => dataItem[key],
             }) as React.ReactElement,
-            { key: dataItem.id, data: dataItem }
+            { key: String(dataItem.id), data: dataItem }
           );
         })}
       </>
@@ -147,7 +147,12 @@ export function ViewBadge(props: ViewBadgeProps) {
     throw new Error("ViewBadge must be used within a ViewContext.Provider");
   }
 
-  return <Badge text={context.data[props.register]} variant={props.variant} />;
+  return (
+    <Badge
+      text={String(context.data[props.register])}
+      variant={props.variant}
+    />
+  );
 }
 
 interface ViewTitleProps {
@@ -163,7 +168,7 @@ export function ViewTitle(props: ViewTitleProps) {
 
   return (
     <span className="text-sm font-semibold">
-      {context.data[props.register]}
+      {String(context.data[props.register])}
     </span>
   );
 }
@@ -184,10 +189,9 @@ export function ViewCover(props: ViewCoverProps) {
   return (
     <Image
       src={
-        context.data[props.register]
-          ? context.data[props.register] !== ""
-            ? context.data[props.register]
-            : placeholderImage
+        typeof context.data[props.register] === "string" &&
+        context.data[props.register] !== ""
+          ? String(context.data[props.register])
           : placeholderImage
       }
       alt=""
@@ -210,5 +214,7 @@ export function ViewContent(props: ViewContentProps) {
     throw new Error("ViewContent must be used within a ViewContext.Provider");
   }
 
-  return <span className="truncate">{context.data[props.register]}</span>;
+  return (
+    <span className="truncate">{String(context.data[props.register])}</span>
+  );
 }

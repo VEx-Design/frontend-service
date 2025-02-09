@@ -3,7 +3,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import {
-  Data,
   Lister,
   ListerContent,
   ListerContentEmpty,
@@ -31,13 +30,14 @@ import {
   ViewCover,
   ViewItem,
   ViewTitle,
-} from "@/components/views/View";
+} from "@/components/lists/views/View";
 import getMyProjects from "../actions/getProjectForUser";
 import { Loading } from "@/src/components/loading";
 import { sortDate, sortString } from "@/components/lists/sorting";
 import { useUser } from "@/features/auth/provider/AuthProvider";
 import { compareString } from "@/components/lists/filter";
 import { useRouter } from "next/navigation";
+import { Data } from "@/components/lists/types/Data";
 
 export default function ProjectLister() {
   const [projects, setProjects] = useState<Data[]>([]);

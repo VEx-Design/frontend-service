@@ -15,7 +15,6 @@ import {
   Connection,
   addEdge,
 } from "@xyflow/react";
-import "@xyflow/react/dist/style.css";
 import StarterNode from "./nodes/StarterNode";
 import TerminalNode from "./nodes/TerminalNode";
 import {
@@ -29,7 +28,7 @@ import {
   CreateObjectNode,
   CreateStarterNode,
   CreateTerminalNode,
-} from "../../libs/createFlowNode";
+} from "../../libs/ClassNode/createFlowNode";
 import { getTypeById } from "../../libs/getTypeDetail";
 import ObjectNode from "./nodes/ObjectNode";
 import { useMutation } from "@tanstack/react-query";
