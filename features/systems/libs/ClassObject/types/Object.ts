@@ -5,8 +5,6 @@ export interface Object {
 }
 
 export interface ObjectVariable {
-  id: string;
-  name: string;
-  symbol: string;
-  value: string;
+  propId: string;
+  value: number;
 }

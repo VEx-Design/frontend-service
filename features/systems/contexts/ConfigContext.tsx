@@ -1,13 +1,13 @@
 "use client";
-
 import { createContext, useContext, useEffect, useState } from "react";
+import { useProject } from "./ProjectContext";
+import editInterface from "../libs/ClassType/editInterface";
+import addInterface from "../libs/ClassType/addInterface";
+import addProperty from "../libs/ClassType/addProperty";
 
 // type
 import { Property, Type } from "../libs/ClassType/types/Type";
 import { Interface } from "../libs/ClassInterface/types/Interface";
-import editInterface from "../libs/ClassType/editInterface";
-import addInterface from "../libs/ClassType/addInterface";
-import addProperty from "../libs/ClassType/addProperty";
 
 interface ConfigContextValue {
   currentType: Type | undefined;
@@ -35,6 +35,8 @@ export const ConfigProvider = ({ children }: ConfigConsoleProviderProps) => {
     Interface | undefined
   >(undefined);
 
+  const { configAction } = useProject();
+
   useEffect(() => {
     if (currentType) {
       setCurrentInterface(currentType.interface[0]);
@@ -43,11 +45,19 @@ export const ConfigProvider = ({ children }: ConfigConsoleProviderProps) => {
   }, [currentType?.id]);
 
   const typeAction: TypeAction = {
-    addProperty: (newProperty: Property) =>
-      setCurrentType(addProperty(currentType!, newProperty)),
+    addProperty: (newProperty: Property) => {
+      if (currentType) {
+        setCurrentType(addProperty(currentType, newProperty));
+        configAction.editType(addProperty(currentType, newProperty));
+      }
+    },
     addInterface: () => setCurrentType(addInterface(currentType!)),
-    editInterface: (interfaceId: string, newInterface: Interface) =>
-      setCurrentType(editInterface(currentType!, interfaceId, newInterface)),
+    editInterface: (interfaceId: string, newInterface: Interface) => {
+      setCurrentType(editInterface(currentType!, interfaceId, newInterface));
+      configAction.editType(
+        editInterface(currentType!, interfaceId, newInterface)
+      );
+    },
   };
 
   return (

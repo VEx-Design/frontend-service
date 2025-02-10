@@ -11,5 +11,11 @@ export interface AppNodeData {
 }
 
 export interface NodeData {
-  object: Object;
+  object?: Object;
+  initials?: Initial[];
+}
+
+export interface Initial {
+  paramId: string;
+  value: number;
 }

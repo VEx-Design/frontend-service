@@ -73,8 +73,16 @@ export default function MainInfo() {
               />
             </div>
             <div className="flex flex-col flex-1 gap-2 pe-6">
-              <Input label="Name" value={currentType?.name || ""} />
-              <Input label="Display Name" value={currentType?.name || ""} />
+              <Input
+                label="Name"
+                value={currentType?.name || ""}
+                onChange={() => {}}
+              />
+              <Input
+                label="Display Name"
+                value={currentType?.name || ""}
+                onChange={() => {}}
+              />
             </div>
           </div>
         </ResizablePanel>

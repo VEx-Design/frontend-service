@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   BaseEdge,
   EdgeLabelRenderer,
@@ -6,8 +6,8 @@ import {
   useReactFlow,
   type EdgeProps,
 } from "@xyflow/react";
-import { EditorContext } from "@/features/systems/pages/Editor";
-import { EdgeData } from "@/features/systems/types/light";
+import { useEditor } from "@/features/systems/contexts/EditorContext";
+import { EdgeData } from "@/features/systems/libs/ClassEdge/types/AppEdge";
 
 export default function LightEdge(props: EdgeProps) {
   const edgeData = props.data?.data as EdgeData;
@@ -15,11 +15,7 @@ export default function LightEdge(props: EdgeProps) {
   const [edgePath, labelX, labelY] = getBezierPath(props);
   const { setEdges } = useReactFlow();
 
-  const context = useContext(EditorContext);
-  if (!context) {
-    throw new Error("EditorContext must be used within an EditorProvider");
-  }
-  const { focusEdge } = context;
+  const { focusEdge } = useEditor();
 
   const selected = useMemo(
     () => focusEdge?.id === props.id,
@@ -27,7 +23,7 @@ export default function LightEdge(props: EdgeProps) {
   );
 
   const edgeStyle = selected
-    ? { stroke: "#000", strokeWidth: 3 } // Selected edge style (red)
+    ? { stroke: "#000", strokeWidth: 3 }
     : { stroke: "#000", strokeWidth: 1 };
 
   return (
@@ -63,7 +59,6 @@ export default function LightEdge(props: EdgeProps) {
         >
           <div className="text-sm font-semibold mb-1">
             {`${edgeData.light?.distance} mm` || "Edge Label"}{" "}
-            {/* Display label */}
           </div>
         </div>
       </EdgeLabelRenderer>

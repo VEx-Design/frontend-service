@@ -2,7 +2,6 @@
 
 import React from "react";
 import ProjectNavbar from "../../components/ProjectNavbar";
-import { ReactFlowProvider } from "@xyflow/react";
 import {
   Tabs,
   TabsContent,
@@ -15,6 +14,7 @@ import { useProject } from "../../contexts/ProjectContext";
 import Editor from "../Editor";
 import Configuration from "../Configuration";
 import { ConfigProvider } from "../../contexts/ConfigContext";
+import { EditorProvider } from "../../contexts/EditorContext";
 
 export default function Project() {
   const { projName, onSave, savePending } = useProject();
@@ -40,10 +40,9 @@ export default function Project() {
           </TabsTrigger>
         </TabsList>
         <TabsContent name="Flow">
-          <></>
-          {/* <ReactFlowProvider>
+          <EditorProvider>
             <Editor />
-          </ReactFlowProvider> */}
+          </EditorProvider>
         </TabsContent>
         <TabsContent name="Configuration">
           <ConfigProvider>

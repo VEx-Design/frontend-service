@@ -1,4 +1,5 @@
-import { AppNode } from "../../types/appNode";
+import { Type } from "../ClassType/types/Type";
+import { AppNode } from "./types/AppNode";
 
 export function CreateObjectNode(
   type: Type,
@@ -9,10 +10,10 @@ export function CreateObjectNode(
     type: "ObjectNode",
     data: {
       data: {
-        type: type,
         object: {
           name: type.name,
-          vars: type.variables.map((variable) => ({
+          typeId: type.id,
+          vars: type.properties.map((variable) => ({
             id: variable.id,
             name: variable.name,
             symbol: variable.symbol,
