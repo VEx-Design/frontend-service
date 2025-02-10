@@ -1,18 +1,18 @@
-import { evaluate } from "mathjs"
+import {evaluate} from "mathjs"
 
 export interface Vertex {
     id: string                      //vertex id
     type: string                    //type id of vertex
     scope: Record<string, number>   //local variables in this vertex
-    // input: Record<string, number>[] //input values in this vertex
     output: Record<string,number>[] //output values out of this vertex
 }
 
 export interface Edge {
     source: string      //source vertex id
     target: string      //target vertex id
+    sourceInterface: number //source interface number
+    targetInterface: number //target interface number
     distance: number    //distance between source and targeti
-    locked: boolean     //locked edge or not
 }
 
 export interface Graph {
@@ -40,12 +40,12 @@ export interface Configuration {
     freespace: Record<string, string> //freespace equations
 }
 
-export function createVertex(id: string, type: string, scope: Record<string, number>,output: Record<string,number>[]): Vertex {
+export function createVertex(id: string, type: string, scope: Record<string, number>, output: Record<string,number>[]): Vertex {
     return { id, type, scope, output };
 }
 
-export function createEdge(source: string, target: string, distance: number, locked: boolean): Edge {
-    return { source, target, distance, locked};
+export function createEdge(source: string, target: string, sourceInterface :number, targetInterface :number, distance: number): Edge {
+    return { source, target, sourceInterface, targetInterface, distance};
 }
 
 export function createGraph(vertices: Vertex[], edges: Edge[]): Graph {
@@ -64,10 +64,11 @@ export function createConfiguration(id: string, parameters: string[], equations:
     return { id, parameters, equations, freespace };
 }
 
-export function inDegreeMap(g: Graph): Map<string, number> {
-    let inDegree = new Map<string, number>()
+// calculate the in-degree of each vertex
+function inDegree(g: Graph): Map<string,number> {
+    let inDegree = new Map<string,number>()
 
-    g.vertices.forEach((node: Vertex) => {
+        g.vertices.forEach((node: Vertex) => {
         inDegree.set(node.id, 0)
     });
 
@@ -79,12 +80,13 @@ export function inDegreeMap(g: Graph): Map<string, number> {
     return inDegree
 }
 
-export function tSort(g: Graph): string[] {
-    let inDegree = inDegreeMap(g)
-    let tSort: string[] = []
+// topological sort of the graph
+function topologicalSort (g: Graph): string[]{
+    let indegree = inDegree(g)
+    let topologicalSort: string[] = []
     let queue: string[] = []
 
-    inDegree.forEach((degree, vertex) => {
+    indegree.forEach((degree, vertex) => {
         if (degree === 0) {
             queue.push(vertex)
         }
@@ -92,69 +94,117 @@ export function tSort(g: Graph): string[] {
 
     while (queue.length > 0) {
         let vertex = queue.shift()!
-        tSort.push(vertex)
+        topologicalSort.push(vertex)
         let edges = g.edges.filter(edge => edge.source === vertex)
         edges.forEach(edge => {
             let target = edge.target
-            inDegree.set(target, (inDegree.get(target) || 0) - 1)
-            if (inDegree.get(target) === 0) {
+            indegree.set(target, (indegree.get(target) || 0) - 1)
+            if (indegree.get(target) === 0) {
                 queue.push(target)
             }
         })
     }
 
-    return tSort
+    return topologicalSort
+
 }
 
-export function calculate(g: Graph, c: Configuration): Record<string, Record<string, number>> {
-    const result: Record<string, Record<string, number>> = {};
-    const inDegree = inDegreeMap(g);
-    const vertices = tSort(g).filter(vertex => inDegree.get(vertex) !== 0);
-    
-
-    for (const vertexId of vertices) {
-        const vertex = g.vertices.find(v => v.id === vertexId)!;
-        const freespace: Record<string, number> = {};
-        const value: Record<string, number> = {};
-
-        // Gather input values from previous vertices
-        const inputs: Record<string, number> = {};
-        g.edges.filter(edge => edge.target === vertexId).forEach(edge => {
-            const sourceVertex = g.vertices.find(v => v.id === edge.source)!;
-            const lastOutput = sourceVertex.output[sourceVertex.output.length - 1] || {};
-            for (const key in lastOutput) {
-                inputs[key] = lastOutput[key];
-            }
-            inputs['distance'] = edge.distance;
-        });
-
-        // Calculate freespace (always calculated)
-        for (const param of c.parameters) {
-            try {
-                freespace[param] = evaluate(c.freespace[param], inputs);
-            } catch (error) {
-                console.error(`Error evaluating freespace for ${vertexId} and parameter ${param}:`, error);
-                freespace[param] = 0;
-            }
+// function to calculate the freespace equations given the input and distance between two vertices
+function freespaceCalculate(input: Record<string,number>, distance: number, c : Configuration): Record<string,number>{
+    let result: Record<string, number> = {};
+    let scope = new Map<string, number>();
+    for (const key in input) {
+        scope.set(key,input[key])
+    }
+    scope.set('distance',distance)
+    c.parameters.forEach(param => {
+        try {
+            result[param] = evaluate(c.freespace[param], scope);
+        } catch (error) {
+            console.error(`Error evaluating freespace for ${param}:`, error);
         }
+    })
 
-        // Calculate output values ONLY if not an "end" vertex
-        if (vertex.type !== "end") {
-            for (const param of c.parameters) {
-                try {
-                    value[param] = evaluate(c.equations[vertex.type][0][param], { ...freespace, ...vertex.scope });
-                } catch (error) {
-                    console.error(`Error evaluating equation for ${vertexId} and parameter ${param}:`, error);
-                    value[param] = 0;
-                }
-            }
-            result[vertexId] = value;
-            vertex.output.push(value); // Store the output in the vertex
-        } else {
-          result[vertexId] = freespace; //for end vertex, the result is freespace
-          vertex.output.push(freespace)
+    return result
+}
+
+// function to create scope for internal calculation of a vertex
+function createInputScope(vertexID : string, graph : Graph, type : Type, configuration : Configuration): Map<string,number>{
+    let result = new Map<string,number>()
+    if(type.input === 1){
+        let edges = graph.edges.filter(edge => edge.target === vertexID)
+        let sourceVertex = graph.vertices.find(v => v.id === edges[0].source)!
+        let newScope = freespaceCalculate(sourceVertex.output[edges[0].sourceInterface - 1],edges[0].distance,configuration)
+        for (const key in newScope) {
+            result.set(key,newScope[key])
         }
     }
+    else{
+        let edges = graph.edges.filter(edge => edge.target === vertexID)
+        edges.forEach(edge => {
+            let sourceVertext = graph.vertices.find(v => v.id === edge.source)!
+            let newScope = freespaceCalculate(sourceVertext.output[edge.sourceInterface -1],edge.distance,configuration)
+            for (const key in newScope) {
+                result.set(key + "_" +edge.targetInterface,newScope[key])
+            }
+        });
+        }
+        return result;
+    }
 
-    return result;
+// function to evaluate the output of a vertex
+function outputCalculate(scope : Map<string,number>, type : Type, configuration : Configuration): Record<string,number>[]{
+    let result: Record<string,number>[] = []
+    for (let i = 0; i < type.output; i ++){
+        let output: Record<string, number> = {}
+        let equation = configuration.equations[type.id][i]
+        configuration.parameters.forEach(param => {
+            try {
+                output[param] = evaluate(equation[param],scope);
+            } catch (error) {
+                console.error(`Error evaluating equation for ${type.id} and parameter ${param}:`, error);
+            }
+        }
+        )
+        result.push(output)
+    }
+    return result
+}
+
+// function to evaluate the graph. It will return a map of vertex id to output values
+export function evaluateGraph(graph: Graph, types : Type[], configuration: Configuration): Map<string,Record<string,number>[]>{
+    let result = new Map<string,Record<string,number>[]>();
+    let graphCopy = createGraph([...graph.vertices], [...graph.edges]) 
+    let sorted = topologicalSort(graphCopy)
+    let calculateVerticies = sorted.filter(vertexID => graphCopy.vertices.find(v => v.id === vertexID)!.type !== "start")
+    calculateVerticies.forEach(vertexID => {
+        let vertex = graphCopy.vertices.find(v => v.id === vertexID)!
+        let type = types.find(t => t.id === vertex.type)!
+        if (type.id !== "end"){
+            let inputScope = createInputScope(vertexID,graphCopy,type,configuration)
+            let combinedScope = new Map<string, number>(inputScope);
+            for (const key in vertex.scope) {
+                combinedScope.set(key, vertex.scope[key]);
+            }
+            let output = outputCalculate(combinedScope, type, configuration)
+            graphCopy.vertices.find(v => v.id === vertexID)!.output = output
+            result.set(vertexID, output)
+        }
+        else{
+            let output: Record<string, number> = {}
+            let inputScope = createInputScope(vertexID,graphCopy,type,configuration)
+            configuration.parameters.forEach(param => {
+                output[param] = inputScope.get(param)!
+            });
+            graphCopy.vertices.find(v => v.id === vertexID)!.output = [output]
+            result.set(vertexID,[output]);
+        }
+    })
+    return result
+}
+
+// function to calculate the freespace in a edge
+export function freespaceInEdge(edge: Edge, distance: number, graph: Graph, configuration: Configuration): Record<string,number>{
+    let sourceVertex = graph.vertices.find(v => v.id === edge.source)!
+    return freespaceCalculate(sourceVertex.output[edge.sourceInterface - 1],distance,configuration)
 }
