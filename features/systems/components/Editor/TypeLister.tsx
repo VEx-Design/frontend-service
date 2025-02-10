@@ -1,5 +1,7 @@
 import React from "react";
 
+import { useProject } from "../../contexts/ProjectContext";
+
 import {
   Lister,
   ListerContent,
@@ -9,7 +11,6 @@ import {
   ListerDisplay,
   ListerHeader,
 } from "@/components/lists/Lister";
-import Empty from "@/src/app/(dashboard)/_components/Empty";
 import { Loading } from "@/src/components/loading";
 import {
   GetDataType,
@@ -17,60 +18,50 @@ import {
   ViewCover,
   ViewItem,
   ViewTitle,
-} from "@/components/views/View";
-import getTypes from "../../actions/getTypes";
+} from "@/components/lists/views/View";
 
 export default function TypeLister() {
-  const fetchTypesforList = React.useCallback(async () => {
-    try {
-      const types = await getTypes();
-      return types?.map((type) => {
-        return {
-          id: type.id,
-          name: type.name,
-          picture: type.picture,
-        };
-      });
-    } catch (error) {
-      console.error("Error fetching projects for listing:", error);
-    }
-  }, []);
+  const { config } = useProject();
 
   const onDragStart = (event: React.DragEvent, getData: GetDataType) => {
-    event.dataTransfer.setData("application/reactflow", getData("id"));
+    event.dataTransfer.setData("application/reactflow", String(getData("id")));
     event.dataTransfer.effectAllowed = "move";
   };
 
   const display: ListerDisplay = {};
 
   return (
-    <Lister mutation={fetchTypesforList}>
-      <ListerHeader title="Type" size="small" />
-      <ListerContent>
-        <ListerContentEmpty>
-          <Empty />
-        </ListerContentEmpty>
-        <ListerContentLoading>
-          <Loading />
-        </ListerContentLoading>
-        <ListerContentView
-          listDisplay={display}
-          render={({ data }) => (
-            <View
-              data={data}
-              render={({ getData }) => (
-                <ViewItem
-                  type="normal"
-                  onDragStart={(event) => onDragStart(event, getData)}
-                >
-                  <ViewTitle register="name" />
-                  <ViewCover register="picture" />
-                </ViewItem>
-              )}
-            />
-          )}
-        />
-      </ListerContent>
-    </Lister>
+    <div className="flex flex-1 flex-col h-full bg-editbar text-foreground border-l-1 border-editbar-border py-4 px-3 overflow-y-auto">
+      <Lister data={config.types} loading={false}>
+        <ListerHeader title="Type" size="small" />
+        <ListerContent>
+          <ListerContentEmpty>
+            <p className="p-3 text-sm text-gray-500 text-center">
+              Your project type is empty. Start by creating a new type
+            </p>
+          </ListerContentEmpty>
+          <ListerContentLoading>
+            <Loading />
+          </ListerContentLoading>
+          <ListerContentView
+            listDisplay={display}
+            render={({ data }) => (
+              <View
+                data={data}
+                render={({ getData }) => (
+                  <ViewItem
+                    type="normal"
+                    onDragStart={(event) => onDragStart(event, getData)}
+                  >
+                    <ViewTitle register="name" />
+                    <ViewCover register="picture" />
+                  </ViewItem>
+                )}
+              />
+            )}
+          />
+        </ListerContent>
+      </Lister>
+    </div>
   );
 }

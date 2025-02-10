@@ -80,6 +80,7 @@ export default async function getMyProjects(): Promise<Response[]> {
         owner: project.owner.name,
         image_url: "", // Placeholder image URL
         updatedAt: formattedDate, // Formatted date
+        updatedTime: project.updatedAt,
         role: "Can Edit",
       };
     });

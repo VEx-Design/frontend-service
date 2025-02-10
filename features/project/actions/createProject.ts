@@ -4,6 +4,7 @@ import { createProjectData, createProjectSchema } from "../schema/project";
 import { client } from "@/lib/service";
 import { Edge } from "@xyflow/react";
 import { AppNode } from "@/features/systems/types/appNode";
+import { Config } from "@/features/systems/types/config";
 
 export default async function createProject(form: createProjectData) {
   const { success, data } = createProjectSchema.safeParse(form);
@@ -12,6 +13,8 @@ export default async function createProject(form: createProjectData) {
     nodes: [],
     edges: [],
   };
+
+  const config: Config = { types: [] };
 
   if (!success) {
     throw new Error("Invalid form data");
@@ -24,6 +27,7 @@ export default async function createProject(form: createProjectData) {
         name: data.name,
         description: data.description,
         flow: JSON.stringify(initialFlow),
+        typesConfig: JSON.stringify(config),
         configurationID: 1,
       },
       {

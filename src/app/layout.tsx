@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AppProviders } from "@/components/providers/AppProviders";
 import { AuthProvider } from "@/features/auth/provider/AuthProvider";
+import "@xyflow/react/dist/style.css";
 
 export const metadata: Metadata = {
   title: "VEx design",
