@@ -1,20 +1,20 @@
 "use client";
 
+import { AppNode } from "@/features/systems/libs/ClassNode/types/AppNode";
 import { createProjectData, createProjectSchema } from "../schema/project";
 import { client } from "@/lib/service";
-import { Edge } from "@xyflow/react";
-import { AppNode } from "@/features/systems/types/appNode";
-import { Config } from "@/features/systems/types/config";
+import { Config } from "@/features/systems/libs/ClassConfig/types/Config";
+import { AppEdge } from "@/features/systems/libs/ClassEdge/types/AppEdge";
 
 export default async function createProject(form: createProjectData) {
   const { success, data } = createProjectSchema.safeParse(form);
 
-  const initialFlow: { nodes: AppNode[]; edges: Edge[] } = {
+  const initialFlow: { nodes: AppNode[]; edges: AppEdge[] } = {
     nodes: [],
     edges: [],
   };
 
-  const config: Config = { types: [] };
+  const config: Config = { types: [], parameters: [] };
 
   if (!success) {
     throw new Error("Invalid form data");

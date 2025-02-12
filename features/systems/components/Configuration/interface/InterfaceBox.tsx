@@ -2,24 +2,24 @@ import Dropdown from "@/components/Dropdown";
 import { Position } from "@xyflow/react";
 import React from "react";
 import { cn } from "@/lib/utils";
-import { useConfig } from "@/features/systems/contexts/ConfigContext";
-import editLocation from "@/features/systems/libs/ClassInterface/editLocation";
 import { Interface } from "@/features/systems/libs/ClassInterface/types/Interface";
+import { useConfigInterface } from "@/features/systems/contexts/ConfigInterfaceContext";
+import { useConfig } from "@/features/systems/contexts/ConfigContext";
 
 interface Props {
   id: string;
   name: string;
-  location: Position;
+  position: Position;
 }
 
-export default function InterfaceBox({ id, name, location }: Props) {
-  const { currentType, currentInterface, setCurrentInterface, typeAction } =
-    useConfig();
+export default function InterfaceBox({ id, name, position }: Props) {
+  const { currentType } = useConfig();
+  const { currentInterface, setCurrentInterface, interfaceAction } =
+    useConfigInterface();
 
   /** dropdown handler */
-  const updateLocation = (newLocation: Position) => {
-    if (!currentType) return;
-    typeAction.editInterface(id, editLocation(currentInterface!, newLocation));
+  const updateLocation = (newPosition: Position) => {
+    interfaceAction.editLocation(newPosition);
   };
 
   const ownerItems = Object.values(Position).map((pos) => ({
@@ -28,7 +28,7 @@ export default function InterfaceBox({ id, name, location }: Props) {
   }));
 
   const onInterfaceClick = () => {
-    const selectedInterface = currentType?.interface.find(
+    const selectedInterface = currentType?.interfaces.find(
       (item: Interface) => item.id === id
     );
     if (selectedInterface) {
@@ -53,7 +53,7 @@ export default function InterfaceBox({ id, name, location }: Props) {
       >
         {name}
       </span>
-      <Dropdown items={ownerItems} value={location} />
+      <Dropdown items={ownerItems} value={position} />
     </div>
   );
 }

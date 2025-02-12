@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { useProject } from "../contexts/ProjectContext";
+import calculate from "../libs/ClassFlow/calculate";
 
 interface EditorNavbarProps {
   title?: string;
@@ -10,6 +12,17 @@ interface EditorNavbarProps {
 
 export default function EditorNavbar(props: EditorNavbarProps) {
   const router = useRouter();
+  const { config, nodesState, edgesState, setExecutedFlow } = useProject();
+
+  const handleExecute = () => {
+    alert("Execute");
+    setExecutedFlow(
+      calculate(
+        { nodes: nodesState.nodes, edges: edgesState.edges },
+        config.parameters
+      )
+    );
+  };
 
   return (
     <div className="flex justify-between items-center border-b px-2 py-2 h-[55px]">
@@ -37,7 +50,10 @@ export default function EditorNavbar(props: EditorNavbarProps) {
             >
               Save
             </div>
-            <div className="text-xs px-2 py-1 hover:bg-slate-100 rounded-sm cursor-pointer">
+            <div
+              className="text-xs px-2 py-1 hover:bg-slate-100 rounded-sm cursor-pointer"
+              onClick={handleExecute}
+            >
               Execute
             </div>
           </div>

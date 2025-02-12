@@ -2,10 +2,13 @@ import { Position } from "@xyflow/react";
 import { Type } from "./types/Type";
 
 export default function addInterface(type: Type): Type {
-  type.interface.push({
+  type.interfaces.push({
     id: crypto.randomUUID(),
-    name: `Interface ${type.interface.length + 1}`,
-    location: Position.Left,
+    name: `Interface ${type.interfaces.length + 1}`,
+    position: Position.Left,
+    formulaConditions: [
+      { id: crypto.randomUUID(), type: "default", formulas: [] },
+    ],
   });
   return type;
 }

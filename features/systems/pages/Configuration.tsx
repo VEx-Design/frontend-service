@@ -9,6 +9,7 @@ import TypeLister from "../components/configuration/type/TypeLister";
 import ParamLister from "../components/configuration/parameter/ParamLister";
 import ConfigTerminal from "../components/configuration/ConfigConsole";
 import React from "react";
+import { ConfigInterfaceProvider } from "../contexts/ConfigInterfaceContext";
 
 export default function Configuration() {
   return (
@@ -30,7 +31,9 @@ export default function Configuration() {
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel defaultSize={80} minSize={15}>
-        <ConfigTerminal />
+        <ConfigInterfaceProvider>
+          <ConfigTerminal />
+        </ConfigInterfaceProvider>
       </ResizablePanel>
     </ResizablePanelGroup>
   );

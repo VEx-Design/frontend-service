@@ -22,6 +22,7 @@ export default function ConfigTerminal() {
         </ReactFlowProvider>
       </ResizablePanel>
       <ResizableHandle />
+
       <ResizablePanel defaultSize={65}>
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={70}>

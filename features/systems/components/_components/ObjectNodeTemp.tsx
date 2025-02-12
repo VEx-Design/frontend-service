@@ -15,7 +15,7 @@ export default function ObjectNodeTemp({
   isSelect = false,
   currentInterfaceId,
 }: Props) {
-  const connection = objectType.interface || [];
+  const connection = objectType.interfaces || [];
 
   const connectionLenght = {
     [Position.Top]: 0,
@@ -25,7 +25,7 @@ export default function ObjectNodeTemp({
   };
 
   connection.forEach((item) => {
-    connectionLenght[item.location] += 1;
+    connectionLenght[item.position] += 1;
   });
 
   const lengthHori = Math.max(
@@ -38,7 +38,7 @@ export default function ObjectNodeTemp({
   );
 
   const nodeHeight = Math.max(52 * lengthVerti + 90, 180);
-  const nodeWidth = Math.max(72 * lengthHori, 110);
+  const nodeWidth = Math.max(82 * lengthHori, 90);
 
   const connectionCount = {
     [Position.Top]: 0,
@@ -74,26 +74,26 @@ export default function ObjectNodeTemp({
         <p className="font-semibold text-lg text-center">{objectType.name}</p>
       </div>
       {connection.map((item, index) => {
-        connectionCount[item.location] += 1;
+        connectionCount[item.position] += 1;
 
-        const positionCount = connectionCount[item.location];
+        const positionCount = connectionCount[item.position];
         const centerVerti =
-          (positionCount * nodeHeight) / (connectionLenght[item.location] + 1);
+          (positionCount * nodeHeight) / (connectionLenght[item.position] + 1);
         const centerHori =
-          (positionCount * nodeWidth) / (connectionLenght[item.location] + 1);
+          (positionCount * nodeWidth) / (connectionLenght[item.position] + 1);
 
         return (
           <div key={`handle-${index}`}>
             <Handle
               type="target"
               id={`target-handle-${item.id}`}
-              position={item.location}
+              position={item.position}
               style={
-                item.location === Position.Top
+                item.position === Position.Top
                   ? { left: `${centerHori + 12}px` }
-                  : item.location === Position.Bottom
+                  : item.position === Position.Bottom
                   ? { left: `${centerHori - 12}px` }
-                  : item.location === Position.Left
+                  : item.position === Position.Left
                   ? { top: `${centerVerti + 12}px` }
                   : { top: `${centerVerti - 12}px` }
               }
@@ -107,13 +107,13 @@ export default function ObjectNodeTemp({
             <Handle
               type="source"
               id={`source-handle-${item.id}`}
-              position={item.location}
+              position={item.position}
               style={
-                item.location === Position.Top
+                item.position === Position.Top
                   ? { left: `${centerHori - 12}px` }
-                  : item.location === Position.Bottom
+                  : item.position === Position.Bottom
                   ? { left: `${centerHori + 12}px` }
-                  : item.location === Position.Left
+                  : item.position === Position.Left
                   ? { top: `${centerVerti - 12}px` }
                   : { top: `${centerVerti + 12}px` }
               }
