@@ -8,7 +8,7 @@ export default function editInterface(
 ): Type {
   return {
     ...type,
-    interface: type.interface.map((item) =>
+    interfaces: type.interfaces.map((item) =>
       item.id === interfaceId ? newInterface : item
     ),
   };

@@ -51,9 +51,7 @@ interface EdgeAction {
   createEdge: (connection: Connection) => void;
 }
 
-export const EditorContext = createContext<EditorContextValue | undefined>(
-  undefined
-);
+const EditorContext = createContext<EditorContextValue | undefined>(undefined);
 
 export function EditorProvider(props: { children: React.ReactNode }) {
   const [focusNode, setFocusNode] = useState<FocusNode | undefined>(undefined);

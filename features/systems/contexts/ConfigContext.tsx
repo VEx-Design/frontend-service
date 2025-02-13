@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { useProject } from "./ProjectContext";
 import editInterface from "../libs/ClassType/editInterface";
 import addInterface from "../libs/ClassType/addInterface";
@@ -12,8 +12,6 @@ import { Interface } from "../libs/ClassInterface/types/Interface";
 interface ConfigContextValue {
   currentType: Type | undefined;
   setCurrentType: (type: Type) => void;
-  currentInterface: Interface | undefined;
-  setCurrentInterface: (type: Interface) => void;
   typeAction: TypeAction;
 }
 
@@ -22,7 +20,9 @@ const ConfigContext = createContext<ConfigContextValue | undefined>(undefined);
 interface TypeAction {
   addProperty: (newProperty: Property) => void;
   addInterface: () => void;
-  editInterface: (interfaceId: string, newInterface: Interface) => void;
+  setInterface: (interfaceId: string, newInterface: Interface) => void;
+  getProperty: (propertyId: string) => Property | undefined;
+  getInterface: (interfaceId: string) => Interface | undefined;
 }
 
 interface ConfigConsoleProviderProps {
@@ -31,32 +31,34 @@ interface ConfigConsoleProviderProps {
 
 export const ConfigProvider = ({ children }: ConfigConsoleProviderProps) => {
   const [currentType, setCurrentType] = useState<Type | undefined>(undefined);
-  const [currentInterface, setCurrentInterface] = useState<
-    Interface | undefined
-  >(undefined);
 
   const { configAction } = useProject();
-
-  useEffect(() => {
-    if (currentType) {
-      setCurrentInterface(currentType.interface[0]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentType?.id]);
 
   const typeAction: TypeAction = {
     addProperty: (newProperty: Property) => {
       if (currentType) {
-        setCurrentType(addProperty(currentType, newProperty));
-        configAction.editType(addProperty(currentType, newProperty));
+        const newType = addProperty(currentType, newProperty);
+        setCurrentType(newType);
+        configAction.editType(newType);
       }
     },
-    addInterface: () => setCurrentType(addInterface(currentType!)),
-    editInterface: (interfaceId: string, newInterface: Interface) => {
-      setCurrentType(editInterface(currentType!, interfaceId, newInterface));
-      configAction.editType(
-        editInterface(currentType!, interfaceId, newInterface)
+    addInterface: () => {
+      const newType = addInterface(currentType!);
+      setCurrentType(newType);
+      configAction.editType(newType);
+    },
+    setInterface: (interfaceId: string, newInterface: Interface) => {
+      const newType = editInterface(currentType!, interfaceId, newInterface);
+      setCurrentType(newType);
+      configAction.editType(newType);
+    },
+    getProperty: (propertyId: string) => {
+      return currentType?.properties.find(
+        (property) => property.id === propertyId
       );
+    },
+    getInterface: (interfaceId: string) => {
+      return currentType?.interfaces.find((inter) => inter.id === interfaceId);
     },
   };
 
@@ -65,8 +67,6 @@ export const ConfigProvider = ({ children }: ConfigConsoleProviderProps) => {
       value={{
         currentType,
         setCurrentType,
-        currentInterface,
-        setCurrentInterface,
         typeAction,
       }}
     >

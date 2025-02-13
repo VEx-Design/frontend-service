@@ -14,6 +14,6 @@ export default function createType(form: createTypeData): Promise<Type> {
     description: data.description,
     picture: "",
     properties: [],
-    interface: [],
+    interfaces: [],
   });
 }

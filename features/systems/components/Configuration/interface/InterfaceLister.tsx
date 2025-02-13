@@ -28,8 +28,8 @@ export default function InterfaceLister() {
 
   return (
     <Lister
-      key={currentType?.interface?.length || 0}
-      data={currentType?.interface || []}
+      key={currentType?.interfaces?.length || 0}
+      data={currentType?.interfaces || []}
       loading={false}
     >
       <ListerHeader title="Interface" size="small">
@@ -61,7 +61,7 @@ export default function InterfaceLister() {
                   key={item.id?.toString()}
                   id={item.id?.toString()}
                   name={item.name?.toString()}
-                  location={item.location as Position}
+                  position={item.position as Position}
                 />
               ))}
             </div>

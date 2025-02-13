@@ -1,10 +1,10 @@
 import { Position } from "@xyflow/react";
 import { Interface } from "./types/Interface";
 
-export default function editLocation(
+export default function editPosition(
   inter: Interface,
-  newLocation: Position
+  newPosition: Position
 ): Interface {
-  inter.location = newLocation;
+  inter.position = newPosition;
   return inter;
 }

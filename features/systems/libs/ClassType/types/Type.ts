@@ -6,7 +6,7 @@ export type Type = {
   description?: string;
   picture: string;
   properties: Property[];
-  interface: Interface[];
+  interfaces: Interface[];
 };
 
 export type Property = {

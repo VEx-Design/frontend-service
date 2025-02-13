@@ -13,15 +13,19 @@ function Input(props: InputProps) {
   return (
     <div>
       <div className="text-sm">{props.title}</div>
-      <input
-        type={props.type}
-        id="name"
-        className="border-2 border-editbar-border rounded-md p-1 bg-white text-sm w-full"
-        placeholder={props.placeholder}
-        value={props.value}
-        onChange={props.onChange}
-        disabled={props.disabled}
-      />
+      <div className="flex items-center gap-2">
+        <input
+          type={props.type}
+          id="name"
+          className="border-2 border-editbar-border rounded-md p-1 bg-white text-sm w-full"
+          placeholder={props.placeholder}
+          value={props.value}
+          onChange={props.onChange}
+          disabled={props.disabled}
+        />
+        <p>mm</p>
+        {/* mrad */}
+      </div>
     </div>
   );
 }

@@ -9,8 +9,6 @@ import {
   useState,
 } from "react";
 import { ProjectResponse } from "../actions/getProjectWithID";
-
-// type
 import { Config } from "../libs/ClassConfig/types/Config";
 import { Type } from "../libs/ClassType/types/Type";
 import addType from "../libs/ClassConfig/addType";
@@ -30,6 +28,7 @@ import { toast } from "sonner";
 import saveFlow from "../actions/saveFlow";
 import saveConfig from "../actions/saveConfig";
 import editType from "../libs/ClassConfig/editType";
+import { Flow } from "../libs/ClassFlow/types/Flow";
 
 interface ProjectContextValue {
   projId: string;
@@ -43,6 +42,9 @@ interface ProjectContextValue {
   nodesState: NodesState;
   edgesState: EdgesState;
   configAction: ConfigAction;
+  // execution
+  executedFlow: Flow | undefined;
+  setExecutedFlow: (flow: Flow | undefined) => void;
 }
 
 const ProjectContext = createContext<ProjectContextValue | undefined>(
@@ -67,6 +69,7 @@ interface ConfigAction {
   editType: (type: Type) => void;
   getType: (typeId: string) => Type;
   addParameter: (parameter: Parameter) => void;
+  getParameter: (parameterId: string) => Parameter;
 }
 
 interface ProjectProviderProps {
@@ -95,6 +98,8 @@ export const ProjectProvider = ({
   });
   const [savePending, setSavePending] = useState<boolean>(false);
 
+  const [executedFlow, setExecutedFlow] = useState<Flow | undefined>(undefined);
+
   useEffect(() => {
     const flow = JSON.parse(project.flow);
     if (!flow) return;
@@ -114,6 +119,9 @@ export const ProjectProvider = ({
     getType: (typeId: string) => getType(config, typeId),
     addParameter: (parameter: Parameter) =>
       setConfig(addParameter(config, parameter)),
+    getParameter: (parameterId: string) => {
+      return config.parameters.find((param) => param.id === parameterId)!;
+    },
   };
 
   const { mutate, isPending } = useMutation({
@@ -169,6 +177,8 @@ export const ProjectProvider = ({
           onEdgesChange,
         },
         configAction,
+        executedFlow,
+        setExecutedFlow,
       }}
     >
       {children}
