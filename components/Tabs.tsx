@@ -70,10 +70,13 @@ export function Tabs(props: TabsProps) {
           {Object.keys(tabList).map((tabName) => (
             <div
               key={tabName}
-              className="absolute inset-0 w-full h-full"
+              className="w-full h-full"
               style={{
                 visibility: currentTab === tabName ? "visible" : "hidden",
+                position: currentTab === tabName ? "relative" : "absolute",
+                pointerEvents: currentTab === tabName ? "auto" : "none",
                 opacity: currentTab === tabName ? 1 : 0,
+                zIndex: currentTab === tabName ? 1 : -1,
               }}
             >
               {tabList[tabName]}
