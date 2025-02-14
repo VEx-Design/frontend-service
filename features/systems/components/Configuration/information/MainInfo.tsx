@@ -53,8 +53,8 @@ export default function MainInfo() {
     <div className="h-full w-full p-6">
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={50}>
-          <div className="flex flex-1 gap-6">
-            <div className="h-[280px] w-[280px]">
+          <div className="flex flex-1 h-full gap-6">
+            <div className="flex flex-1">
               <ReactFlow
                 nodes={nodes}
                 onNodesChange={onNodesChange}

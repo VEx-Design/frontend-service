@@ -12,7 +12,6 @@ import getFormular from "../libs/ClassInterface/FeatureFomula/getFormular";
 import addVariable from "../libs/ClassInterface/FeatureFomula/addVariable";
 import setStream from "../libs/ClassInterface/FeatureFomula/setStream";
 import deleteVariable from "../libs/ClassInterface/FeatureFomula/deleteVariable";
-import { set } from "lodash";
 
 type InputPosition = {
   index: number;

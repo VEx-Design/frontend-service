@@ -21,7 +21,7 @@ export default async function Page({
   }
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-screen w-full flex-col">
       <ProjectProvider project={project}>
         <Project />
       </ProjectProvider>

@@ -1,10 +1,9 @@
-import React, { use, useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import AutoWidthInput from "./AutoWidthInput";
 import VariableBox from "./VariableBadge";
 import { useConfigInterface } from "@/features/systems/contexts/ConfigInterfaceContext";
 import { useConfig } from "@/features/systems/contexts/ConfigContext";
 import { useProject } from "@/features/systems/contexts/ProjectContext";
-import { set } from "lodash";
 
 interface Props {
   conditionId: string;

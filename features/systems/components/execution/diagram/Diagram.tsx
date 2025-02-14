@@ -62,7 +62,7 @@ export default function Diagram() {
       onSelectionChange={handleSelectionChange}
       deleteKeyCode={[]}
     >
-      <Controls />
+      <Controls position="top-right" />
     </ReactFlow>
   );
 }

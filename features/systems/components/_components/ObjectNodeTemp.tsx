@@ -62,15 +62,17 @@ export default function ObjectNodeTemp({
       }}
     >
       <div className="flex flex-col justify-center items-center gap-2">
-        <Image
-          src={objectType.picture || placeholderImage}
-          alt={objectType.name || "Placeholder"}
-          width={30}
-          height={30}
-          quality={100}
-          priority
-          className="object-contain"
-        />
+        <div className="relative w-[30px] h-[30px]">
+          <Image
+            src={objectType.picture || placeholderImage}
+            alt={objectType.name || "Placeholder"}
+            fill
+            quality={100}
+            priority
+            sizes="(max-width: 768px) 30px, 30px"
+            className="object-contain"
+          />
+        </div>
         <p className="font-semibold text-lg text-center">{objectType.name}</p>
       </div>
       {connection.map((item, index) => {

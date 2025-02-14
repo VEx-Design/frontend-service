@@ -6,6 +6,7 @@ import {
   useNodesState,
   NodeChange,
   EdgeChange,
+  ReactFlowProvider,
 } from "@xyflow/react";
 import { useProject } from "./ProjectContext";
 
@@ -79,7 +80,7 @@ export function ExecutionProvider(props: { children: React.ReactNode }) {
         },
       }}
     >
-      {props.children}
+      <ReactFlowProvider>{props.children}</ReactFlowProvider>
     </ExecutionContext.Provider>
   );
 }

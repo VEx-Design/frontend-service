@@ -1,7 +1,7 @@
 import React from "react";
 import { useProject } from "@/features/systems/contexts/ProjectContext";
 import FormularBox from "./FormularBox";
-import { FormulaCondition } from "@/features/systems/libs/ClassInterface/types/Interface";
+import { FormulaCondition } from "@/features/systems/libs/ClassInterface/types/Formula";
 
 interface Props {
   condition: FormulaCondition;
