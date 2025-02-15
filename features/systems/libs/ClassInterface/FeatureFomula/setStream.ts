@@ -1,5 +1,5 @@
 import { FormulaId, FormulaStatus } from "../types/Formula";
-import getFormular from "./getFormular";
+import getFormular from "./getFormula";
 
 export default function setStream(
   formulars: FormulaStatus[],

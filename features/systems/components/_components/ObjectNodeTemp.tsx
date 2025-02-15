@@ -3,6 +3,7 @@ import { Type } from "../../libs/ClassType/types/Type";
 import { Handle, Position } from "@xyflow/react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import CustomHandle from "./CustomHandle";
 
 interface Props {
   objectType: Type;
@@ -58,7 +59,7 @@ export default function ObjectNodeTemp({
       )}
       style={{
         height: `${nodeHeight}px`,
-        ...(lengthHori > 0 && { width: `${nodeWidth}px` }),
+        width: `${nodeWidth}px`,
       }}
     >
       <div className="flex flex-col justify-center items-center gap-2">
@@ -86,10 +87,9 @@ export default function ObjectNodeTemp({
 
         return (
           <div key={`handle-${index}`}>
-            <Handle
-              type="target"
-              id={`target-handle-${item.id}`}
-              position={item.position}
+            <CustomHandle
+              item={item}
+              isSelect={currentInterfaceId === item.id}
               style={
                 item.position === Position.Top
                   ? { left: `${centerHori + 12}px` }
@@ -99,13 +99,8 @@ export default function ObjectNodeTemp({
                   ? { top: `${centerVerti + 12}px` }
                   : { top: `${centerVerti - 12}px` }
               }
-              className={cn(
-                "!bg-gray-400 !border-2 !border-background !w-4 !h-4",
-                {
-                  "!w-5 !h-5": currentInterfaceId === item.id,
-                }
-              )}
             />
+
             <Handle
               type="source"
               id={`source-handle-${item.id}`}

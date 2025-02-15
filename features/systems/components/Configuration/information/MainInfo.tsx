@@ -49,6 +49,12 @@ export default function MainInfo() {
     }, 0);
   }, [setNodes, fitView, currentType]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      fitView({ maxZoom: 0.9, duration: 300 });
+    }, 0);
+  }, [fitView, nodes]);
+
   return (
     <div className="h-full w-full p-6">
       <ResizablePanelGroup direction="horizontal">

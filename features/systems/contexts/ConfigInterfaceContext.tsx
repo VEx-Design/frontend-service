@@ -8,10 +8,12 @@ import {
   FormulaStatus,
   Variable,
 } from "../libs/ClassInterface/types/Formula";
-import getFormular from "../libs/ClassInterface/FeatureFomula/getFormular";
+import getFormula from "../libs/ClassInterface/FeatureFomula/getFormula";
 import addVariable from "../libs/ClassInterface/FeatureFomula/addVariable";
 import setStream from "../libs/ClassInterface/FeatureFomula/setStream";
 import deleteVariable from "../libs/ClassInterface/FeatureFomula/deleteVariable";
+import setFormula from "../libs/ClassInterface/setFormula";
+import getFormulaInterface from "../libs/ClassInterface/getFormulaInterface";
 
 type InputPosition = {
   index: number;
@@ -37,14 +39,18 @@ const ConfigInterfaceContext = createContext<
 >(undefined);
 
 interface InterfaceAction {
+  addInterface: () => void;
   editLocation: (newPosition: Position) => void;
   getFormular: (formulaId: FormulaId) => FormulaStatus | undefined;
+  setFormular: (newFormular: FormulaStatus) => void;
 }
 
 interface FormulaAction {
   setStream: (stream: string) => void;
   addVariable: (newVariable: Variable) => void;
   deleteVariable: () => void;
+  applyFormula: (formulaId: FormulaId) => void;
+  cancelFormula: (formulaId: FormulaId) => void;
 }
 
 interface FormulaProviderProps {
@@ -93,15 +99,27 @@ export const ConfigInterfaceProvider = ({ children }: FormulaProviderProps) => {
   }, [currentInterface?.id]);
 
   const interfaceAction: InterfaceAction = {
+    addInterface: () => {
+      const newInterface = typeAction.addInterface();
+      setCurrentInterface(newInterface);
+    },
     editLocation: (newPosition: Position) => {
       if (currentInterface) {
-        const newInterface = editPosition(currentInterface!, newPosition);
+        const newInterface = editPosition(currentInterface, newPosition);
         setCurrentInterface(newInterface);
         typeAction.setInterface(currentInterface.id, newInterface);
       }
     },
     getFormular: (formulaId: FormulaId) => {
-      return getFormular(formulars, formulaId);
+      return getFormula(formulars, formulaId);
+    },
+    setFormular: (newFormular: FormulaStatus) => {
+      if (currentInterface) {
+        const newInterface = setFormula(currentInterface, newFormular);
+        setCurrentInterface(newInterface);
+        console.log(newInterface);
+        typeAction.setInterface(currentInterface.id, newInterface);
+      }
     },
   };
 
@@ -140,6 +158,42 @@ export const ConfigInterfaceProvider = ({ children }: FormulaProviderProps) => {
         stream,
         currentInputPosition!.index
       );
+      setFormulars(newFormulars);
+    },
+    applyFormula: (formulaId: FormulaId) => {
+      const formula = getFormula(formulars, formulaId);
+      if (!formula) return;
+      interfaceAction.setFormular(formula);
+      const newFormulars = formulars.map((f) => {
+        if (
+          f.conditionId === formulaId.conditionId &&
+          f.formula.paramId === formulaId.paramId
+        ) {
+          return {
+            ...f,
+            isEdited: false,
+          };
+        }
+        return f;
+      });
+      setFormulars(newFormulars);
+    },
+    cancelFormula: (formulaId: FormulaId) => {
+      const formula = getFormula(formulars, formulaId);
+      if (!formula) return;
+      const newFormulars = formulars.map((f) => {
+        if (
+          f.conditionId === formulaId.conditionId &&
+          f.formula.paramId === formulaId.paramId
+        ) {
+          return {
+            ...f,
+            formula: getFormulaInterface(currentInterface!, formulaId)!,
+            isEdited: false,
+          };
+        }
+        return f;
+      });
       setFormulars(newFormulars);
     },
   };

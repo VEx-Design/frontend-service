@@ -1,5 +1,5 @@
 import { FormulaId, FormulaStatus, Variable } from "../types/Formula";
-import getFormular from "./getFormular";
+import getFormular from "./getFormula";
 
 export default function addVariable(
   formulars: FormulaStatus[],
