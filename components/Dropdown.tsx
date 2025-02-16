@@ -27,6 +27,7 @@ export default function Dropdown(props: DropdownProps) {
         props.items[0].onClick();
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const OnMouseLeave = () => {

@@ -53,6 +53,8 @@ export default function setStream(
           paramId: currentIdFormula.paramId,
           formulaTokens: [],
           lastStream: stream,
+          completeStream: "",
+          variables: [],
         },
         isEdited: true,
       });

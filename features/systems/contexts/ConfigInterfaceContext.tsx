@@ -4,6 +4,7 @@ import { useConfig } from "./ConfigContext";
 import { Position } from "@xyflow/react";
 import editPosition from "../libs/ClassInterface/editPosition";
 import {
+  FormulaCondition,
   FormulaId,
   FormulaStatus,
   Variable,
@@ -51,6 +52,7 @@ interface FormulaAction {
   deleteVariable: () => void;
   applyFormula: (formulaId: FormulaId) => void;
   cancelFormula: (formulaId: FormulaId) => void;
+  addCondition: (condition: FormulaCondition) => void;
 }
 
 interface FormulaProviderProps {
@@ -117,7 +119,6 @@ export const ConfigInterfaceProvider = ({ children }: FormulaProviderProps) => {
       if (currentInterface) {
         const newInterface = setFormula(currentInterface, newFormular);
         setCurrentInterface(newInterface);
-        console.log(newInterface);
         typeAction.setInterface(currentInterface.id, newInterface);
       }
     },
@@ -195,6 +196,16 @@ export const ConfigInterfaceProvider = ({ children }: FormulaProviderProps) => {
         return f;
       });
       setFormulars(newFormulars);
+    },
+    addCondition: (condition: FormulaCondition) => {
+      if (currentInterface) {
+        const newInterface = {
+          ...currentInterface,
+          formulaConditions: [...currentInterface.formulaConditions, condition],
+        };
+        setCurrentInterface(newInterface);
+        typeAction.updateInterface(currentInterface.id, newInterface);
+      }
     },
   };
 

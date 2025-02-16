@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useMemo } from "react";
 import {
+  Control,
   FieldErrors,
   FieldValues,
   Path,
@@ -67,9 +68,11 @@ export const FormFieldContext = createContext<{ name: string } | undefined>(
 
 interface FormFieldProps<TFormValues extends FieldValues> {
   name: Path<TFormValues>;
-  register: UseFormRegister<TFormValues>;
+  register?: UseFormRegister<TFormValues>;
+  control?: Control<TFormValues>;
   render: (field: {
-    field: UseFormRegisterReturn;
+    field?: UseFormRegisterReturn;
+    control?: Control<TFormValues>;
     isError: boolean;
   }) => React.ReactNode;
   required?: boolean;
@@ -92,7 +95,8 @@ export function FormField<TFormValues extends FieldValues>(
     <FormFieldContext.Provider value={{ name: props.name }}>
       <div className="pb-3">
         {props.render({
-          field: register(props.name),
+          field: register ? register(props.name) : undefined,
+          control: props.control,
           isError,
         })}
       </div>

@@ -3,6 +3,7 @@ import { useConfigInterface } from "@/features/systems/contexts/ConfigInterfaceC
 import FormulaConditionBox from "../_input/formular/FormulaConditionBox";
 import { useResizeDetector } from "react-resize-detector";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import AddConditionDialog from "./AddConditionDialog";
 
 export default function FormulaLister() {
   const { currentInterface } = useConfigInterface();
@@ -11,11 +12,7 @@ export default function FormulaLister() {
 
   useEffect(() => {
     if (height !== undefined) {
-      const timeout = setTimeout(() => {
-        setParentHeight(height);
-      }, 200);
-
-      return () => clearTimeout(timeout);
+      setParentHeight(height);
     }
   }, [height]);
 
@@ -23,13 +20,14 @@ export default function FormulaLister() {
     <div className="flex flex-1 flex-col">
       <div className="flex flex-none items-center justify-between border-b pb-4">
         <div className="text-H5 font-bold">{currentInterface?.name}</div>
+        <AddConditionDialog />
       </div>
       <div ref={ref} className="flex flex-1">
         <ScrollArea
           className="w-full"
           style={{ height: `${parentHeight - 15}px` }}
         >
-          <div className="flex flex-col gap-4 mt-4">
+          <div className="flex flex-1 flex-col gap-4 mt-4">
             {currentInterface?.formulaConditions?.map((condition) => (
               <FormulaConditionBox key={condition.id} condition={condition} />
             ))}

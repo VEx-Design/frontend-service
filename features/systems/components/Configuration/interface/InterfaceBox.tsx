@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Interface } from "@/features/systems/libs/ClassInterface/types/Interface";
 import { useConfigInterface } from "@/features/systems/contexts/ConfigInterfaceContext";
 import { useConfig } from "@/features/systems/contexts/ConfigContext";
+import { useProject } from "@/features/systems/contexts/ProjectContext";
 
 interface Props {
   id: string;
@@ -13,7 +14,8 @@ interface Props {
 }
 
 export default function InterfaceBox({ id, name, position }: Props) {
-  const { currentType } = useConfig();
+  const { configAction } = useProject();
+  const { currentType, setCurrentType } = useConfig();
   const { currentInterface, setCurrentInterface, interfaceAction } =
     useConfigInterface();
 
@@ -33,6 +35,7 @@ export default function InterfaceBox({ id, name, position }: Props) {
     );
     if (selectedInterface) {
       setCurrentInterface(selectedInterface);
+      setCurrentType(configAction.getType(currentType?.id || ""));
     }
   };
 

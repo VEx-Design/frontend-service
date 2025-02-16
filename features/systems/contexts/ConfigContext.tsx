@@ -8,6 +8,7 @@ import addProperty from "../libs/ClassType/addProperty";
 // type
 import { Property, Type } from "../libs/ClassType/types/Type";
 import { Interface } from "../libs/ClassInterface/types/Interface";
+import getInterface from "../libs/ClassType/getInterface";
 
 interface ConfigContextValue {
   currentType: Type | undefined;
@@ -21,6 +22,7 @@ interface TypeAction {
   addProperty: (newProperty: Property) => void;
   addInterface: () => Interface;
   setInterface: (interfaceId: string, newInterface: Interface) => void;
+  updateInterface: (interfaceId: string, newInterface: Interface) => void;
   getProperty: (propertyId: string) => Property | undefined;
   getInterface: (interfaceId: string) => Interface | undefined;
 }
@@ -53,13 +55,17 @@ export const ConfigProvider = ({ children }: ConfigConsoleProviderProps) => {
       setCurrentType(newType);
       configAction.editType(newType);
     },
+    updateInterface: (interfaceId: string, newInterface: Interface) => {
+      const newType = editInterface(currentType!, interfaceId, newInterface);
+      configAction.editType(newType);
+    },
     getProperty: (propertyId: string) => {
       return currentType?.properties.find(
         (property) => property.id === propertyId
       );
     },
     getInterface: (interfaceId: string) => {
-      return currentType?.interfaces.find((inter) => inter.id === interfaceId);
+      return getInterface(currentType!, interfaceId);
     },
   };
 

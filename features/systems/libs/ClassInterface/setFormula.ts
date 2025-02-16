@@ -14,13 +14,19 @@ export default function setFormula(
   ].formulas.findIndex((f) => f.paramId === formula.formula.paramId);
 
   const newInterface = { ...currentInterface };
+  const newFormula = {
+    ...formula.formula,
+    completeStream:
+      formula.formula.formulaTokens.reduce((acc, token, index) => {
+        acc += token.stream + `x[${index + 1}]`;
+        return acc;
+      }, "") + formula.formula.lastStream,
+    variables: formula.formula.formulaTokens.map((token) => token.variable),
+  };
   if (index === -1) {
-    newInterface.formulaConditions[conditionIndex].formulas.push(
-      formula.formula
-    );
+    newInterface.formulaConditions[conditionIndex].formulas.push(newFormula);
   } else {
-    newInterface.formulaConditions[conditionIndex].formulas[index] =
-      formula.formula;
+    newInterface.formulaConditions[conditionIndex].formulas[index] = newFormula;
   }
   return newInterface;
 }

@@ -7,7 +7,7 @@ export default function addInterface(type: Type): Type {
     name: `Interface ${type.interfaces.length + 1}`,
     position: Position.Left,
     formulaConditions: [
-      { id: crypto.randomUUID(), type: "default", formulas: [] },
+      { id: crypto.randomUUID(), type: "DEFAULT", formulas: [] },
     ],
   });
   return type;

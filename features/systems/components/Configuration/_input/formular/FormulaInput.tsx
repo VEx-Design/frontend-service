@@ -91,6 +91,7 @@ export default function FormulaInput({ conditionId, paramId }: Props) {
     paramId,
     indexTofocus,
     moveCursorToPosition,
+    setIndexTofocus,
   ]);
 
   return (
