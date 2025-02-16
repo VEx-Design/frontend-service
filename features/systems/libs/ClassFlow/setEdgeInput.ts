@@ -1,7 +1,7 @@
 import { LightInput } from "../ClassLight/types/Light";
 import { Flow } from "./types/Flow";
 
-export default function setInput(
+export default function setEdgeInput(
   flow: Flow,
   edgeId: string,
   input: LightInput[]

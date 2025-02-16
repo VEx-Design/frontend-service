@@ -204,7 +204,7 @@ export const ConfigInterfaceProvider = ({ children }: FormulaProviderProps) => {
           formulaConditions: [...currentInterface.formulaConditions, condition],
         };
         setCurrentInterface(newInterface);
-        typeAction.updateInterface(currentInterface.id, newInterface);
+        typeAction.setInterface(currentInterface.id, newInterface);
       }
     },
   };

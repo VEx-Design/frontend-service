@@ -13,11 +13,9 @@ export function CreateObjectNode(
         object: {
           name: type.name,
           typeId: type.id,
-          vars: type.properties.map((variable) => ({
-            id: variable.id,
-            name: variable.name,
-            symbol: variable.symbol,
-            value: "0",
+          vars: type.properties.map((prop) => ({
+            propId: prop.id,
+            value: 0,
           })),
         },
       },
