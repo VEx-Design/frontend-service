@@ -1,6 +1,255 @@
-const LeftSidebar = () => {
+import Image from "next/image";
+import React, { useState } from "react";
+import { useCanvas } from "../canvas/CanvasContext";
+import { LuPanelBottomClose, LuPanelTopClose } from "react-icons/lu";
+import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
+import { TbGridDots } from "react-icons/tb";
+
+interface CanvasObject {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  fill: string;
+  imageUrl: string;
+  connectedTo: string[]; // Array of object IDs this object is connected to
+  isStartNode?: boolean; // Mark if this is the starting node
+}
+interface LeftSidebarProps {
+  objects: CanvasObject[];
+  selectedObject: CanvasObject | null;
+  setSelectedObject: React.Dispatch<React.SetStateAction<CanvasObject | null>>;
+}
+
+const LeftSidebar = ({
+  objects,
+  selectedObject,
+  setSelectedObject,
+}: LeftSidebarProps) => {
+  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [isLock, setIsLock] = useState<boolean>(true);
+  const { canvasState, setCanvasState } = useCanvas();
+
+  const handleClick = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handdleLock = () => {
+    setIsLock(!isLock);
+  };
+
+  const handleDimensionChange = (
+    dimension: "width" | "height",
+    value: number
+  ) => {
+    if (value > 0) {
+      setCanvasState((prev: CanvasState) => ({
+        ...prev,
+        [dimension]: value,
+      }));
+    }
+  };
+
+  const handleGridChange = (key: string, value: any) => {
+    setCanvasState((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
   return (
-    <div className="bg-blue-400 w-[100px] h-full fixed left-0">LeftSidebar</div>
+    <div className="w-64 h-full overflow-y-auto p-2 bg-gray-200">
+      <div
+        className={`bg-white rounded-md h-full p-4 space-y-4 ${
+          isOpen ? "" : "hidden"
+        }`}
+      >
+        {/* Main */}
+        <div className="flex justify-between items-center">
+          <a href="/project">
+            <Image
+              src={"/VExDesign.svg"}
+              alt={"Logo"}
+              height={36}
+              width={36}
+              style={{ height: "36px", width: "auto" }}
+            />
+          </a>
+          <button onClick={handleClick}>
+            <LuPanelTopClose size={18} />
+          </button>
+        </div>
+        {/* Project */}
+        <div className="flex flex-col gap-1 border-b">
+          <div className="text-sm">Project</div>
+          <div className="text-xs text-ChildText pb-2">optical simulator</div>
+        </div>
+        {/* Table Size */}
+        <div className="flex flex-col gap-1 border-b">
+          <div className="flex justify-between items-center">
+            <div className="text-sm">Table Size</div>
+            <button onClick={handdleLock}>
+              {isLock ? (
+                <MdOutlineLock size={15} />
+              ) : (
+                <MdOutlineLockOpen size={15} />
+              )}
+            </button>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="text-xs text-ChildText">Width</label>
+              <input
+                type="number"
+                value={canvasState.width}
+                onChange={(e) =>
+                  handleDimensionChange("width", Number(e.target.value))
+                }
+                className="w-full bg-gray-200 rounded px-2 py-1 mt-1 mb-2"
+                disabled={isLock}
+              />
+            </div>
+            <div>
+              <label className="text-xs text-ChildText">Height</label>
+              <input
+                type="number"
+                value={canvasState.height}
+                onChange={(e) =>
+                  handleDimensionChange("height", Number(e.target.value))
+                }
+                className="w-full bg-gray-200 rounded px-2 py-1 mt-1 mb-2"
+                disabled={isLock}
+              />
+            </div>
+          </div>
+        </div>
+        {/* Grid Layout section */}
+        <div className="flex flex-col gap-1 border-b pb-4">
+          <div className="flex justify-between items-center">
+            <div className="text-sm">Layout Grid</div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={canvasState.showGrid}
+                onChange={(e) => handleGridChange("showGrid", e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+
+          {canvasState.showGrid && (
+            <div className="space-y-1 mt-2">
+              {/* Grid Size and Grid Style */}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-xs text-ChildText">Grid Size</label>
+                  <input
+                    type="number"
+                    value={canvasState.gridSize}
+                    onChange={(e) =>
+                      handleGridChange("gridSize", Number(e.target.value))
+                    }
+                    min={25}
+                    max={100}
+                    className="w-full bg-gray-200 rounded px-2 py-1 mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-ChildText">Grid Style</label>
+                  <select
+                    value={canvasState.gridStyle}
+                    onChange={(e) =>
+                      handleGridChange("gridStyle", e.target.value)
+                    }
+                    className="w-full bg-gray-200 rounded px-2 py-1 mt-1"
+                  >
+                    <option value="dot">Dot</option>
+                    <option value="line">Line</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Grid Opacity */}
+              <div>
+                <label className="text-xs text-ChildText">Opacity</label>
+                <input
+                  type="range"
+                  value={canvasState.gridOpacity}
+                  onChange={(e) =>
+                    handleGridChange("gridOpacity", Number(e.target.value))
+                  }
+                  min={0}
+                  max={1}
+                  step={0.1}
+                  className="w-full"
+                />
+              </div>
+              {/* Grid Color */}
+              <div>
+                <label className="text-xs text-ChildText">Color</label>
+                <input
+                  type="color"
+                  value={canvasState.gridColor}
+                  onChange={(e) =>
+                    handleGridChange("gridColor", e.target.value)
+                  }
+                  className="w-full h-8 p-1 bg-gray-200 rounded mt-1"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+        {/* Object list */}
+        <div className="flex flex-col gap-1 ">
+          <div className="text-sm">Object list</div>
+          <ul className="space-y-1">
+            {objects.map((obj) => (
+              <div
+                key={obj.id}
+                onClick={() => setSelectedObject(obj)}
+                className={`p-2 rounded cursor-pointer transition-colors ${
+                  selectedObject?.id === obj.id
+                    ? "bg-gray-200"
+                    : "hover:bg-gray-200"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: obj.fill }}
+                  />
+                  <span className="text-xs">{obj.name}</span>
+                </div>
+              </div>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div
+        className={`bg-white rounded-md h-fit p-4 space-y-4 ${
+          isOpen ? "hidden" : ""
+        }`}
+      >
+        <div className="flex justify-between items-center">
+          <a href="/project">
+            <Image
+              src={"/VExDesign.svg"}
+              alt={"Logo"}
+              height={36}
+              width={36}
+              style={{ height: "36px", width: "auto" }}
+            />
+          </a>
+          <button onClick={handleClick}>
+            <LuPanelBottomClose size={18} />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 

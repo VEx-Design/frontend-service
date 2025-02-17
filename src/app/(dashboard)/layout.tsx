@@ -9,11 +9,11 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { userId } = await auth();
+  // const { userId } = await auth();
 
-  if (!userId) {
-    return <div>Not Signed In - Please Sign In (in Layout Nest)</div>;
-  }
+  // if (!userId) {
+  //   return <div>Not Signed In - Please Sign In (in Layout Nest)</div>;
+  // }
 
   return (
     <Suspense fallback={<Loading />}>
