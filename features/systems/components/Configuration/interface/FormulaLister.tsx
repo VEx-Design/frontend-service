@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useConfigInterface } from "@/features/systems/contexts/ConfigInterfaceContext";
 import FormulaConditionBox from "../_input/formular/FormulaConditionBox";
 import { useResizeDetector } from "react-resize-detector";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import AddConditionDialog from "./AddConditionDialog";
 
 const MemoizedFormulaConditionBox = React.memo(FormulaConditionBox);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
   Lister,
@@ -24,16 +24,27 @@ import { useConfig } from "@/features/systems/contexts/ConfigContext";
 
 export default function TypeLister() {
   const { config } = useProject();
-  const { setCurrentType } = useConfig();
+  const { setCurrentType, setIsConfigFreeS } = useConfig();
 
   const onClick = (getData: GetDataType) => {
     const type = config.types.find((ty) => ty.id === getData("id"));
     if (type) {
       setCurrentType(type);
+      setIsConfigFreeS(false);
     }
   };
 
+  const onClickFreespace = () => {
+    setIsConfigFreeS(true);
+    setCurrentType(undefined);
+  };
+
   const display: ListerDisplay = {};
+
+  useEffect(() => {
+    // Any action you want to take when config changes
+    console.log("Config has changed:", config);
+  }, [config]);
 
   return (
     <Lister data={config.types} loading={false}>
@@ -54,15 +65,28 @@ export default function TypeLister() {
         <ListerContentView
           listDisplay={display}
           render={({ data }) => (
-            <View
-              data={data}
-              render={({ getData }: { getData: GetDataType }) => (
-                <ViewItem type="normal" onClick={() => onClick(getData)}>
-                  <ViewTitle register="name" />
-                  <ViewCover register="picture" />
-                </ViewItem>
-              )}
-            />
+            <>
+              <View
+                data={data}
+                render={({ getData }: { getData: GetDataType }) => (
+                  <ViewItem type="normal" onClick={() => onClick(getData)}>
+                    <ViewTitle register="name" />
+                    <ViewCover register="picture" />
+                  </ViewItem>
+                )}
+              />
+              <div className="py-3 border-b mb-2">
+                <p className="text-H5 font-bold">Free space</p>
+              </div>
+              <View
+                data={[{ name: "Regular" }]}
+                render={() => (
+                  <ViewItem type="normal" onClick={() => onClickFreespace()}>
+                    <ViewTitle register="name" />
+                  </ViewItem>
+                )}
+              />
+            </>
           )}
         />
       </ListerContent>

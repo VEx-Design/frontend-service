@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useProject } from "../contexts/ProjectContext";
-import calculate from "../libs/ClassFlow/calculate";
+import calculate from "../libs/ClassFlow/calculation/calculate";
 
 interface EditorNavbarProps {
   title?: string;
@@ -17,10 +17,7 @@ export default function EditorNavbar(props: EditorNavbarProps) {
   const handleExecute = () => {
     alert("Execute");
     setExecutedFlow(
-      calculate(
-        { nodes: nodesState.nodes, edges: edgesState.edges },
-        config.parameters
-      )
+      calculate({ nodes: nodesState.nodes, edges: edgesState.edges }, config)
     );
   };
 

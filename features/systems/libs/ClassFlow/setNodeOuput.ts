@@ -1,11 +1,11 @@
-import { ObjectInput } from "../ClassObject/types/Object";
+import { ObjectOutput } from "../ClassObject/types/Object";
 import { Flow } from "./types/Flow";
 
-export default function setNodeInput(
+export default function setNodeOutput(
   flow: Flow,
   nodeId: string,
   interfaceId: string,
-  input: ObjectInput[]
+  output: ObjectOutput[]
 ): Flow {
   const resultFlow = {
     ...flow,
@@ -31,7 +31,7 @@ export default function setNodeInput(
                         index === interfaceIndex
                           ? {
                               ...inter,
-                              input,
+                              output: output,
                             }
                           : inter
                       );
@@ -40,8 +40,8 @@ export default function setNodeInput(
                         ...interfaces,
                         {
                           interfaceId,
-                          input,
-                          output: [],
+                          input: [],
+                          output: output,
                         },
                       ];
                     }

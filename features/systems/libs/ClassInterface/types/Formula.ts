@@ -24,6 +24,7 @@ export type Formula = {
   lastStream: string;
   completeStream: string;
   variables: Variable[];
+  triggers: string[];
 };
 
 export type FormulaToken = {

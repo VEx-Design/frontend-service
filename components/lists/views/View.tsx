@@ -1,7 +1,7 @@
 "use client";
 
 import Badge, { BadgeVariant } from "@/components/Badge";
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo } from "react";
 import { getChild, getChildren } from "../..//libs/getChildren";
 import Image from "next/image";
 import React from "react";
@@ -25,6 +25,10 @@ interface ViewProps {
 }
 
 export function View(props: ViewProps) {
+  useEffect(() => {
+    console.log("View data changed");
+  }, [props.data]);
+
   if (props.data.length === 0) return <div></div>;
   else {
     return (
@@ -51,27 +55,25 @@ interface ViewItemProps {
 }
 
 export function ViewItem(props: ViewItemProps) {
-  const [data] = useState(props.data);
+  const data = props.data;
 
   const title = useMemo(
     () => getChild(props.children, ViewTitle),
     [props.children]
   );
-
   const cover_img = useMemo(
     () => getChild(props.children, ViewCover),
     [props.children]
   );
-
   const badges = useMemo(
     () => getChildren(props.children, ViewBadge),
     [props.children]
   );
-
   const contents = useMemo(
     () => getChildren(props.children, ViewContent),
     [props.children]
   );
+
   if (data !== undefined) {
     return (
       <ViewContext.Provider value={{ data: data }}>
@@ -185,6 +187,10 @@ export function ViewCover(props: ViewCoverProps) {
   }
 
   const placeholderImage = "https://i.sstatic.net/y9DpT.jpg";
+
+  useEffect(() => {
+    console.log("ViewCover data changed", context.data[props.register]);
+  }, [context.data, props.register]);
 
   return (
     <Image

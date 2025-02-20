@@ -14,7 +14,11 @@ export default async function createProject(form: createProjectData) {
     edges: [],
   };
 
-  const config: Config = { types: [], parameters: [] };
+  const config: Config = {
+    types: [],
+    parameters: [],
+    freeSpaces: [{ id: crypto.randomUUID(), name: "Regular", formulas: [] }],
+  };
 
   if (!success) {
     throw new Error("Invalid form data");

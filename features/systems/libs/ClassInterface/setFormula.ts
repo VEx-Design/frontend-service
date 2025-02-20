@@ -22,6 +22,13 @@ export default function setFormula(
         return acc;
       }, "") + formula.formula.lastStream,
     variables: formula.formula.formulaTokens.map((token) => token.variable),
+    triggers: Array.from(
+      new Set(
+        formula.formula.formulaTokens
+          .map((token) => token.variable.interfaceId)
+          .filter((id): id is string => id !== undefined)
+      )
+    ),
   };
   if (index === -1) {
     newInterface.formulaConditions[conditionIndex].formulas.push(newFormula);

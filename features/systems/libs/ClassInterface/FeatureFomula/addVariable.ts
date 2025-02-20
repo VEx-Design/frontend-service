@@ -93,6 +93,7 @@ export default function addVariable(
           lastStream: "",
           completeStream: "",
           variables: [],
+          triggers: [],
         },
         isEdited: true,
       });

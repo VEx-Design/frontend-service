@@ -11,8 +11,6 @@ export default async function Page({
   // Await params if necessary (e.g., async route params access)
   const { projectId } = await params;
 
-  console.log("projectId", projectId);
-
   // Fetch the project data
   const project = await getProjectByID(projectId);
 

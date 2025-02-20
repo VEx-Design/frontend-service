@@ -17,6 +17,7 @@ export function CreateObjectNode(
             propId: prop.id,
             value: 0,
           })),
+          interfaces: [],
         },
       },
     },

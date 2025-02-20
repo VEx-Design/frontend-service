@@ -55,6 +55,7 @@ export default function setStream(
           lastStream: stream,
           completeStream: "",
           variables: [],
+          triggers: [],
         },
         isEdited: true,
       });

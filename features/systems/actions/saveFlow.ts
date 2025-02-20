@@ -1,8 +1,8 @@
 "use client";
 
 import { client } from "@/lib/service";
-import { AppNode } from "../types/appNode";
-import { AppEdge } from "../types/appEdge";
+import { AppNode } from "../libs/ClassNode/types/AppNode";
+import { AppEdge } from "../libs/ClassEdge/types/AppEdge";
 
 export default async function saveFlow(
   projId: string,

@@ -9,10 +9,13 @@ import addProperty from "../libs/ClassType/addProperty";
 import { Property, Type } from "../libs/ClassType/types/Type";
 import { Interface } from "../libs/ClassInterface/types/Interface";
 import getInterface from "../libs/ClassType/getInterface";
+import editImage from "../libs/ClassType/editImage";
 
 interface ConfigContextValue {
   currentType: Type | undefined;
-  setCurrentType: (type: Type) => void;
+  setCurrentType: (type: Type | undefined) => void;
+  isConfigFreeS: boolean;
+  setIsConfigFreeS: (isConfig: boolean) => void;
   typeAction: TypeAction;
 }
 
@@ -25,6 +28,7 @@ interface TypeAction {
   updateInterface: (interfaceId: string, newInterface: Interface) => void;
   getProperty: (propertyId: string) => Property | undefined;
   getInterface: (interfaceId: string) => Interface | undefined;
+  editImage: (fileName: string) => void;
 }
 
 interface ConfigConsoleProviderProps {
@@ -33,6 +37,7 @@ interface ConfigConsoleProviderProps {
 
 export const ConfigProvider = ({ children }: ConfigConsoleProviderProps) => {
   const [currentType, setCurrentType] = useState<Type | undefined>(undefined);
+  const [isConfigFreeS, setIsConfigFreeS] = useState<boolean>(false);
 
   const { configAction } = useProject();
 
@@ -67,6 +72,13 @@ export const ConfigProvider = ({ children }: ConfigConsoleProviderProps) => {
     getInterface: (interfaceId: string) => {
       return getInterface(currentType!, interfaceId);
     },
+    editImage: (fileName: string) => {
+      if (currentType) {
+        const newType = editImage(currentType, fileName);
+        setCurrentType(newType);
+        configAction.editType(newType);
+      }
+    },
   };
 
   return (
@@ -74,6 +86,8 @@ export const ConfigProvider = ({ children }: ConfigConsoleProviderProps) => {
       value={{
         currentType,
         setCurrentType,
+        isConfigFreeS,
+        setIsConfigFreeS,
         typeAction,
       }}
     >

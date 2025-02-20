@@ -115,7 +115,9 @@ export const ProjectProvider = ({
       setNodes([...nodes]);
     },
     addType: (type: Type) => setConfig(addType(config, type)),
-    editType: (type: Type) => setConfig(editType(config, type)),
+    editType: (type: Type) => {
+      setConfig(editType(config, type));
+    },
     getType: (typeId: string) => getType(config, typeId),
     addParameter: (parameter: Parameter) =>
       setConfig(addParameter(config, parameter)),

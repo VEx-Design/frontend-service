@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/resizable";
 import PropertiesLister from "./PropertiesLister";
 import ObjectConfigNode from "./ObjectConfigNode";
+import UploadImageDialog from "./UploadImageDialog";
 import { useConfig } from "@/features/systems/contexts/ConfigContext";
 
 // type
@@ -37,6 +38,7 @@ export default function MainInfo() {
             name: currentType.name,
             typeId: currentType.id,
             vars: [],
+            interfaces: [],
           },
         },
       },
@@ -89,6 +91,7 @@ export default function MainInfo() {
                 value={currentType?.name || ""}
                 onChange={() => {}}
               />
+              <UploadImageDialog />
             </div>
           </div>
         </ResizablePanel>
