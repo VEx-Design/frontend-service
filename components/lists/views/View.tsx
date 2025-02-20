@@ -25,9 +25,7 @@ interface ViewProps {
 }
 
 export function View(props: ViewProps) {
-  useEffect(() => {
-    console.log("View data changed");
-  }, [props.data]);
+  useEffect(() => {}, [props.data]);
 
   if (props.data.length === 0) return <div></div>;
   else {
@@ -188,9 +186,7 @@ export function ViewCover(props: ViewCoverProps) {
 
   const placeholderImage = "https://i.sstatic.net/y9DpT.jpg";
 
-  useEffect(() => {
-    console.log("ViewCover data changed", context.data[props.register]);
-  }, [context.data, props.register]);
+  useEffect(() => {}, [context.data, props.register]);
 
   return (
     <Image

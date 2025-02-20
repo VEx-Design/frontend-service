@@ -19,7 +19,6 @@ export default function ImageUploader(props: ImageUploaderProps) {
       uploadImage(file, fileName),
     onSuccess: (data) => {
       toast.success("Image uploaded successfully!", { id: "upload-image" });
-      console.log("Uploaded image URL:", data);
       setImage(data);
       props.onUpload?.(props.fileName || "");
     },

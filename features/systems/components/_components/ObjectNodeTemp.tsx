@@ -74,7 +74,9 @@ export default function ObjectNodeTemp({
             className="object-contain"
           />
         </div>
-        <p className="font-semibold text-lg text-center">{objectType.name}</p>
+        <p className="font-semibold text-lg text-center">
+          {objectType.displayName}
+        </p>
       </div>
       {connection.map((item, index) => {
         connectionCount[item.position] += 1;

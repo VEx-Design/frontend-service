@@ -20,7 +20,6 @@ export default async function uploadImage(
       }
     );
 
-    console.log("Uploaded Successfully:", data);
     return data.filePath;
   } catch (error) {
     console.error("Upload failed:", error);

@@ -3,6 +3,7 @@ import { Interface } from "../../ClassInterface/types/Interface";
 export type Type = {
   id: string;
   name: string;
+  displayName: string;
   description?: string;
   picture: string;
   properties: Property[];

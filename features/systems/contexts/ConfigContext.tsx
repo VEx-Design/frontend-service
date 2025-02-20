@@ -10,6 +10,8 @@ import { Property, Type } from "../libs/ClassType/types/Type";
 import { Interface } from "../libs/ClassInterface/types/Interface";
 import getInterface from "../libs/ClassType/getInterface";
 import editImage from "../libs/ClassType/editImage";
+import editName from "../libs/ClassType/editName";
+import editDisplayName from "../libs/ClassType/editDisplayName";
 
 interface ConfigContextValue {
   currentType: Type | undefined;
@@ -29,6 +31,8 @@ interface TypeAction {
   getProperty: (propertyId: string) => Property | undefined;
   getInterface: (interfaceId: string) => Interface | undefined;
   editImage: (fileName: string) => void;
+  editName: (name: string) => void;
+  editDisplayName: (displayName: string) => void;
 }
 
 interface ConfigConsoleProviderProps {
@@ -75,6 +79,20 @@ export const ConfigProvider = ({ children }: ConfigConsoleProviderProps) => {
     editImage: (fileName: string) => {
       if (currentType) {
         const newType = editImage(currentType, fileName);
+        setCurrentType(newType);
+        configAction.editType(newType);
+      }
+    },
+    editName: (name: string) => {
+      if (currentType) {
+        const newType = editName(currentType, name);
+        setCurrentType(newType);
+        configAction.editType(newType);
+      }
+    },
+    editDisplayName: (displayName: string) => {
+      if (currentType) {
+        const newType = editDisplayName(currentType, displayName);
         setCurrentType(newType);
         configAction.editType(newType);
       }

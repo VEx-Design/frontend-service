@@ -36,9 +36,7 @@ export default function calculate(flow: Flow, config: Config): Flow {
           )?.value || 0,
       }));
       resultFlow = setEdgeInput(resultFlow, edge.id, input);
-      console.log(resultFlow);
     } else if (sourceNode?.type === "ObjectNode") {
-      console.log("Object");
       const sourceInterfaceId =
         edge.sourceHandle?.replace("source-handle-", "") || "";
       console.log(sourceInterfaceId);

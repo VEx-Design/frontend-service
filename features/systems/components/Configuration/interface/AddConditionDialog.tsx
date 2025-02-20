@@ -49,7 +49,6 @@ export default function AddConditionDialog(props: AddConditionDialogProps) {
 
   const onSubmit = useCallback(
     (values: createConditionData) => {
-      console.log(values);
       toast.loading("Creating Condition...", { id: "add-condition" });
       if (currentInterface) {
         createCondition(values)

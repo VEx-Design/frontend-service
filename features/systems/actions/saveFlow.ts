@@ -19,7 +19,6 @@ export default async function saveFlow(
         withCredentials: true,
       }
     );
-    console.log(response);
     return response; // You should return the response to satisfy the mutation
   } catch (error) {
     throw new Error(

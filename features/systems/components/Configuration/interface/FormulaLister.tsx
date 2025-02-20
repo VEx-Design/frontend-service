@@ -14,7 +14,6 @@ export default function FormulaLister() {
   useEffect(() => {
     if (height) {
       setParentHeight(height); // Update height automatically
-      console.log("FormulaLister Height", height);
     }
   }, [height]);
 

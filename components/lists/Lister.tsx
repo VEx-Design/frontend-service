@@ -42,7 +42,6 @@ export function Lister(props: ListerProps) {
   const [currentView, setView] = useState<ViewType>("card");
 
   useEffect(() => {
-    console.log("Lister data changed");
     setModifyData(
       (filterFunction ? filterFunction : (data: Data[]) => data)(
         (sortFunction ? sortFunction : (data: Data[]) => data)(data)

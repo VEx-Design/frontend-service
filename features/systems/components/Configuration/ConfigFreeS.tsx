@@ -9,7 +9,6 @@ export default function ConfigFreeS() {
   useEffect(() => {
     if (height) {
       setParentHeight(height);
-      console.log("FormulaLister Height", height);
     }
   }, [height]);
 

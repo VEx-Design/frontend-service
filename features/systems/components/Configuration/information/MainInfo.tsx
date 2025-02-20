@@ -25,7 +25,7 @@ const nodeTypes = {
 export default function MainInfo() {
   const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
   const { fitView } = useReactFlow();
-  const { currentType } = useConfig();
+  const { currentType, typeAction } = useConfig();
 
   useEffect(() => {
     if (!currentType) return;
@@ -84,12 +84,12 @@ export default function MainInfo() {
               <Input
                 label="Name"
                 value={currentType?.name || ""}
-                onChange={() => {}}
+                onChange={(e) => typeAction.editName(e.target.value)}
               />
               <Input
                 label="Display Name"
-                value={currentType?.name || ""}
-                onChange={() => {}}
+                value={currentType?.displayName || ""}
+                onChange={(e) => typeAction.editDisplayName(e.target.value)}
               />
               <UploadImageDialog />
             </div>

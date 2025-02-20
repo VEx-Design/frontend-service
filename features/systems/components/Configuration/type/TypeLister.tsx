@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import {
   Lister,
@@ -40,11 +40,6 @@ export default function TypeLister() {
   };
 
   const display: ListerDisplay = {};
-
-  useEffect(() => {
-    // Any action you want to take when config changes
-    console.log("Config has changed:", config);
-  }, [config]);
 
   return (
     <Lister data={config.types} loading={false}>
