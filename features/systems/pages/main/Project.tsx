@@ -18,6 +18,7 @@ import { EditorProvider } from "../../contexts/EditorContext";
 import Execution from "../Execution";
 import { ExecutionProvider } from "../../contexts/ExecutionContext";
 import Box from "../Box";
+import { BoxProvider } from "../../contexts/BoxContext";
 
 export default function Project() {
   const { projName, onSave, savePending } = useProject();
@@ -68,9 +69,9 @@ export default function Project() {
           </ExecutionProvider>
         </TabsContent>
         <TabsContent name="Box">
-          <EditorProvider>
+          <BoxProvider>
             <Box />
-          </EditorProvider>
+          </BoxProvider>
         </TabsContent>
       </Tabs>
     </>
