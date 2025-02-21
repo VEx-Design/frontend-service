@@ -1,5 +1,5 @@
-import { Controls, Edge, ReactFlow } from '@xyflow/react';
-import React, { useCallback } from 'react';
+import { Controls, ReactFlow, ReactFlowProvider, useReactFlow } from '@xyflow/react';
+import React, { useCallback, useEffect } from 'react';
 import StarterNode from './nodes/StarterNode';
 import TerminalNode from './nodes/TerminalNode';
 import ObjectNode from './nodes/ObjectNode';
@@ -21,20 +21,24 @@ const edgeTypes = {
   default: LightEdge,
 };
 
-export default function Diagram() {
+function DiagramComponent() {
   const { nodesState, edgesState } = useBox();
   const { nodes, onNodesChange } = nodesState;
   const { edges, onEdgesChange } = edgesState;
+  const { setFocusNode } = useBox();
+  const { fitView } = useReactFlow();
 
-  const { setFocusNode} = useBox();
-
-  const handleNodeClikc = useCallback((_: React.MouseEvent, node: AppNode) => {
+  const handleNodeClick = useCallback((_: React.MouseEvent, node: AppNode) => {
     setFocusNode(node);
   }, [setFocusNode]);
 
   const handleBackgroundClick = () => {
     setFocusNode(undefined);
   };
+
+  useEffect(() => {
+    fitView();
+  }, []);
 
   return (
     <ReactFlow
@@ -44,14 +48,23 @@ export default function Diagram() {
       edgeTypes={edgeTypes}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
-      onNodeClick={handleNodeClikc}
+      onNodeClick={handleNodeClick}
       style={rfStyle}
-      fitView= {true}
+      fitView={true}
       deleteKeyCode={[]}
       nodesDraggable={false}
       edgesFocusable={false}
+      onPaneClick={handleBackgroundClick}
     >
       <Controls />
     </ReactFlow>
+  );
+}
+
+export default function Diagram() {
+  return (
+    <ReactFlowProvider>
+      <DiagramComponent />
+    </ReactFlowProvider>
   );
 }

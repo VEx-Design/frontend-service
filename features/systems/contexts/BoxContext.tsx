@@ -1,10 +1,11 @@
-import { EdgeChange, NodeChange, useEdgesState, useNodesState } from "@xyflow/react";
+import { EdgeChange, FitView, NodeChange, useEdgesState, useNodesState, useReactFlow } from "@xyflow/react";
 import { AppNode, NodeData } from "../libs/ClassNode/types/AppNode";
 import { AppEdge, EdgeData } from "../libs/ClassEdge/types/AppEdge";
 import { useProject } from "./ProjectContext";
 import { createContext, use, useEffect, useState } from "react";
 import React from "react";
 import { BoxConfig, BoxInformation } from "../libs/ClassBox/types/BoxConfig";
+import { Config } from "../libs/ClassConfig/types/Config";
 
 interface BoxContextValue {
   focusNode: AppNode | undefined;
@@ -14,6 +15,7 @@ interface BoxContextValue {
   boxInformation: BoxInformation;
   map : Map<string, BoxConfig>;
   setMap: (map: Map<string, BoxConfig>) => void;
+  config: Config;
 }
 
 interface NodesState {
@@ -32,6 +34,7 @@ const BoxContext = createContext<BoxContextValue | undefined>(undefined);
 
 export function BoxProvider (props: { children: React.ReactNode }) {
     const flow = useProject();
+    const {config} = useProject();
     const [map, setMap] = useState(new Map<string, BoxConfig>());
     const [focusNode, setFocusNode] = useState<AppNode | undefined>(undefined);
     const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
@@ -62,7 +65,8 @@ export function BoxProvider (props: { children: React.ReactNode }) {
       },
       boxInformation,
       map,
-      setMap
+      setMap,
+      config
     }}>
       {props.children}
     </BoxContext.Provider>

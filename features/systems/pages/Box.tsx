@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
-
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import BoxSizing from "../components/Box/BoxSizing";
-import { useBox } from "../contexts/BoxContext";
 import ViewDiagram from "../components/Box/ViewDiagram";
 import BoxKonva from "../components/Box/BoxKonva";
 
 export default function Box() {
+
   return (
     <ResizablePanelGroup direction="vertical">
       <ResizablePanel defaultSize={50} minSize={50} maxSize={50}>

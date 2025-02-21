@@ -1,55 +1,77 @@
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useBox } from '../../contexts/BoxContext';
 import { BoxConfig } from '../../libs/ClassBox/types/BoxConfig';
 
 export default function BoxSizing() {
-  const { focusNode } = useBox();
-  const { boxInformation } = useBox();
-  const [height, setHeight] = useState(0);
-  const [width, setWidth] = useState(0);
+  const { focusNode, map, setMap } = useBox();
+  const [height, setHeight] = useState('');
+  const [width, setWidth] = useState('');
 
   useEffect(() => {
-    if (focusNode) {
-      const nodeInfo = boxInformation.information.get(focusNode.id);
-      if (nodeInfo) {
-        setHeight(nodeInfo.height);
-        setWidth(nodeInfo.width);
-      } else {
-        setHeight(0);
-        setWidth(0);
-      }
+    if (!focusNode) {
+      setHeight('');
+      setWidth('');
+      return;
     }
-  }, [focusNode]);
 
-  useEffect(()=>{
-    if(focusNode){
-      const nodeInfo = boxInformation.information.get(focusNode.id);
-      if(nodeInfo){
-        let newBoxConfig = new BoxConfig(height, width);
-        boxInformation.information.set(focusNode.id, newBoxConfig);
-        console.log(boxInformation.information);
-      }else{
-        boxInformation.information.set(focusNode.id, new BoxConfig(height, width));
-        console.log(boxInformation.information);
-      }
+    const nodeInfo = map.get(focusNode.id);
+    if (nodeInfo) {
+      setHeight(nodeInfo.height.toString());
+      setWidth(nodeInfo.width.toString());
+    } else {
+      setHeight('');
+      setWidth('');
     }
-  },[height, width])
+  }, [focusNode, map]);
+
+  const handleSave = () => {
+    if (!focusNode) return;
+
+    setMap((prevMap: Map<string, BoxConfig>) => {
+      const existingConfig: BoxConfig | undefined = prevMap.get(focusNode.id);
+      const newHeight: number = Number(height) || 0;
+      const newWidth: number = Number(width) || 0;
+
+      if (existingConfig?.height === newHeight && existingConfig?.width === newWidth) {
+      return prevMap; 
+      }
+
+      const updatedMap: Map<string, BoxConfig> = new Map(prevMap);
+      updatedMap.set(focusNode.id, new BoxConfig(newHeight, newWidth));
+      return updatedMap;
+    });
+  };
 
   return (
     <div>
-      <div>{focusNode?.id}</div>
-      <div>
-        <label>
-          Height:
-          <input type="number" value={height} onChange={(e) => setHeight(Number(e.target.value))} />
-        </label>
-      </div>
-      <div>
-        <label>
-          Width:
-          <input type="number" value={width} onChange={(e) => setWidth(Number(e.target.value))} />
-        </label>
-      </div>
+      {focusNode ? (
+        <>
+          <div>{focusNode.id}</div>
+          <div>
+            <label>
+              Height:
+              <input
+                type="number"
+                value={height}
+                onChange={(e) => setHeight(e.target.value)}
+              />
+            </label>
+          </div>
+          <div>
+            <label>
+              Width:
+              <input
+                type="number"
+                value={width}
+                onChange={(e) => setWidth(e.target.value)}
+              />
+            </label>
+          </div>
+          <button onClick={handleSave}>Save</button>
+        </>
+      ) : (
+        <div>No node selected</div>
+      )}
     </div>
   );
 }
