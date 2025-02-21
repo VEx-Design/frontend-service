@@ -62,6 +62,7 @@ const HomePage = () => {
               <h1 className="text-lg flex items-center gap-3">Fit to space</h1>
               <button>
                 <IoClose size={25} onClick={closePopup} />
+                {}
               </button>
             </div>
             <div className="p-4">
@@ -79,6 +80,7 @@ const HomePage = () => {
                     placeholder="Enter width"
                   />
                   <select
+                    aria-label="select unit"
                     value={unit}
                     onChange={(e) => setUnit(e.target.value)}
                     className="mt-1 p-2 border border-gray-300 rounded-md"
@@ -104,6 +106,7 @@ const HomePage = () => {
                     placeholder="Enter height"
                   />
                   <select
+                    aria-label="select unit"
                     value={unit}
                     onChange={(e) => setUnit(e.target.value)}
                     className="mt-1 p-2 border border-gray-300 rounded-md"

@@ -2,32 +2,16 @@
 
 //mport { v4 as uuidv4 } from "uuid";
 import Canvas from "./_components/canvas/Canvas";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import LeftSidebar from "./_components/sidebar/left-sidebar";
 import RightSidebar from "./_components/sidebar/right-sidebar";
-import { CanvasProvider } from "./_components/canvas/CanvasContext";
-
-interface CanvasObject {
-  id: string;
-  name: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  fill: string;
-  imageUrl: string;
-  connectedTo: string[];
-  isStartNode?: boolean;
-}
+import { useCanvas } from "./_components/canvas/CanvasContext";
 
 const FitObject = () => {
-  const [objects, setObjects] = useState<CanvasObject[]>([]);
-  const [selectedObject, setSelectedObject] = useState<CanvasObject | null>(
-    null
-  );
+  const { setCanvasState } = useCanvas();
 
   useEffect(() => {
-    const mockData: CanvasObject[] = [
+    const mockData = [
       {
         id: "6a3ec60f-fc1b-4db5-8eee-b2d85e70b31b",
         name: "Convex Lens",
@@ -81,39 +65,28 @@ const FitObject = () => {
       },
     ];
 
-    setObjects(mockData);
-  }, []);
+    setCanvasState((prevState) => ({
+      ...prevState,
+      objects: mockData,
+    }));
+  }, [setCanvasState]);
 
   return (
-    <CanvasProvider>
-      <div className="h-full w-screen flex flex-col">
-        <main className="flex-1 flex relative">
-          <div className="absolute top-0 left-0 h-full z-10">
-            <LeftSidebar
-              objects={objects}
-              selectedObject={selectedObject}
-              setSelectedObject={setSelectedObject}
-            />
-          </div>
+    <div className="h-full w-screen flex flex-col">
+      <main className="flex-1 flex relative">
+        <div className="absolute top-0 left-0 h-full z-10">
+          <LeftSidebar />
+        </div>
 
-          <div className="flex-1 ml-32 md:ml-40 xl:ml-64 mr-32 md:mr-40 xl:mr-64">
-            <Canvas
-              objects={objects}
-              setObjects={setObjects}
-              selectedObject={selectedObject}
-              setSelectedObject={setSelectedObject}
-            />
-          </div>
+        <div className="flex-1 ml-32 md:ml-40 xl:ml-64 mr-32 md:mr-40 xl:mr-64">
+          <Canvas />
+        </div>
 
-          <div className="absolute top-0 right-0 h-full z-10">
-            <RightSidebar
-              selectedObject={selectedObject}
-              setObjects={setObjects}
-            />
-          </div>
-        </main>
-      </div>
-    </CanvasProvider>
+        <div className="absolute top-0 right-0 h-full z-10">
+          <RightSidebar />
+        </div>
+      </main>
+    </div>
   );
 };
 

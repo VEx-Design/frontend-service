@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { AppProviders } from "@/components/providers/AppProviders";
+import { CanvasProvider } from "./fitobject/_components/canvas/CanvasContext";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,11 +16,13 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body className={`font-lexend antialiased`}>
-          <AppProviders>{children}</AppProviders>
-        </body>
-      </html>
+      <CanvasProvider>
+        <html lang="en">
+          <body className={`font-lexend antialiased`}>
+            <AppProviders>{children}</AppProviders>
+          </body>
+        </html>
+      </CanvasProvider>
     </ClerkProvider>
   );
 }

@@ -3,31 +3,9 @@ import React, { useState } from "react";
 import { useCanvas } from "../canvas/CanvasContext";
 import { LuPanelBottomClose, LuPanelTopClose } from "react-icons/lu";
 import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
-import { TbGridDots } from "react-icons/tb";
+// import { TbGridDots } from "react-icons/tb";
 
-interface CanvasObject {
-  id: string;
-  name: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  fill: string;
-  imageUrl: string;
-  connectedTo: string[]; // Array of object IDs this object is connected to
-  isStartNode?: boolean; // Mark if this is the starting node
-}
-interface LeftSidebarProps {
-  objects: CanvasObject[];
-  selectedObject: CanvasObject | null;
-  setSelectedObject: React.Dispatch<React.SetStateAction<CanvasObject | null>>;
-}
-
-const LeftSidebar = ({
-  objects,
-  selectedObject,
-  setSelectedObject,
-}: LeftSidebarProps) => {
+const LeftSidebar = ({}) => {
   const [isOpen, setIsOpen] = useState<boolean>(true);
   const [isLock, setIsLock] = useState<boolean>(true);
   const { canvasState, setCanvasState } = useCanvas();
@@ -40,22 +18,26 @@ const LeftSidebar = ({
     setIsLock(!isLock);
   };
 
-  const handleDimensionChange = (
-    dimension: "width" | "height",
-    value: number
-  ) => {
-    if (value > 0) {
-      setCanvasState((prev: CanvasState) => ({
-        ...prev,
-        [dimension]: value,
-      }));
-    }
-  };
-
-  const handleGridChange = (key: string, value: any) => {
+  const handleDimensionChange = (key: "width" | "height", value: number) => {
     setCanvasState((prev) => ({
       ...prev,
-      [key]: value,
+      canvas: {
+        ...prev.canvas,
+        [key]: value,
+      },
+    }));
+  };
+
+  const handleGridChange = (
+    key: "showGrid" | "gridSize" | "gridColor" | "gridOpacity" | "gridStyle",
+    value: boolean | number | string
+  ) => {
+    setCanvasState((prev) => ({
+      ...prev,
+      canvas: {
+        ...prev.canvas,
+        [key]: value,
+      },
     }));
   };
 
@@ -79,6 +61,7 @@ const LeftSidebar = ({
           </a>
           <button onClick={handleClick}>
             <LuPanelTopClose size={18} />
+            {}
           </button>
         </div>
         {/* Project */}
@@ -100,27 +83,33 @@ const LeftSidebar = ({
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-xs text-ChildText">Width</label>
+              <label className="text-xs text-ChildText" htmlFor="width">
+                Width
+              </label>
               <input
                 type="number"
-                value={canvasState.width}
+                value={canvasState.canvas.width}
                 onChange={(e) =>
                   handleDimensionChange("width", Number(e.target.value))
                 }
                 className="w-full bg-gray-200 rounded px-2 py-1 mt-1 mb-2"
                 disabled={isLock}
+                id="width"
               />
             </div>
             <div>
-              <label className="text-xs text-ChildText">Height</label>
+              <label className="text-xs text-ChildText" htmlFor="height">
+                Height
+              </label>
               <input
                 type="number"
-                value={canvasState.height}
+                value={canvasState.canvas.height}
                 onChange={(e) =>
                   handleDimensionChange("height", Number(e.target.value))
                 }
                 className="w-full bg-gray-200 rounded px-2 py-1 mt-1 mb-2"
                 disabled={isLock}
+                id="height"
               />
             </div>
           </div>
@@ -130,9 +119,10 @@ const LeftSidebar = ({
           <div className="flex justify-between items-center">
             <div className="text-sm">Layout Grid</div>
             <label className="relative inline-flex items-center cursor-pointer">
+              {}
               <input
                 type="checkbox"
-                checked={canvasState.showGrid}
+                checked={canvasState.canvas.showGrid}
                 onChange={(e) => handleGridChange("showGrid", e.target.checked)}
                 className="sr-only peer"
               />
@@ -140,31 +130,35 @@ const LeftSidebar = ({
             </label>
           </div>
 
-          {canvasState.showGrid && (
+          {canvasState.canvas.showGrid && (
             <div className="space-y-1 mt-2">
               {/* Grid Size and Grid Style */}
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-xs text-ChildText">Grid Size</label>
+                  <label className="text-xs text-ChildText" htmlFor="grid">
+                    Grid Size
+                  </label>
                   <input
                     type="number"
-                    value={canvasState.gridSize}
+                    value={canvasState.canvas.gridSize}
                     onChange={(e) =>
                       handleGridChange("gridSize", Number(e.target.value))
                     }
                     min={25}
                     max={100}
                     className="w-full bg-gray-200 rounded px-2 py-1 mt-1"
+                    id="grid"
                   />
                 </div>
                 <div>
                   <label className="text-xs text-ChildText">Grid Style</label>
                   <select
-                    value={canvasState.gridStyle}
+                    value={canvasState.canvas.gridStyle}
                     onChange={(e) =>
                       handleGridChange("gridStyle", e.target.value)
                     }
                     className="w-full bg-gray-200 rounded px-2 py-1 mt-1"
+                    aria-label="gridstyle"
                   >
                     <option value="dot">Dot</option>
                     <option value="line">Line</option>
@@ -174,10 +168,12 @@ const LeftSidebar = ({
 
               {/* Grid Opacity */}
               <div>
-                <label className="text-xs text-ChildText">Opacity</label>
+                <label className="text-xs text-ChildText" htmlFor="opacity">
+                  Opacity
+                </label>
                 <input
                   type="range"
-                  value={canvasState.gridOpacity}
+                  value={canvasState.canvas.gridOpacity}
                   onChange={(e) =>
                     handleGridChange("gridOpacity", Number(e.target.value))
                   }
@@ -185,18 +181,22 @@ const LeftSidebar = ({
                   max={1}
                   step={0.1}
                   className="w-full"
+                  id="opacity"
                 />
               </div>
               {/* Grid Color */}
               <div>
-                <label className="text-xs text-ChildText">Color</label>
+                <label className="text-xs text-ChildText" htmlFor="color">
+                  Color
+                </label>
                 <input
                   type="color"
-                  value={canvasState.gridColor}
+                  value={canvasState.canvas.gridColor}
                   onChange={(e) =>
                     handleGridChange("gridColor", e.target.value)
                   }
                   className="w-full h-8 p-1 bg-gray-200 rounded mt-1"
+                  id="color"
                 />
               </div>
             </div>
@@ -206,12 +206,14 @@ const LeftSidebar = ({
         <div className="flex flex-col gap-1 ">
           <div className="text-sm">Object list</div>
           <ul className="space-y-1">
-            {objects.map((obj) => (
+            {canvasState.objects.map((obj) => (
               <div
                 key={obj.id}
-                onClick={() => setSelectedObject(obj)}
+                onClick={() =>
+                  setCanvasState({ ...canvasState, selectedObject: obj })
+                }
                 className={`p-2 rounded cursor-pointer transition-colors ${
-                  selectedObject?.id === obj.id
+                  canvasState.selectedObject?.id === obj.id
                     ? "bg-gray-200"
                     : "hover:bg-gray-200"
                 }`}
@@ -245,6 +247,7 @@ const LeftSidebar = ({
             />
           </a>
           <button onClick={handleClick}>
+            {}
             <LuPanelBottomClose size={18} />
           </button>
         </div>

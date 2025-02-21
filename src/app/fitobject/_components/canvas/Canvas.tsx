@@ -7,45 +7,19 @@ import { LuMousePointer2 } from "react-icons/lu";
 import Konva from "konva";
 import { useCanvas } from "./CanvasContext";
 
-// Types
-interface CanvasObject {
-  id: string;
-  name: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  fill: string;
-  imageUrl: string;
-  connectedTo: string[]; // Array of object IDs this object is connected to
-  isStartNode?: boolean; // Mark if this is the starting node
-}
-
-interface CanvasProps {
-  objects: CanvasObject[];
-  setObjects: React.Dispatch<React.SetStateAction<CanvasObject[]>>;
-  selectedObject: CanvasObject | null;
-  setSelectedObject: React.Dispatch<React.SetStateAction<CanvasObject | null>>;
-}
-
-const Canvas = ({
-  objects,
-  setObjects,
-  selectedObject,
-  setSelectedObject,
-}: CanvasProps) => {
+const Canvas = ({}) => {
   // Refs
   const stageRef = useRef<Konva.Stage | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Canvas dimensions
-  const { canvasState } = useCanvas();
-  const CANVAS_WIDTH = canvasState.width;
-  const CANVAS_HEIGHT = canvasState.height;
+  const { canvasState, setCanvasState } = useCanvas();
+  const CANVAS_WIDTH = canvasState.canvas.width;
+  const CANVAS_HEIGHT = canvasState.canvas.height;
   // console.log("H:", CANVAS_HEIGHT, "W:", CANVAS_WIDTH);
 
   // Grid-related state from canvasState
-  const { showGrid, gridSize, gridColor, gridOpacity } = canvasState;
+  const { showGrid, gridSize, gridColor, gridOpacity } = canvasState.canvas;
 
   // State
   const [action, setAction] = useState<string>("Move");
@@ -161,15 +135,14 @@ const Canvas = ({
     const rect = e.target;
     const scale = getStageScale();
 
-    // // Keep object within canvas bounds
-    // const x = Math.max(
-    //   0,
-    //   Math.min(rect.x(), CANVAS_WIDTH * scale - rect.width())
-    // );
-    // const y = Math.max(
-    //   0,
-    //   Math.min(rect.y(), CANVAS_HEIGHT * scale - rect.height())
-    // );
+    const x = Math.max(
+      0,
+      Math.min(rect.x(), canvasState.canvas.width * scale - rect.width())
+    );
+    const y = Math.max(
+      0,
+      Math.min(rect.y(), canvasState.canvas.height * scale - rect.height())
+    );
 
     rect.position({ x, y });
 
@@ -177,20 +150,20 @@ const Canvas = ({
     const updatedX = x / scale;
     const updatedY = y / scale;
 
-    setObjects((prev) =>
-      prev.map((obj) =>
+    setCanvasState((prevState) => {
+      const updatedObjects = prevState.objects.map((obj) =>
         obj.id === rect.id() ? { ...obj, x: updatedX, y: updatedY } : obj
-      )
-    );
+      );
 
-    // Update selected object if it's being dragged
-    if (selectedObject && selectedObject.id === rect.id()) {
-      setSelectedObject({
-        ...selectedObject,
-        x: updatedX,
-        y: updatedY,
-      });
-    }
+      return {
+        ...prevState,
+        objects: updatedObjects,
+        selectedObject:
+          prevState.selectedObject?.id === rect.id()
+            ? { ...prevState.selectedObject, x: updatedX, y: updatedY }
+            : prevState.selectedObject,
+      };
+    });
   };
 
   // // Function to create grid lines
@@ -284,12 +257,12 @@ const Canvas = ({
           />
 
           {/* Grid */}
-          {canvasState.gridStyle === "line"
+          {canvasState.canvas.gridStyle === "line"
             ? createGridLines()
             : createGridDots()}
 
           {/* Objects */}
-          {objects.map((obj) => (
+          {canvasState.objects.map((obj) => (
             <Rect
               key={obj.id}
               id={obj.id}
@@ -300,8 +273,16 @@ const Canvas = ({
               fill={obj.fill}
               draggable={action === "Select"}
               onDragMove={handleObjectDragMove}
-              onClick={() => action === "Select" && setSelectedObject(obj)}
-              stroke={selectedObject?.id === obj.id ? "red" : undefined}
+              onClick={() =>
+                action === "Select" &&
+                setCanvasState((prevState) => ({
+                  ...prevState,
+                  selectedObject: obj,
+                }))
+              }
+              stroke={
+                canvasState.selectedObject?.id === obj.id ? "red" : undefined
+              }
               strokeWidth={2}
             />
           ))}
@@ -314,12 +295,14 @@ const Canvas = ({
           className={`p-2 rounded ${action === "Move" ? "bg-gray-200" : ""}`}
           onClick={() => setAction("Move")}
         >
+          {}
           <FaRegHandPaper size={20} />
         </button>
         <button
           className={`p-2 rounded ${action === "Select" ? "bg-gray-200" : ""}`}
           onClick={() => setAction("Select")}
         >
+          {}
           <LuMousePointer2 size={20} />
         </button>
         {/* <button className="p-2 rounded" onClick={handleZoomIn}>
@@ -332,6 +315,7 @@ const Canvas = ({
           className={`p-2 rounded ${action === "Export" ? "bg-gray-200" : ""}`}
           onClick={handleExport}
         >
+          {}
           <AiOutlineExport size={20} />
         </button>
       </div>

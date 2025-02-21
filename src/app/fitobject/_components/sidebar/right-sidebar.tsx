@@ -2,25 +2,9 @@ import React, { useEffect, useState } from "react";
 import { LuPanelBottomClose, LuPanelTopClose } from "react-icons/lu";
 import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
 import { UserButton } from "@clerk/nextjs";
-interface CanvasObject {
-  id: string;
-  name: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  fill: string;
-  imageUrl: string;
-  connectedTo: string[]; // Array of object IDs this object is connected to
-  isStartNode?: boolean; // Mark if this is the starting node
-}
+import { useCanvas } from "../canvas/CanvasContext";
 
-interface RightSidebarProps {
-  selectedObject: CanvasObject | null;
-  setObjects: React.Dispatch<React.SetStateAction<CanvasObject[]>>;
-}
-
-const RightSidebar = ({ selectedObject, setObjects }: RightSidebarProps) => {
+const RightSidebar = () => {
   const [properties, setProperties] = useState({
     x: 0,
     y: 0,
@@ -28,36 +12,31 @@ const RightSidebar = ({ selectedObject, setObjects }: RightSidebarProps) => {
     height: 0,
     fill: "#000000",
   });
-  const [isOpen, setIsOpen] = useState<boolean>(true);
-  const [isLock, setIsLock] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState(true);
+  const [isLock, setIsLock] = useState(true);
+  const { canvasState, setCanvasState } = useCanvas();
 
-  const handleClick = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const handdleLock = () => {
-    setIsLock(!isLock);
-  };
+  const handleClick = () => setIsOpen((prev) => !prev);
+  const handleLock = () => setIsLock((prev) => !prev);
 
   useEffect(() => {
-    if (selectedObject) {
-      setProperties({
-        x: selectedObject.x,
-        y: selectedObject.y,
-        width: selectedObject.width,
-        height: selectedObject.height,
-        fill: selectedObject.fill,
-      });
+    if (canvasState.selectedObject) {
+      const { x, y, width, height, fill } = canvasState.selectedObject;
+      setProperties({ x, y, width, height, fill });
     }
-  }, [selectedObject]);
+  }, [canvasState.selectedObject]);
 
   const handlePropertyChange = (property: string, value: number | string) => {
     setProperties((prev) => ({ ...prev, [property]: value }));
-    setObjects((prevObjects) =>
-      prevObjects.map((obj) =>
-        obj.id === selectedObject?.id ? { ...obj, [property]: value } : obj
-      )
-    );
+
+    setCanvasState((prev) => ({
+      ...prev,
+      objects: prev.objects.map((object) =>
+        object.id === canvasState.selectedObject?.id
+          ? { ...object, [property]: value }
+          : object
+      ),
+    }));
   };
 
   return (
@@ -67,42 +46,41 @@ const RightSidebar = ({ selectedObject, setObjects }: RightSidebarProps) => {
           isOpen ? "" : "hidden"
         }`}
       >
-        {/* Main */}
+        {/* Header */}
         <div className="flex justify-between items-center">
           <button onClick={handleClick}>
+            {}
             <LuPanelTopClose size={18} />
           </button>
           <UserButton
-            appearance={{
-              elements: {
-                userButtonAvatarBox: "w-9 h-9",
-              },
-            }}
+            appearance={{ elements: { userButtonAvatarBox: "w-9 h-9" } }}
           />
         </div>
 
         {/* Properties */}
         <div className="flex flex-col gap-1 border-b">
           <div className="text-sm">Properties</div>
-          <div className="text-xs text-ChildText pb-2">
-            {selectedObject ? selectedObject.name : "Select an object"}
+          <div className="text-xs text-gray-500 pb-2">
+            {canvasState.selectedObject?.name || "Select an object"}
           </div>
         </div>
+
         {/* ID */}
         <div className="flex flex-col gap-1 border-b">
           <div className="text-sm">ID</div>
-          <div className="text-xs text-ChildText pb-2">
-            {selectedObject ? selectedObject.id : "Select an object"}
+          <div className="text-xs text-gray-500 pb-2">
+            {canvasState.selectedObject?.id || "Select an object"}
           </div>
         </div>
+
         {/* Position */}
         <div className="flex flex-col gap-1 border-b">
-          <div className="flex justify-between items-center">
-            <div className="text-sm">Position</div>
-          </div>
+          <div className="text-sm">Position</div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-xs text-ChildText">X</label>
+              <label className="text-xs text-gray-500" htmlFor="x">
+                X
+              </label>
               <input
                 type="number"
                 value={properties.x}
@@ -110,10 +88,13 @@ const RightSidebar = ({ selectedObject, setObjects }: RightSidebarProps) => {
                   handlePropertyChange("x", Number(e.target.value))
                 }
                 className="w-full bg-gray-200 rounded px-2 py-1 mt-1 mb-2"
+                id="x"
               />
             </div>
             <div>
-              <label className="text-xs text-ChildText">Y</label>
+              <label className="text-xs text-gray-500" htmlFor="y">
+                Y
+              </label>
               <input
                 type="number"
                 value={properties.y}
@@ -121,15 +102,17 @@ const RightSidebar = ({ selectedObject, setObjects }: RightSidebarProps) => {
                   handlePropertyChange("y", Number(e.target.value))
                 }
                 className="w-full bg-gray-200 rounded px-2 py-1 mt-1 mb-2"
+                id="y"
               />
             </div>
           </div>
         </div>
+
         {/* Size */}
         <div className="flex flex-col gap-1 border-b">
           <div className="flex justify-between items-center">
             <div className="text-sm">Size</div>
-            <button onClick={handdleLock}>
+            <button onClick={handleLock}>
               {isLock ? (
                 <MdOutlineLock size={15} />
               ) : (
@@ -139,27 +122,38 @@ const RightSidebar = ({ selectedObject, setObjects }: RightSidebarProps) => {
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-xs text-ChildText">Width</label>
+              <label className="text-xs text-gray-500" htmlFor="width">
+                Width
+              </label>
               <input
                 type="number"
                 value={properties.width}
+                onChange={(e) =>
+                  handlePropertyChange("width", Number(e.target.value))
+                }
                 className="w-full bg-gray-200 rounded px-2 py-1 mt-1 mb-2"
-                disabled
+                id="width"
               />
             </div>
             <div>
-              <label className="text-xs text-ChildText">Height</label>
+              <label className="text-xs text-gray-500" htmlFor="height">
+                Height
+              </label>
               <input
                 type="number"
                 value={properties.height}
+                onChange={(e) =>
+                  handlePropertyChange("height", Number(e.target.value))
+                }
                 className="w-full bg-gray-200 rounded px-2 py-1 mt-1 mb-2"
-                disabled
+                id="height"
               />
             </div>
           </div>
         </div>
       </div>
 
+      {/* Sidebar Closed */}
       <div
         className={`bg-white rounded-md h-fit p-4 space-y-4 ${
           isOpen ? "hidden" : ""
@@ -167,14 +161,11 @@ const RightSidebar = ({ selectedObject, setObjects }: RightSidebarProps) => {
       >
         <div className="flex justify-between items-center">
           <button onClick={handleClick}>
+            {}
             <LuPanelBottomClose size={18} />
           </button>
           <UserButton
-            appearance={{
-              elements: {
-                userButtonAvatarBox: "w-9 h-9",
-              },
-            }}
+            appearance={{ elements: { userButtonAvatarBox: "w-9 h-9" } }}
           />
         </div>
       </div>
