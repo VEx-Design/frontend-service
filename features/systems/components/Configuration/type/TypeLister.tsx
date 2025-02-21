@@ -24,18 +24,21 @@ import { useConfig } from "@/features/systems/contexts/ConfigContext";
 
 export default function TypeLister() {
   const { config } = useProject();
-  const { setCurrentType, setIsConfigFreeS } = useConfig();
+  const { setCurrentType, setCurrentConfigFreeS } = useConfig();
 
   const onClick = (getData: GetDataType) => {
     const type = config.types.find((ty) => ty.id === getData("id"));
     if (type) {
       setCurrentType(type);
-      setIsConfigFreeS(false);
+      setCurrentConfigFreeS(undefined);
     }
   };
 
-  const onClickFreespace = () => {
-    setIsConfigFreeS(true);
+  const onClickFreespace = (getData: GetDataType) => {
+    const freeSpace = config.freeSpaces.find(
+      (freeSpace) => freeSpace.id === getData("id")
+    );
+    setCurrentConfigFreeS(freeSpace);
     setCurrentType(undefined);
   };
 
@@ -73,14 +76,20 @@ export default function TypeLister() {
               <div className="py-3 border-b mb-2">
                 <p className="text-H5 font-bold">Free space</p>
               </div>
-              <View
-                data={[{ name: "Regular" }]}
-                render={() => (
-                  <ViewItem type="normal" onClick={() => onClickFreespace()}>
-                    <ViewTitle register="name" />
-                  </ViewItem>
-                )}
-              />
+              {config.freeSpaces.map((freeSpace) => (
+                <View
+                  key={freeSpace.id}
+                  data={[{ id: freeSpace.id, name: freeSpace.name }]}
+                  render={({ getData }) => (
+                    <ViewItem
+                      type="normal"
+                      onClick={() => onClickFreespace(getData)}
+                    >
+                      <ViewTitle register="name" />
+                    </ViewItem>
+                  )}
+                />
+              ))}
             </>
           )}
         />

@@ -12,12 +12,13 @@ import getInterface from "../libs/ClassType/getInterface";
 import editImage from "../libs/ClassType/editImage";
 import editName from "../libs/ClassType/editName";
 import editDisplayName from "../libs/ClassType/editDisplayName";
+import { FreeSpace } from "../libs/ClassConfig/types/FreeSpace";
 
 interface ConfigContextValue {
   currentType: Type | undefined;
   setCurrentType: (type: Type | undefined) => void;
-  isConfigFreeS: boolean;
-  setIsConfigFreeS: (isConfig: boolean) => void;
+  currentConfigFreeS: FreeSpace | undefined;
+  setCurrentConfigFreeS: (freeSpace: FreeSpace | undefined) => void;
   typeAction: TypeAction;
 }
 
@@ -41,7 +42,9 @@ interface ConfigConsoleProviderProps {
 
 export const ConfigProvider = ({ children }: ConfigConsoleProviderProps) => {
   const [currentType, setCurrentType] = useState<Type | undefined>(undefined);
-  const [isConfigFreeS, setIsConfigFreeS] = useState<boolean>(false);
+  const [currentConfigFreeS, setCurrentConfigFreeS] = useState<
+    FreeSpace | undefined
+  >(undefined);
 
   const { configAction } = useProject();
 
@@ -104,8 +107,8 @@ export const ConfigProvider = ({ children }: ConfigConsoleProviderProps) => {
       value={{
         currentType,
         setCurrentType,
-        isConfigFreeS,
-        setIsConfigFreeS,
+        currentConfigFreeS,
+        setCurrentConfigFreeS,
         typeAction,
       }}
     >

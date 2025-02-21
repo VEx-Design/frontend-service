@@ -16,7 +16,7 @@ import ConfigFreeS from "../components/Configuration/ConfigFreeS";
 import { ConfigFreeSProvider } from "../contexts/ConfigFreeSContext";
 
 export default function Configuration() {
-  const { isConfigFreeS } = useConfig();
+  const { currentConfigFreeS } = useConfig();
 
   return (
     <ResizablePanelGroup direction="horizontal">
@@ -37,7 +37,7 @@ export default function Configuration() {
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel defaultSize={80} minSize={15}>
-        {isConfigFreeS ? (
+        {currentConfigFreeS ? (
           <ConfigFreeSProvider>
             <ConfigFreeS />
           </ConfigFreeSProvider>

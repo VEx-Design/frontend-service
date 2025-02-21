@@ -13,7 +13,7 @@ export type FormulaId = {
 
 export type FormulaCondition = {
   id: string;
-  type: "DEFAULT" | "TRIGGER WITH";
+  type: "DEFAULT" | "TRIGGER AT";
   interfaceId?: string;
   formulas: Formula[];
 };

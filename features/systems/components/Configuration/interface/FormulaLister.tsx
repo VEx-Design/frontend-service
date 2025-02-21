@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useConfigInterface } from "@/features/systems/contexts/ConfigInterfaceContext";
 import FormulaConditionBox from "../_input/formular/FormulaConditionBox";
 import { useResizeDetector } from "react-resize-detector";
-import AddConditionDialog from "./AddConditionDialog";
+import AddActionDialogProps from "./AddActionDialog";
 
 const MemoizedFormulaConditionBox = React.memo(FormulaConditionBox);
 
@@ -21,7 +21,7 @@ export default function FormulaLister() {
     <div className="flex flex-1 flex-col">
       <div className="flex flex-none items-center justify-between border-b pb-4">
         <div className="text-H5 font-bold">{currentInterface?.name}</div>
-        <AddConditionDialog />
+        <AddActionDialogProps />
       </div>
       <div ref={ref} className="flex flex-1 py-2">
         <div className="flex flex-1 overflow-auto scrollbar">

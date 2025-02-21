@@ -1,19 +1,46 @@
-import { createContext, useContext, useState } from "react";
-import { FormulaFStatus } from "../libs/ClassConfig/types/FreeSpace";
+import { createContext, useContext, useEffect, useState } from "react";
+import {
+  FormulaFSId,
+  FormulaFStatus,
+  VariableFreeS,
+} from "../libs/ClassConfig/types/FreeSpace";
+import deleteVariable from "../libs/ClassConfig/FeatureFreeSpace/deleteVariable";
+import setStream from "../libs/ClassConfig/FeatureFreeSpace/setStream";
+import addVariable from "../libs/ClassConfig/FeatureFreeSpace/addVariable";
+import getFormula from "../libs/ClassConfig/FeatureFreeSpace/getFormula";
+import { useConfig } from "./ConfigContext";
+import setFormula from "../libs/ClassConfig/FeatureFreeSpace/setFormula";
+import { useProject } from "./ProjectContext";
+import getFormulaFreeSpace from "../libs/ClassConfig/getFormulaFreeSpace";
+
+type InputPosition = {
+  index: number;
+  position: number;
+};
 
 interface ConfigFreeSContextValue {
   formulars: FormulaFStatus[];
   setFormulars: (formulars: FormulaFStatus[]) => void;
-  currentIdFormula: { paramId: string } | undefined;
-  setCurrentIdFormula: (
-    currentIdFormula: { paramId: string } | undefined
-  ) => void;
+  currentIdFormula: FormulaFSId | undefined;
+  setCurrentIdFormula: (currentIdFormula: FormulaFSId | undefined) => void;
+  setCurrentInputPosition: (inputPosition: InputPosition | undefined) => void;
+  indexTofocus: number | undefined;
+  setIndexTofocus: (index: number | undefined) => void;
+  freeSpaceAction: FreeSpaceAction;
   formulaAction: FormulaAction;
 }
 
+interface FreeSpaceAction {
+  getFormular: (formulaId: FormulaFSId) => FormulaFStatus | undefined;
+  setFormular: (newFormular: FormulaFStatus) => void;
+}
+
 interface FormulaAction {
-  applyFormula: (formula: { paramId: string }) => void;
-  cancelFormula: (formula: { paramId: string }) => void;
+  setStream: (stream: string) => void;
+  addVariable: (newVariable: VariableFreeS) => void;
+  deleteVariable: () => void;
+  applyFormula: (formulaId: FormulaFSId) => void;
+  cancelFormula: (formulaId: FormulaFSId) => void;
 }
 
 const ConfigFreeSContext = createContext<ConfigFreeSContextValue | undefined>(
@@ -27,18 +54,107 @@ interface ConfigFreeSProviderProps {
 export const ConfigFreeSProvider = ({ children }: ConfigFreeSProviderProps) => {
   const [formulars, setFormulars] = useState<FormulaFStatus[]>([]);
   const [currentIdFormula, setCurrentIdFormula] = useState<
-    | {
-        paramId: string;
-      }
-    | undefined
+    FormulaFSId | undefined
   >(undefined);
+  const [currentInputPosition, setCurrentInputPosition] = useState<
+    InputPosition | undefined
+  >(undefined);
+  const [indexTofocus, setIndexTofocus] = useState<number | undefined>(
+    undefined
+  );
+
+  const { configAction } = useProject();
+  const { currentConfigFreeS, setCurrentConfigFreeS } = useConfig();
+
+  useEffect(() => {
+    if (currentConfigFreeS) {
+      setFormulars(
+        currentConfigFreeS.formulas.map((f) => ({
+          formula: f,
+          isEdited: false,
+        }))
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentConfigFreeS?.id]);
+
+  const freeSpaceAction: FreeSpaceAction = {
+    getFormular: (formulaId: FormulaFSId) => getFormula(formulars, formulaId),
+    setFormular: (newFormular: FormulaFStatus) => {
+      if (currentConfigFreeS) {
+        const newFreeSpace = setFormula(currentConfigFreeS, newFormular);
+        setCurrentConfigFreeS(newFreeSpace);
+        configAction.editFreeSpace(newFreeSpace);
+      }
+    },
+  };
 
   const formulaAction: FormulaAction = {
-    applyFormula: (formula: { paramId: string }) => {
-      console.log("applyFormula", formula);
+    setStream: (stream: string) => {
+      const newFormulars = setStream(
+        formulars,
+        currentIdFormula!,
+        stream,
+        currentInputPosition!.index
+      );
+      setFormulars(newFormulars);
     },
-    cancelFormula: (formula: { paramId: string }) => {
-      console.log("cancelFormula", formula);
+    addVariable: (newVariable: VariableFreeS) => {
+      const newFormulars = addVariable(
+        formulars,
+        currentIdFormula!,
+        currentInputPosition!.index,
+        currentInputPosition!.position,
+        newVariable
+      );
+      setFormulars(newFormulars);
+      setIndexTofocus(currentInputPosition!.index + 1);
+      setCurrentInputPosition({
+        index: currentInputPosition!.index + 1,
+        position: 0,
+      });
+    },
+    deleteVariable: () => {
+      const newFormulars = deleteVariable(
+        formulars,
+        currentIdFormula!,
+        currentInputPosition!.index
+      );
+      setFormulars(newFormulars);
+      setCurrentInputPosition({
+        index: currentInputPosition!.index - 1,
+        position: 0,
+      });
+    },
+    applyFormula: (formulaId: FormulaFSId) => {
+      const formula = getFormula(formulars, formulaId);
+      if (!formula) return;
+      freeSpaceAction.setFormular(formula);
+      const newFormulars = formulars.map((f) => {
+        if (f.formula.paramId === formulaId.paramId) {
+          return {
+            ...f,
+            isEdited: false,
+          };
+        }
+        return f;
+      });
+      setFormulars(newFormulars);
+    },
+    cancelFormula: (formulaId: FormulaFSId) => {
+      const formula = getFormula(formulars, formulaId);
+      if (!formula) return;
+      const newFormulars = formulars.map((f) => {
+        if (f.formula.paramId === formulaId.paramId) {
+          return {
+            ...f,
+            formula: getFormulaFreeSpace(currentConfigFreeS!, formulaId)!,
+            isEdited: false,
+          };
+        }
+        return f;
+      });
+      setFormulars(newFormulars);
     },
   };
 
@@ -49,6 +165,10 @@ export const ConfigFreeSProvider = ({ children }: ConfigFreeSProviderProps) => {
         setFormulars,
         currentIdFormula,
         setCurrentIdFormula,
+        setCurrentInputPosition,
+        indexTofocus,
+        setIndexTofocus,
+        freeSpaceAction,
         formulaAction,
       }}
     >

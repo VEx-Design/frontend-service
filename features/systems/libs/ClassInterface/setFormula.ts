@@ -4,7 +4,7 @@ import { Interface } from "./types/Interface";
 export default function setFormula(
   currentInterface: Interface,
   formula: FormulaStatus
-) {
+): Interface {
   const conditionIndex = currentInterface.formulaConditions.findIndex(
     (cond) => cond.id === formula.conditionId
   );

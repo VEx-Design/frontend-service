@@ -23,11 +23,11 @@ import { useConfigInterface } from "@/features/systems/contexts/ConfigInterfaceC
 import { useConfig } from "@/features/systems/contexts/ConfigContext";
 import createCondition from "@/features/systems/libs/ClassInterface/FeatureFomula/createCondition";
 
-interface AddConditionDialogProps {
+interface AddActionDialogProps {
   onCreated?: () => void;
 }
 
-export default function AddConditionDialog(props: AddConditionDialogProps) {
+export default function AddActionDialog(props: AddActionDialogProps) {
   const [actionType, setActionType] = useState<string | undefined>(undefined);
   const [isOpen, setOpen] = useState(false);
   const { onCreated } = props;
@@ -49,17 +49,17 @@ export default function AddConditionDialog(props: AddConditionDialogProps) {
 
   const onSubmit = useCallback(
     (values: createConditionData) => {
-      toast.loading("Creating Condition...", { id: "add-condition" });
+      toast.loading("Creating Action...", { id: "add-action" });
       if (currentInterface) {
         createCondition(values)
           .then((condition) => {
             formulaAction.addCondition(condition);
-            toast.success("Condition added successfully.", {
-              id: "add-condition",
+            toast.success("Action added successfully.", {
+              id: "add-action",
             });
           })
           .catch((error) => {
-            toast.error(error.message, { id: "add-condition" });
+            toast.error(error.message, { id: "add-action" });
           });
         closeDialog();
         if (onCreated) {
@@ -75,7 +75,7 @@ export default function AddConditionDialog(props: AddConditionDialogProps) {
   const interfaceCondition =
     currentInterface?.formulaConditions
       .filter((condition) => {
-        return condition.type === "TRIGGER WITH";
+        return condition.type === "TRIGGER AT";
       })
       .map((condition) => {
         return condition.interfaceId;
@@ -93,14 +93,14 @@ export default function AddConditionDialog(props: AddConditionDialogProps) {
 
   return (
     <Dialog
-      title="Add Condition"
+      title="Add Action"
       isOpen={isOpen}
       openDialog={openDialog}
       closeDialog={closeDialog}
     >
       <DialogTrigger>
         <button className="btn btn-primary text-sm hover:font-semibold">
-          + Add Condition
+          + Add Action
         </button>
       </DialogTrigger>
       <DialogContent>
@@ -115,14 +115,14 @@ export default function AddConditionDialog(props: AddConditionDialogProps) {
                   <DropdownForm
                     name="action"
                     control={control}
-                    options={[{ label: "trigger with", value: "TRIGGER WITH" }]}
+                    options={[{ label: "trigger at", value: "TRIGGER AT" }]}
                     onChange={(value) => setActionType(value)}
                   />
                 </FormControl>
               </FormItem>
             )}
           />
-          {actionType === "TRIGGER WITH" && (
+          {actionType === "TRIGGER AT" && (
             <FormField
               name="interface"
               control={form.control}

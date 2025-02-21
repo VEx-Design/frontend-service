@@ -1,15 +1,17 @@
 import React from "react";
 import { Parameter } from "@/features/systems/libs/ClassParameter/types/Parameter";
 import { useConfigFreeS } from "@/features/systems/contexts/ConfigFreeSContext";
-import FormulaInput from "../formular/FormulaInput";
-import VariableLister from "../formular/VariableLister";
+import FormulaInput from "./FormulaInput";
+import VariableLister from "./VariableLister";
 
 interface Props {
   param: Parameter;
 }
 
 export default function FormularBox({ param }: Props) {
-  const { currentIdFormula, formulaAction } = useConfigFreeS();
+  const { currentIdFormula, formulaAction, freeSpaceAction } = useConfigFreeS();
+  const myFormula = freeSpaceAction.getFormular({ paramId: param.id });
+
   const onMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
   };
@@ -39,14 +41,13 @@ export default function FormularBox({ param }: Props) {
       <span className="text-sm font-bold">{`${param.name} [${param.symbol}]`}</span>
       <div className="flex items-center gap-2">
         <span className="text-sm font-bold">{" = "}</span>
-        <FormulaInput conditionId={conditionId} paramId={param.id} />
+        <FormulaInput paramId={param.id} />
       </div>
-      {currentIdFormula?.conditionId === conditionId &&
-        currentIdFormula?.paramId === param.id && (
-          <div className="bg-white border border-editbar-border rounded-md p-1 text-sm">
-            <VariableLister />
-          </div>
-        )}
+      {currentIdFormula?.paramId === param.id && (
+        <div className="bg-white border border-editbar-border rounded-md p-1 text-sm">
+          <VariableLister />
+        </div>
+      )}
       {myFormula?.isEdited && (
         <div className="flex justify-end gap-2">
           <button

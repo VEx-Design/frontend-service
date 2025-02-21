@@ -29,6 +29,8 @@ import saveFlow from "../actions/saveFlow";
 import saveConfig from "../actions/saveConfig";
 import editType from "../libs/ClassConfig/editType";
 import { Flow } from "../libs/ClassFlow/types/Flow";
+import { FreeSpace } from "../libs/ClassConfig/types/FreeSpace";
+import editFreeSpace from "../libs/ClassConfig/editFreeSpace";
 
 interface ProjectContextValue {
   projId: string;
@@ -70,6 +72,7 @@ interface ConfigAction {
   getType: (typeId: string) => Type;
   addParameter: (parameter: Parameter) => void;
   getParameter: (parameterId: string) => Parameter;
+  editFreeSpace: (freeSpace: FreeSpace) => void;
 }
 
 interface ProjectProviderProps {
@@ -123,6 +126,9 @@ export const ProjectProvider = ({
       setConfig(addParameter(config, parameter)),
     getParameter: (parameterId: string) => {
       return config.parameters.find((param) => param.id === parameterId)!;
+    },
+    editFreeSpace: (freeSpace: FreeSpace) => {
+      setConfig(editFreeSpace(config, freeSpace));
     },
   };
 

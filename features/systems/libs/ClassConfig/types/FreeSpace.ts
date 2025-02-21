@@ -1,14 +1,16 @@
-import { Formula } from "../../ClassInterface/types/Formula";
-
-export type FormulaFStatus = {
-  formula: Formula;
-  isEdited: boolean;
-};
-
 export type FreeSpace = {
   id: string;
   name: string;
-  formulas: FormulaFStatus[];
+  formulas: FormulaFreeS[];
+};
+
+export type FormulaFStatus = {
+  formula: FormulaFreeS;
+  isEdited: boolean;
+};
+
+export type FormulaFSId = {
+  paramId: string;
 };
 
 export type FormulaFreeS = {

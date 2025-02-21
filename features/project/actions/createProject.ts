@@ -38,7 +38,6 @@ export default async function createProject(form: createProjectData) {
         withCredentials: true,
       }
     );
-    console.log(response);
     return response; // You should return the response to satisfy the mutation
   } catch (error) {
     throw new Error(

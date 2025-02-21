@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const createConditionSchema = z.object({
-  action: z.enum(["TRIGGER WITH"]),
+  action: z.enum(["TRIGGER AT"]),
   interface: z.string().nonempty(),
 });
 

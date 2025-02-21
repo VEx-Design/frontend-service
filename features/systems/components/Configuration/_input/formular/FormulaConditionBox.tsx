@@ -18,12 +18,12 @@ export default function FormulaConditionBox({ condition }: Props) {
   let conditionName;
   if (condition.type === "DEFAULT") {
     conditionName = "Default";
-  } else if (condition.type === "TRIGGER WITH") {
+  } else if (condition.type === "TRIGGER AT") {
     const interfaceId = condition.interfaceId;
     const interfaceName = interfaceId
       ? typeAction.getInterface(interfaceId)?.name
       : undefined;
-    conditionName = `Trigger with ${interfaceName}`;
+    conditionName = `Trigger at ${interfaceName}`;
   }
 
   return (
