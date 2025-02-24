@@ -8,12 +8,10 @@ export function CreateEdgeLight(connection: Connection): AppEdge {
     id: crypto.randomUUID(),
     data: {
       data: {
-        light: {
-          distance: "25",
-          focusDistance: 0,
-          locked: false,
-          input: [],
-        },
+        distance: "25",
+        focusDistance: 0,
+        locked: false,
+        light: [],
       },
     },
   };

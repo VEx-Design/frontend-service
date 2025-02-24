@@ -13,10 +13,10 @@ import { Airplay, FileSliders, GitGraph } from "lucide-react";
 import { useProject } from "../../contexts/ProjectContext";
 import Editor from "../Editor";
 import Configuration from "../Configuration";
-import { ConfigProvider } from "../../contexts/ConfigContext";
 import { EditorProvider } from "../../contexts/EditorContext";
 import Execution from "../Execution";
 import { ExecutionProvider } from "../../contexts/ExecutionContext";
+import { ConfigProvider } from "../../contexts/Configuration/ConfigContext";
 
 export default function Project() {
   const { projName, onSave, savePending } = useProject();

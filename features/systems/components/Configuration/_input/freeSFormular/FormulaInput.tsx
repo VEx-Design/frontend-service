@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef } from "react";
 import { useProject } from "@/features/systems/contexts/ProjectContext";
 import VariableBadge from "./VariableBadge";
 import AutoWidthInput from "../formular/AutoWidthInput";
-import { useConfigFreeS } from "@/features/systems/contexts/ConfigFreeSContext";
+import { useConfigFreeS } from "@/features/systems/contexts/Configuration/ConfigFreeSContext";
 
 interface Props {
   paramId: string;

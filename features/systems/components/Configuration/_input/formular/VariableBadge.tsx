@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Property } from "@/features/systems/libs/ClassType/types/Type";
 import { Interface } from "@/features/systems/libs/ClassInterface/types/Interface";
 import { Parameter } from "@/features/systems/libs/ClassParameter/types/Parameter";
-import { useConfigInterface } from "@/features/systems/contexts/ConfigInterfaceContext";
+import { useConfigInterface } from "@/features/systems/contexts/Configuration/ConfigInterfaceContext";
 
 interface Props {
   canClick?: boolean;

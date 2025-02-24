@@ -20,7 +20,7 @@ import {
 } from "@/components/lists/views/View";
 import CreateTypeDialog from "./CreateTypeDialog";
 import { useProject } from "@/features/systems/contexts/ProjectContext";
-import { useConfig } from "@/features/systems/contexts/ConfigContext";
+import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
 
 export default function TypeLister() {
   const { config } = useProject();

@@ -1,9 +1,11 @@
 import { Variable } from "../../ClassInterface/types/Formula";
-import { Object } from "../../ClassObject/types/Object";
+import { Light } from "../../ClassLight/types/Light";
+import { OpticalObject } from "../../ClassObject/types/Object";
 
 export default function createScope(
   variables: Variable[],
-  object: Object
+  object: OpticalObject,
+  inputLight: Light
 ): number[] {
   const scope: number[] = [];
   variables.map((variable) => {
@@ -13,16 +15,13 @@ export default function createScope(
         scope.push(prop.value);
       }
     } else if (variable.type === "interface") {
-      const interfaceObj = object.interfaces.find(
-        (interfaceObj) => interfaceObj.interfaceId === variable.interfaceId
+      const light = inputLight.params.find(
+        (param) => param.paramId === variable.paramId
       );
-      if (interfaceObj) {
-        const input = interfaceObj.input.find(
-          (input) => input.paramId === variable.paramId
-        );
-        if (input) {
-          scope.push(input.value);
-        }
+      if (light) {
+        scope.push(light.value);
+      } else {
+        scope.push(0);
       }
     }
   });

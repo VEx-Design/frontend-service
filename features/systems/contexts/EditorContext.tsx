@@ -12,6 +12,7 @@ import { Type } from "../libs/ClassType/types/Type";
 import { CreateEdgeLight } from "../libs/ClassEdge/createFlowEdge";
 import setInitial from "../libs/ClassNode/setInitial";
 import setValue from "../libs/ClassObject/setValue";
+import addInitialLight from "../libs/ClassNode/addInitialLight";
 
 type FocusNode = {
   id: string;
@@ -43,8 +44,9 @@ interface EditorContextValue {
 
 interface NodeAction {
   createNode: (type: string, position: Coordinate, objectType?: Type) => void;
-  setInitial: (paramId: string, value: number) => void;
+  setInitial: (lightId: string, paramId: string, value: number) => void;
   setValue: (propId: string, value: number) => void;
+  addInitialLight: () => void;
 }
 
 interface EdgeAction {
@@ -89,13 +91,16 @@ export function EditorProvider(props: { children: React.ReactNode }) {
         nodesState.setNodes([...nodesState.nodes, newNode]);
       }
     },
-    setInitial: (paramId: string, value: number) => {
+    setInitial: (lightId: string, paramId: string, value: number) => {
       if (focusNode?.data) {
-        updateFocusNodeData(setInitial(focusNode.data, paramId, value));
-        configAction.editNode(
-          focusNode.id,
-          setInitial(focusNode.data, paramId, value)
+        const newFocusNode = setInitial(
+          focusNode.data,
+          lightId,
+          paramId,
+          value
         );
+        updateFocusNodeData(newFocusNode);
+        configAction.editNode(focusNode.id, newFocusNode);
       }
     },
     setValue: (propId: string, value: number) => {
@@ -105,6 +110,13 @@ export function EditorProvider(props: { children: React.ReactNode }) {
           focusNode.id,
           setValue(focusNode.data, propId, value)
         );
+      }
+    },
+    addInitialLight: () => {
+      if (focusNode?.data) {
+        const newFocusNode = addInitialLight(focusNode.data);
+        updateFocusNodeData(newFocusNode);
+        configAction.editNode(focusNode.id, newFocusNode);
       }
     },
   };

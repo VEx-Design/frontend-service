@@ -9,10 +9,10 @@ import {
 import PropertiesLister from "./PropertiesLister";
 import ObjectConfigNode from "./ObjectConfigNode";
 import UploadImageDialog from "./UploadImageDialog";
-import { useConfig } from "@/features/systems/contexts/ConfigContext";
 
 // type
 import { AppNode } from "@/features/systems/libs/ClassNode/types/AppNode";
+import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
 
 const rfStyle = {
   backgroundColor: "#FAFAFA",

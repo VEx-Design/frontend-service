@@ -8,8 +8,8 @@ import MainInfo from "./information/MainInfo";
 import FormulaLister from "./interface/FormulaLister";
 import InterfaceLister from "./interface/InterfaceLister";
 import { ReactFlowProvider } from "@xyflow/react";
-import { useConfig } from "../../contexts/ConfigContext";
-import { useConfigInterface } from "../../contexts/ConfigInterfaceContext";
+import { useConfig } from "../../contexts/Configuration/ConfigContext";
+import { useConfigInterface } from "../../contexts/Configuration/ConfigInterfaceContext";
 
 /**  */
 export default function ConfigTerminal() {

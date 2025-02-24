@@ -11,5 +11,8 @@ export interface AppEdgeData {
 }
 
 export interface EdgeData {
-  light?: Light;
+  lights?: Light[];
+  distance?: string;
+  focusDistance?: number;
+  locked?: boolean;
 }

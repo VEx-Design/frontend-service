@@ -7,13 +7,13 @@ import {
 } from "@/components/ui/resizable";
 
 import React from "react";
-import { ConfigInterfaceProvider } from "../contexts/ConfigInterfaceContext";
 import TypeLister from "../components/Configuration/type/TypeLister";
 import ParamLister from "../components/Configuration/parameter/ParamLister";
 import ConfigTerminal from "../components/Configuration/ConfigConsole";
-import { useConfig } from "../contexts/ConfigContext";
 import ConfigFreeS from "../components/Configuration/ConfigFreeS";
-import { ConfigFreeSProvider } from "../contexts/ConfigFreeSContext";
+import { useConfig } from "../contexts/Configuration/ConfigContext";
+import { ConfigFreeSProvider } from "../contexts/Configuration/ConfigFreeSContext";
+import { ConfigInterfaceProvider } from "../contexts/Configuration/ConfigInterfaceContext";
 
 export default function Configuration() {
   const { currentConfigFreeS } = useConfig();

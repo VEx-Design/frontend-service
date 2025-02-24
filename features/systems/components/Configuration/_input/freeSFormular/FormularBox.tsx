@@ -1,8 +1,8 @@
 import React from "react";
 import { Parameter } from "@/features/systems/libs/ClassParameter/types/Parameter";
-import { useConfigFreeS } from "@/features/systems/contexts/ConfigFreeSContext";
 import FormulaInput from "./FormulaInput";
 import VariableLister from "./VariableLister";
+import { useConfigFreeS } from "@/features/systems/contexts/Configuration/ConfigFreeSContext";
 
 interface Props {
   param: Parameter;

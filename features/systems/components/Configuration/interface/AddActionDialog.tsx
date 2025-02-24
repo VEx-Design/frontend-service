@@ -19,9 +19,9 @@ import {
   createConditionData,
   createConditionSchema,
 } from "@/features/systems/schema/condition";
-import { useConfigInterface } from "@/features/systems/contexts/ConfigInterfaceContext";
-import { useConfig } from "@/features/systems/contexts/ConfigContext";
 import createCondition from "@/features/systems/libs/ClassInterface/FeatureFomula/createCondition";
+import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
+import { useConfigInterface } from "@/features/systems/contexts/Configuration/ConfigInterfaceContext";
 
 interface AddActionDialogProps {
   onCreated?: () => void;

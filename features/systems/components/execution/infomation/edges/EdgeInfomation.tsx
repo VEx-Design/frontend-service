@@ -4,21 +4,28 @@ import React from "react";
 
 export default function EdgeInfomation() {
   const { focusEdge } = useExecution();
-  const light = focusEdge?.data?.light;
+  const lights = focusEdge?.data?.lights;
 
   const { configAction } = useProject();
 
-  if (!light) return null;
+  if (!lights) return null;
   return (
-    <div>
+    <div className="flex flex-col">
       {/* <p>{focusEdge?.id}</p> */}
-      <div>
-        {light.input.map((input) => {
-          const param = configAction.getParameter(input.paramId);
+      <div className="flex flex-col overflow-auto">
+        {lights.map((light, index) => {
           return (
-            <div key={input.paramId}>
-              <p>{`${param.name} [${param.symbol}]`}</p>
-              <p>{input.value}</p>
+            <div key={index}>
+              {light.params.map((param) => {
+                const paramInfo = configAction.getParameter(param.paramId);
+                return (
+                  <div key={param.paramId}>
+                    <p>{`${paramInfo.name} [${paramInfo.symbol}]`}</p>
+                    <p>{param.value}</p>
+                  </div>
+                );
+              })}
+              <div className="flex flex-1 border"></div>
             </div>
           );
         })}

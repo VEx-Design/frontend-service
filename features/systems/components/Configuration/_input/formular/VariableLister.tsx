@@ -1,8 +1,8 @@
 import React from "react";
 import VariableBadge from "./VariableBadge";
 import { useProject } from "@/features/systems/contexts/ProjectContext";
-import { useConfig } from "@/features/systems/contexts/ConfigContext";
-import { useConfigInterface } from "@/features/systems/contexts/ConfigInterfaceContext";
+import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
+import { useConfigInterface } from "@/features/systems/contexts/Configuration/ConfigInterfaceContext";
 
 export default function VariableLister() {
   const { config } = useProject();

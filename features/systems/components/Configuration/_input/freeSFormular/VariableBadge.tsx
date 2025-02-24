@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Parameter } from "@/features/systems/libs/ClassParameter/types/Parameter";
-import { useConfigFreeS } from "@/features/systems/contexts/ConfigFreeSContext";
+import { useConfigFreeS } from "@/features/systems/contexts/Configuration/ConfigFreeSContext";
 
 interface Props {
   canClick?: boolean;

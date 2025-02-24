@@ -3,15 +3,15 @@ import {
   FormulaFSId,
   FormulaFStatus,
   VariableFreeS,
-} from "../libs/ClassConfig/types/FreeSpace";
-import deleteVariable from "../libs/ClassConfig/FeatureFreeSpace/deleteVariable";
-import setStream from "../libs/ClassConfig/FeatureFreeSpace/setStream";
-import addVariable from "../libs/ClassConfig/FeatureFreeSpace/addVariable";
-import getFormula from "../libs/ClassConfig/FeatureFreeSpace/getFormula";
+} from "../../libs/ClassConfig/types/FreeSpace";
+import { useProject } from "../ProjectContext";
 import { useConfig } from "./ConfigContext";
-import setFormula from "../libs/ClassConfig/FeatureFreeSpace/setFormula";
-import { useProject } from "./ProjectContext";
-import getFormulaFreeSpace from "../libs/ClassConfig/getFormulaFreeSpace";
+import getFormula from "../../libs/ClassConfig/FeatureFreeSpace/getFormula";
+import setFormula from "../../libs/ClassConfig/FeatureFreeSpace/setFormula";
+import setStream from "../../libs/ClassConfig/FeatureFreeSpace/setStream";
+import addVariable from "../../libs/ClassConfig/FeatureFreeSpace/addVariable";
+import deleteVariable from "../../libs/ClassConfig/FeatureFreeSpace/deleteVariable";
+import getFormulaFreeSpace from "../../libs/ClassConfig/getFormulaFreeSpace";
 
 type InputPosition = {
   index: number;

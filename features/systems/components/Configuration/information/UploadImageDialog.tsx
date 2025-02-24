@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/Dialog";
 import { Upload } from "lucide-react";
 import ImageUploader from "@/components/ImageUploader";
-import { useConfig } from "@/features/systems/contexts/ConfigContext";
+import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
 
 interface CreatePropertyDialogProps {
   onCreated?: () => void;

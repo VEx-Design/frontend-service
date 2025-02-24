@@ -1,20 +1,20 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { Interface } from "../libs/ClassInterface/types/Interface";
 import { useConfig } from "./ConfigContext";
 import { Position } from "@xyflow/react";
-import editPosition from "../libs/ClassInterface/editPosition";
+import { Interface } from "../../libs/ClassInterface/types/Interface";
 import {
   FormulaCondition,
   FormulaId,
   FormulaStatus,
   Variable,
-} from "../libs/ClassInterface/types/Formula";
-import getFormula from "../libs/ClassInterface/FeatureFomula/getFormula";
-import addVariable from "../libs/ClassInterface/FeatureFomula/addVariable";
-import setStream from "../libs/ClassInterface/FeatureFomula/setStream";
-import deleteVariable from "../libs/ClassInterface/FeatureFomula/deleteVariable";
-import setFormula from "../libs/ClassInterface/setFormula";
-import getFormulaInterface from "../libs/ClassInterface/getFormulaInterface";
+} from "../../libs/ClassInterface/types/Formula";
+import editPosition from "../../libs/ClassInterface/editPosition";
+import getFormula from "../../libs/ClassInterface/FeatureFomula/getFormula";
+import setFormula from "../../libs/ClassInterface/setFormula";
+import addVariable from "../../libs/ClassInterface/FeatureFomula/addVariable";
+import deleteVariable from "../../libs/ClassInterface/FeatureFomula/deleteVariable";
+import setStream from "../../libs/ClassInterface/FeatureFomula/setStream";
+import getFormulaInterface from "../../libs/ClassInterface/getFormulaInterface";
 
 type InputPosition = {
   index: number;

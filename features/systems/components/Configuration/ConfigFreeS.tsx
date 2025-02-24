@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
-import { useConfig } from "../../contexts/ConfigContext";
 import { useProject } from "../../contexts/ProjectContext";
 import FormularBox from "./_input/freeSFormular/FormularBox";
+import { useConfig } from "../../contexts/Configuration/ConfigContext";
 
 export default function ConfigFreeS() {
   const { ref, height } = useResizeDetector();

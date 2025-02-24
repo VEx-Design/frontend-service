@@ -1,11 +1,10 @@
 export interface Light {
-  distance: string;
-  focusDistance: number;
-  locked: boolean;
-  input: LightInput[];
+  id: string;
+  formInterfaceId?: string;
+  params: LightParam[];
 }
 
-export interface LightInput {
+export interface LightParam {
   paramId: string;
   value: number;
 }

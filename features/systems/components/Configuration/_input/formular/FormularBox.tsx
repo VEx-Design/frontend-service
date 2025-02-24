@@ -1,8 +1,8 @@
 import React from "react";
 import { Parameter } from "@/features/systems/libs/ClassParameter/types/Parameter";
 import FormulaInput from "./FormulaInput";
-import { useConfigInterface } from "@/features/systems/contexts/ConfigInterfaceContext";
 import VariableLister from "./VariableLister";
+import { useConfigInterface } from "@/features/systems/contexts/Configuration/ConfigInterfaceContext";
 
 interface Props {
   conditionId: string;

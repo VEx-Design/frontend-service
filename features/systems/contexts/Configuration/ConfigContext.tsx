@@ -1,18 +1,16 @@
 "use client";
 import { createContext, useContext, useState } from "react";
-import { useProject } from "./ProjectContext";
-import editInterface from "../libs/ClassType/editInterface";
-import addInterface from "../libs/ClassType/addInterface";
-import addProperty from "../libs/ClassType/addProperty";
-
-// type
-import { Property, Type } from "../libs/ClassType/types/Type";
-import { Interface } from "../libs/ClassInterface/types/Interface";
-import getInterface from "../libs/ClassType/getInterface";
-import editImage from "../libs/ClassType/editImage";
-import editName from "../libs/ClassType/editName";
-import editDisplayName from "../libs/ClassType/editDisplayName";
-import { FreeSpace } from "../libs/ClassConfig/types/FreeSpace";
+import { Property, Type } from "../../libs/ClassType/types/Type";
+import { FreeSpace } from "../../libs/ClassConfig/types/FreeSpace";
+import { Interface } from "../../libs/ClassInterface/types/Interface";
+import { useProject } from "../ProjectContext";
+import addProperty from "../../libs/ClassType/addProperty";
+import addInterface from "../../libs/ClassType/addInterface";
+import editInterface from "../../libs/ClassType/editInterface";
+import getInterface from "../../libs/ClassType/getInterface";
+import editImage from "../../libs/ClassType/editImage";
+import editName from "../../libs/ClassType/editName";
+import editDisplayName from "../../libs/ClassType/editDisplayName";
 
 interface ConfigContextValue {
   currentType: Type | undefined;

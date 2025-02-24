@@ -29,7 +29,16 @@ export function CreateStarterNode(position: { x: number; y: number }): AppNode {
   return {
     id: crypto.randomUUID(),
     type: "starter",
-    data: { data: {} },
+    data: {
+      data: {
+        initials: [
+          {
+            id: crypto.randomUUID(),
+            params: [],
+          },
+        ],
+      },
+    },
     position: position ?? { x: 0, y: 0 },
   };
 }

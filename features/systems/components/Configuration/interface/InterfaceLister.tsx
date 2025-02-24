@@ -14,8 +14,8 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import InterfaceBox from "./InterfaceBox";
 import { Position } from "@xyflow/react";
-import { useConfig } from "@/features/systems/contexts/ConfigContext";
-import { useConfigInterface } from "@/features/systems/contexts/ConfigInterfaceContext";
+import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
+import { useConfigInterface } from "@/features/systems/contexts/Configuration/ConfigInterfaceContext";
 
 export default function InterfaceLister() {
   const { currentType } = useConfig();

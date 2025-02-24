@@ -3,9 +3,9 @@ import { Position } from "@xyflow/react";
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Interface } from "@/features/systems/libs/ClassInterface/types/Interface";
-import { useConfigInterface } from "@/features/systems/contexts/ConfigInterfaceContext";
-import { useConfig } from "@/features/systems/contexts/ConfigContext";
 import { useProject } from "@/features/systems/contexts/ProjectContext";
+import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
+import { useConfigInterface } from "@/features/systems/contexts/Configuration/ConfigInterfaceContext";
 
 interface Props {
   id: string;

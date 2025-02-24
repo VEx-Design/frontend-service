@@ -1,4 +1,6 @@
-export interface Object {
+import { Light } from "../../ClassLight/types/Light";
+
+export interface OpticalObject {
   name: string;
   typeId: string;
   vars: ObjectVariable[];
@@ -12,16 +14,6 @@ export interface ObjectVariable {
 
 export interface ObjectInterface {
   interfaceId: string;
-  input: ObjectInput[];
-  output: ObjectOutput[];
-}
-
-export interface ObjectInput {
-  paramId: string;
-  value: number;
-}
-
-export interface ObjectOutput {
-  paramId: string;
-  value: number;
+  input: Light[];
+  output: Light[];
 }

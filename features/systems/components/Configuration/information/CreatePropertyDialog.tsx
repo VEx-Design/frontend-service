@@ -21,7 +21,7 @@ import {
   createPropertySchema,
 } from "@/features/systems/schema/property";
 import createProperty from "@/features/systems/libs/ClassType/createProperty";
-import { useConfig } from "@/features/systems/contexts/ConfigContext";
+import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
 
 interface CreatePropertyDialogProps {
   onCreated?: () => void;

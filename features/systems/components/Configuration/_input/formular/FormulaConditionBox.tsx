@@ -4,7 +4,7 @@ import FormularBox from "./FormularBox";
 import { FormulaCondition } from "@/features/systems/libs/ClassInterface/types/Formula";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useConfig } from "@/features/systems/contexts/ConfigContext";
+import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
 
 interface Props {
   condition: FormulaCondition;
