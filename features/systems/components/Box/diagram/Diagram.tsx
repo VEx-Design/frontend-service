@@ -51,6 +51,7 @@ function DiagramComponent() {
       onNodeClick={handleNodeClick}
       style={rfStyle}
       fitView={true}
+      fitViewOptions={{ maxZoom: 0.8, minZoom: 0.005, padding: 0.25 }}
       deleteKeyCode={[]}
       nodesDraggable={false}
       edgesFocusable={false}

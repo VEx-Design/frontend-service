@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useBox } from "../../contexts/BoxContext";
 import { BoundingConfiguration } from "../../libs/ClassBox/types/BoundingConfiguration";
+import { set } from "lodash";
 
 export default function BoxSizing() {
   const { focusNode, mapBounding, setMapBounding, focusPoint, setFocusPoint, config, nodesState } = useBox();
   const [height, setHeight] = useState("");
   const [width, setWidth] = useState("");
-  const [interfaces, setInterfaces] = useState<string[]>([]);
+  const [interfaces, setInterfaces] = useState<[string,string][]>([]);
   const [showSaveHeight, setShowSaveHeight] = useState(false);
   const [showSaveWidth, setShowSaveWidth] = useState(false);
 
@@ -33,35 +34,42 @@ export default function BoxSizing() {
 
     const nodeId = focusNode.id;
     const node = nodesState.nodes.find((node) => node.id === nodeId);
-    const typeID = node?.data.data.object?.typeId;
-    const interfaces = config.types.find((type) => type.id === typeID)?.interfaces;
-
-    if (interfaces) {
-      setInterfaces(interfaces.map((iface) => iface.name));
-    } else {
-      setInterfaces([]);
+    if(node?.type === "ObjectNode"){
+      const typeID = node?.data.data.object?.typeId;
+      const interfaces = config.types.find((type) => type.id === typeID)?.interfaces;
+      if (interfaces) {
+        setInterfaces(interfaces.map((intf) => [intf.id, intf.name]));
+      } else {
+        setInterfaces([]);
+      }
     }
+    else if (node?.type === "starter"){
+      setInterfaces([["starter", "Output"]]);
+    }
+    else{
+      setInterfaces([["terminal", "Input"]]);
+    }
+
+    setShowSaveHeight(false);
+    setShowSaveWidth(false);
+
   }, [focusNode, mapBounding, config.types]);
 
   const handleSave = () => {
     if (!focusNode) return;
 
-    setMapBounding((prevMap: Map<string, BoundingConfiguration>) => {
-      const existingConfig: BoundingConfiguration | undefined = prevMap.get(focusNode.id);
-      const newHeight: number = Number(height) || 0;
-      const newWidth: number = Number(width) || 0;
+    let prevMap = mapBounding
+    const existingConfig: BoundingConfiguration | undefined = prevMap.get(focusNode.id);
+    const newHeight: number = Number(height) || 0;
+    const newWidth: number = Number(width) || 0;
+    const referencePoint = existingConfig?.referencePosition || [0, 0];
+    const interfacePositions = existingConfig?.interfacePositions || new Map();
 
-      if (
-        existingConfig?.height === newHeight &&
-        existingConfig?.width === newWidth
-      ) {
-        return prevMap;
-      }
-
+    if (!(existingConfig?.height === newHeight && existingConfig?.width === newWidth)) {
       const updatedMap: Map<string, BoundingConfiguration> = new Map(prevMap);
-      updatedMap.set(focusNode.id, new BoundingConfiguration(newHeight, newWidth));
-      return updatedMap;
-    });
+      updatedMap.set(focusNode.id, new BoundingConfiguration(newHeight, newWidth, referencePoint, interfacePositions));
+      setMapBounding(updatedMap);
+    }
 
     setShowSaveHeight(false);
     setShowSaveWidth(false);
@@ -78,7 +86,7 @@ export default function BoxSizing() {
   };
 
   return (
-    <div onClick={() => setFocusPoint("")} style={{ width: "100%", height: "100%", position: "relative" }}>
+    <div onClick={() => setFocusPoint("")} style={{ position: "static" }}>
       {focusNode ? (
         <>
           <div>{focusNode.id}</div>
@@ -127,32 +135,32 @@ export default function BoxSizing() {
             )}
           </div>
           <div>
-            <label>Fulcrum:</label>
+            <label>Reference Point:</label>
             <ul>
               <li
                 onClick={(e) => {
                   e.stopPropagation();
-                  setFocusPoint("Fulcrum");
+                  setFocusPoint("Reference Point");
                 }}
-                style={{ fontWeight: focusPoint === "Fulcrum" ? "bold" : "normal" }}
+                style={{ fontWeight: focusPoint === "Reference Point" ? "bold" : "normal" }}
               >
-                Fulcrum
+                Reference Point
               </li>
             </ul>
           </div>
           <div>
             <label>Interfaces:</label>
             <ul>
-              {interfaces.map((iface, index) => (
+              {interfaces.map((intf, index) => (
                 <li
                   key={index}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setFocusPoint(iface);
+                    setFocusPoint(intf[0]);
                   }}
-                  style={{ fontWeight: focusPoint === iface ? "bold" : "normal" }}
+                  style={{ fontWeight: focusPoint === intf[0] ? "bold" : "normal" }}
                 >
-                  {iface}
+                  {intf[1]}
                 </li>
               ))}
             </ul>

@@ -18,7 +18,7 @@ export default function Box() {
             <BoxSizing />
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel defaultSize={50} minSize={50} maxSize={50}>
+          <ResizablePanel defaultSize={50} minSize={50} maxSize={50} >
             <BoxKonva />
           </ResizablePanel>
         </ResizablePanelGroup>

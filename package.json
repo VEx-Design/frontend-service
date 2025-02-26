@@ -51,6 +51,7 @@
     "date-fns": "^3.6.0",
     "elkjs": "^0.9.3",
     "embla-carousel-react": "^8.5.1",
+    "fabric": "^6.6.1",
     "graphql": "^16.10.0",
     "graphql-request": "^7.1.2",
     "input-otp": "^1.4.1",
