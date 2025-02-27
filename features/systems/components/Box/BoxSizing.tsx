@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useBox } from "../../contexts/BoxContext";
 import { BoundingConfiguration } from "../../libs/ClassBox/types/BoundingConfiguration";
-import { set } from "lodash";
 
 export default function BoxSizing() {
   const { focusNode, mapBounding, setMapBounding, focusPoint, setFocusPoint, config, nodesState } = useBox();
@@ -58,10 +57,15 @@ export default function BoxSizing() {
   const handleSave = () => {
     if (!focusNode) return;
 
-    let prevMap = mapBounding
+    let prevMap = mapBounding;
     const existingConfig: BoundingConfiguration | undefined = prevMap.get(focusNode.id);
-    const newHeight: number = Number(height) || 0;
-    const newWidth: number = Number(width) || 0;
+    let newHeight: number = Number(height) || 0;
+    let newWidth: number = Number(width) || 0;
+
+    // Ensure height and width do not exceed 1000
+    if (newHeight > 1000) newHeight = 1000;
+    if (newWidth > 1000) newWidth = 1000;
+
     const referencePoint = existingConfig?.referencePosition || [0, 0];
     const interfacePositions = existingConfig?.interfacePositions || new Map();
 

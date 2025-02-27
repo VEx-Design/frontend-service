@@ -12,7 +12,9 @@ const P5Square = () => {
   const [squareSize, setSquareSize] = useState({ width: 0, height: 0 });
   const [relativePos, setRelativePos] = useState<{ x: number; y: number | null }>({ x: 0, y: null });
   const [zoom, setZoom] = useState(1); // Zoom level
-  const [offset, setOffset] = useState({ x: 0, y: 0 }); // Centering offset
+  const [offset, setOffset] = useState({ x: 0, y: 0 }); // Panning offset
+  const [isDragging, setIsDragging] = useState(false);
+  const [lastMouse, setLastMouse] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     if (focusNode) {
@@ -34,7 +36,7 @@ const P5Square = () => {
 
       setZoom(newZoom);
 
-      // Ensure the square stays centered
+      // Ensure the square starts centered
       setOffset({
         x: width / 2 - (squareSize.width * newZoom) / 2,
         y: height / 2 - (squareSize.height * newZoom) / 2,
@@ -51,7 +53,7 @@ const P5Square = () => {
     p5.background(220);
 
     p5.push();
-    p5.translate(offset.x, offset.y); // Centering
+    p5.translate(offset.x, offset.y); // Apply panning
     p5.scale(zoom);
 
     // Draw the square
@@ -88,24 +90,57 @@ const P5Square = () => {
     }
   };
 
+  const mousePressed = (p5: any) => {
+    setIsDragging(true);
+    setLastMouse({ x: p5.mouseX, y: p5.mouseY });
+  };
+
+  const mouseReleased = () => {
+    setIsDragging(false);
+  };
+
+  const mouseDragged = (p5: any) => {
+    if (isDragging) {
+      const dx = p5.mouseX - lastMouse.x;
+      const dy = p5.mouseY - lastMouse.y;
+      setOffset((prev) => ({
+        x: prev.x + dx,
+        y: prev.y + dy,
+      }));
+      setLastMouse({ x: p5.mouseX, y: p5.mouseY });
+    }
+  };
+
   const mouseWheel = (p5: any, event: any) => {
     event.preventDefault();
     let newZoom = zoom - event.delta * 0.001;
     newZoom = p5.constrain(newZoom, 0.3, 2); // Keep zoom within limits
 
-    // Keep square centered while zooming
-    const newOffset = {
-      x: width / 2 - (squareSize.width * newZoom) / 2,
-      y: height / 2 - (squareSize.height * newZoom) / 2,
-    };
+    // Get mouse position before zooming
+    const mouseXBeforeZoom = (p5.mouseX - offset.x) / zoom;
+    const mouseYBeforeZoom = (p5.mouseY - offset.y) / zoom;
 
+    // Update zoom
     setZoom(newZoom);
-    setOffset(newOffset);
+
+    // Adjust offset so that zooming is centered on the mouse
+    setOffset((prev) => ({
+      x: p5.mouseX - mouseXBeforeZoom * newZoom,
+      y: p5.mouseY - mouseYBeforeZoom * newZoom,
+    }));
   };
 
   return (
     <div ref={ref} style={{ width: '100%', height: '100%' }}>
-      <Sketch setup={setup} draw={draw} mouseMoved={mouseMoved} mouseWheel={mouseWheel} />
+      <Sketch
+        setup={setup}
+        draw={draw}
+        mouseMoved={mouseMoved}
+        mousePressed={mousePressed}
+        mouseReleased={mouseReleased}
+        mouseDragged={mouseDragged}
+        mouseWheel={mouseWheel}
+      />
     </div>
   );
 };
