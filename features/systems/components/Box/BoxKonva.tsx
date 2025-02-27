@@ -1,13 +1,14 @@
 import Konva from "konva";
 import React, { useState, useEffect, useRef } from "react";
-import { Stage, Layer, Rect, Text } from "react-konva";
+import { Stage, Layer, Rect, Text, Circle } from "react-konva";
 import { useResizeDetector } from "react-resize-detector";
 import { useBox } from "../../contexts/BoxContext";
+import { map } from "lodash";
 
 const KonvaSquare = () => {
   const { ref, width = 400, height = 400 } = useResizeDetector();
-  const {focusNode, mapBounding} = useBox();
-  const [squareSize , setSquareSize] = useState({ width: 0, height: 0 });
+  const { focusNode, mapBounding, setMapBounding ,focusPoint } = useBox();
+  const [squareSize, setSquareSize] = useState({ width: 0, height: 0 });
   const [relativePos, setRelativePos] = useState<{
     x: number;
     y: number | null;
@@ -17,7 +18,7 @@ const KonvaSquare = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [lastMouse, setLastMouse] = useState({ x: 0, y: 0 });
   const stageRef = useRef<Konva.Stage>(null);
-  
+
   useEffect(() => {
     if (focusNode) {
       const nodeInfo = mapBounding.get(focusNode.id);
@@ -98,6 +99,8 @@ const KonvaSquare = () => {
   };
 
   const handleRectClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    e.cancelBubble = true;
+    e.evt.stopPropagation();
     const stage = e.target.getStage();
     const pointer = stage?.getPointerPosition();
     if (!pointer) return;
@@ -105,7 +108,42 @@ const KonvaSquare = () => {
     const unscaledX = (pointer.x - offset.x) / zoom;
     const unscaledY = (pointer.y - offset.y) / zoom;
 
-    alert(`Clicked at: (${Math.floor(unscaledX)}, ${Math.floor(unscaledY)})`);
+    const x = Math.floor(unscaledX) / squareSize.width;
+    const y = Math.floor(unscaledY) / squareSize.height;
+
+    if(focusPoint !== ""){
+      if(focusPoint === "Reference Point"){
+        setMapBounding((prev) => {
+          const newMapBounding = new Map(prev);
+          newMapBounding.set(focusNode!.id, {
+            ...newMapBounding.get(focusNode!.id)!,
+            referencePoint: { x, y },
+          });
+          return newMapBounding;
+        });
+        alert(focusPoint + "at" + `(${Math.floor(unscaledX)}, ${Math.floor(unscaledY)})`);
+      }
+      else{
+        setMapBounding((prev) => {
+          const newMapBounding = new Map(prev);
+          const nodeInfo = newMapBounding.get(focusNode!.id);
+          if (nodeInfo) {
+            const newInterfacePositions = new Map(nodeInfo.interfacePositions);
+            newInterfacePositions.set(focusPoint, { x, y });
+            newMapBounding.set(focusNode!.id, {
+              ...nodeInfo,
+              interfacePositions: newInterfacePositions,
+            });
+          }
+          return newMapBounding;
+        });
+        alert(focusPoint + "at" + `(${Math.floor(unscaledX)}, ${Math.floor(unscaledY)})`);
+      }
+    }
+    else {
+      alert("no focus point selected");
+    }
+    
   };
 
   return (
@@ -127,16 +165,25 @@ const KonvaSquare = () => {
             width={squareSize.width * zoom}
             height={squareSize.height * zoom}
             fill="rgba(100, 200, 255, 1)"
-            onClick={handleRectClick} // Click handler added here
+            
           />
           {relativePos.y !== null && (
-            <Text
-              text={`(${relativePos.x}, ${relativePos.y})`}
-              x={offset.x + relativePos.x * zoom + 10}
-              y={offset.y + relativePos.y * zoom - 10}
-              fontSize={16}
-              fill="black"
-            />
+            <>
+              <Text
+                text={`(${relativePos.x}, ${relativePos.y})`}
+                x={offset.x + relativePos.x * zoom + 10}
+                y={offset.y + relativePos.y * zoom - 10}
+                fontSize={16}
+                fill="black"
+              />
+              <Circle
+                x={offset.x + relativePos.x * zoom}
+                y={offset.y + relativePos.y * zoom}
+                radius={2} // Small circle to represent the mouse pointer
+                fill="red"
+                onClick={handleRectClick} // Click handler added here
+              />
+            </>
           )}
         </Layer>
       </Stage>
