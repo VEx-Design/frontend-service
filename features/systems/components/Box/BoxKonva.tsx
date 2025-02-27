@@ -99,52 +99,48 @@ const KonvaSquare = () => {
   };
 
   const handleRectClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
-    e.cancelBubble = true;
-    e.evt.stopPropagation();
-    const stage = e.target.getStage();
-    const pointer = stage?.getPointerPosition();
-    if (!pointer) return;
+  const stage = e.target.getStage();
+  const pointer = stage?.getPointerPosition();
+  if (!pointer) return;
 
-    const unscaledX = (pointer.x - offset.x) / zoom;
-    const unscaledY = (pointer.y - offset.y) / zoom;
+  const unscaledX = (pointer.x - offset.x) / zoom;
+  const unscaledY = (pointer.y - offset.y) / zoom;
 
-    const x = Math.floor(unscaledX) / squareSize.width;
-    const y = Math.floor(unscaledY) / squareSize.height;
+  const x = Math.floor(unscaledX) / squareSize.width;
+  const y = Math.floor(unscaledY) / squareSize.height;
 
-    if(focusPoint !== ""){
-      if(focusPoint === "Reference Point"){
-        setMapBounding((prev) => {
-          const newMapBounding = new Map(prev);
+  if (focusPoint !== "") {
+    if (focusPoint === "Reference Point") {
+      setMapBounding((prev) => {
+        const newMapBounding = new Map(prev);
+        newMapBounding.set(focusNode!.id, {
+          ...newMapBounding.get(focusNode!.id)!,
+          referencePosition: [x, y]  as [number, number],
+        });
+        console.log(newMapBounding)
+        return newMapBounding;
+      });
+      alert(focusPoint + " at" + ` (${Math.floor(unscaledX)}, ${Math.floor(unscaledY)})`);
+    } else {
+      setMapBounding((prev) => {
+        const newMapBounding = new Map(prev);
+        const nodeInfo = newMapBounding.get(focusNode!.id);
+        if (nodeInfo) {
+          const newInterfacePositions = new Map(nodeInfo.interfacePositions);
+          newInterfacePositions.set(focusPoint, [ x, y ] as [number, number]);
           newMapBounding.set(focusNode!.id, {
-            ...newMapBounding.get(focusNode!.id)!,
-            referencePoint: { x, y },
+            ...nodeInfo,
+            interfacePositions: newInterfacePositions,
           });
-          return newMapBounding;
-        });
-        alert(focusPoint + "at" + `(${Math.floor(unscaledX)}, ${Math.floor(unscaledY)})`);
-      }
-      else{
-        setMapBounding((prev) => {
-          const newMapBounding = new Map(prev);
-          const nodeInfo = newMapBounding.get(focusNode!.id);
-          if (nodeInfo) {
-            const newInterfacePositions = new Map(nodeInfo.interfacePositions);
-            newInterfacePositions.set(focusPoint, { x, y });
-            newMapBounding.set(focusNode!.id, {
-              ...nodeInfo,
-              interfacePositions: newInterfacePositions,
-            });
-          }
-          return newMapBounding;
-        });
-        alert(focusPoint + "at" + `(${Math.floor(unscaledX)}, ${Math.floor(unscaledY)})`);
-      }
+        }
+        return newMapBounding;
+      });
+      alert(focusPoint + " at" + ` (${Math.floor(unscaledX)}, ${Math.floor(unscaledY)})`);
     }
-    else {
-      alert("no focus point selected");
-    }
-    
-  };
+  } else {
+    alert("no focus point selected");
+  }
+};
 
   return (
     <div ref={ref} style={{ width: "100%", height: "100%" }}>
@@ -165,7 +161,7 @@ const KonvaSquare = () => {
             width={squareSize.width * zoom}
             height={squareSize.height * zoom}
             fill="rgba(100, 200, 255, 1)"
-            
+            onClick={handleRectClick}
           />
           {relativePos.y !== null && (
             <>
@@ -176,13 +172,37 @@ const KonvaSquare = () => {
                 fontSize={16}
                 fill="black"
               />
-              <Circle
+              {/* <Circle
                 x={offset.x + relativePos.x * zoom}
                 y={offset.y + relativePos.y * zoom}
                 radius={2} // Small circle to represent the mouse pointer
                 fill="red"
-                onClick={handleRectClick} // Click handler added here
-              />
+              /> */}
+              {focusNode &&
+                mapBounding.get(focusNode.id)?.referencePosition && (
+                  <Circle
+                    x={offset.x + mapBounding.get(focusNode.id)!.referencePosition[0] * squareSize.width * zoom}
+                    y={offset.y + mapBounding.get(focusNode.id)!.referencePosition[1] * squareSize.height * zoom}
+                    radius={5} // Adjust the radius as needed
+                    fill="blue"
+                  />
+                )}
+              {focusNode &&
+                mapBounding.get(focusNode.id)?.interfacePositions &&
+                Array.from(mapBounding.get(focusNode.id)?.interfacePositions.entries() || []).map(
+                  ([key, pos]) => {
+                    const [x, y] = pos;
+                    return (
+                      <Circle
+                        key={key}
+                        x={offset.x + x * squareSize.width * zoom}
+                        y={offset.y + y * squareSize.height * zoom}
+                        radius={5} // Adjust the radius as needed
+                        fill="green"
+                      />
+                    );
+                  }
+                )}
             </>
           )}
         </Layer>
