@@ -22,6 +22,8 @@ import {
 } from "@/features/systems/schema/property";
 import createProperty from "@/features/systems/libs/ClassType/createProperty";
 import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
+import DropdownForm from "@/components/inputs/DropdownForm";
+import { units } from "@/features/systems/libs/UnitManagement/unit";
 
 interface CreatePropertyDialogProps {
   onCreated?: () => void;
@@ -106,6 +108,25 @@ export default function CreatePropertyDialog({}: CreatePropertyDialogProps) {
                         ? "border-red-500 focus:border-red-500 focus:outline-none"
                         : ""
                     }
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="unitId"
+            control={form.control}
+            render={({ control }) => (
+              <FormItem>
+                <FormLabel>Unit</FormLabel>
+                <FormControl>
+                  <DropdownForm
+                    name="unitId"
+                    control={control}
+                    options={units.map((unit) => ({
+                      label: `${unit.name} (${unit.symbol})`,
+                      value: unit.id.toString(),
+                    }))}
                   />
                 </FormControl>
               </FormItem>

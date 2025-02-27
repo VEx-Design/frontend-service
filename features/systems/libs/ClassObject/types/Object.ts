@@ -10,6 +10,7 @@ export interface OpticalObject {
 export interface ObjectVariable {
   propId: string;
   value: number;
+  unitPrefixId: string;
 }
 
 export interface ObjectInterface {

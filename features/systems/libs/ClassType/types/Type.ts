@@ -14,5 +14,6 @@ export type Property = {
   id: string;
   name: string;
   symbol: string;
+  unitId: string;
   description?: string;
 };
