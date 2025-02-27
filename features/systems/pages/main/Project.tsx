@@ -9,7 +9,7 @@ import {
   TabsTrigger,
   TabsTriggerIcon,
 } from "@/components/Tabs";
-import { Airplay, FileSliders, GitGraph } from "lucide-react";
+import { Airplay, FileSliders, GitGraph, Grid2X2Plus } from "lucide-react";
 import { useProject } from "../../contexts/ProjectContext";
 import Editor from "../Editor";
 import Configuration from "../Configuration";
@@ -17,6 +17,7 @@ import { EditorProvider } from "../../contexts/EditorContext";
 import Execution from "../Execution";
 import { ExecutionProvider } from "../../contexts/ExecutionContext";
 import { ConfigProvider } from "../../contexts/Configuration/ConfigContext";
+import ObjectBox from "../../components/ObjectDefine/ObjectBox";
 
 export default function Project() {
   const { projName, onSave, savePending } = useProject();
@@ -45,6 +46,11 @@ export default function Project() {
               <Airplay />
             </TabsTriggerIcon>
           </TabsTrigger>
+          <TabsTrigger name="ObjectDefine">
+            <TabsTriggerIcon>
+              <Grid2X2Plus />
+            </TabsTriggerIcon>
+          </TabsTrigger>
         </TabsList>
         <TabsContent name="Flow">
           <EditorProvider>
@@ -60,6 +66,9 @@ export default function Project() {
           <ExecutionProvider>
             <Execution />
           </ExecutionProvider>
+        </TabsContent>
+        <TabsContent name="ObjectDefine">
+          <ObjectBox />
         </TabsContent>
       </Tabs>
     </>
