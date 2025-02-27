@@ -1,82 +1,52 @@
-import React, { useState, useEffect } from "react";
-import dynamic from "next/dynamic";
+import Konva from "konva";
+import React, { useState, useEffect, useRef } from "react";
+import { Stage, Layer, Rect, Text } from "react-konva";
 import { useResizeDetector } from "react-resize-detector";
 import { useBox } from "../../contexts/BoxContext";
 
-const Sketch = dynamic(() => import("react-p5"), { ssr: false });
-
-const P5Square = () => {
+const KonvaSquare = () => {
   const { ref, width = 400, height = 400 } = useResizeDetector();
-  const { focusNode, mapBounding } = useBox();
-
-  const [squareSize, setSquareSize] = useState({ width: 0, height: 0 });
-  const [relativePos, setRelativePos] = useState<{ x: number; y: number | null }>({ x: 0, y: null });
-  const [zoom, setZoom] = useState(1); // Zoom level
-  const [offset, setOffset] = useState({ x: 0, y: 0 }); // Panning offset
+  const {focusNode, mapBounding} = useBox();
+  const [squareSize , setSquareSize] = useState({ width: 0, height: 0 });
+  const [relativePos, setRelativePos] = useState<{
+    x: number;
+    y: number | null;
+  }>({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [lastMouse, setLastMouse] = useState({ x: 0, y: 0 });
-
+  const stageRef = useRef<Konva.Stage>(null);
+  
   useEffect(() => {
     if (focusNode) {
-      const bounding = mapBounding.get(focusNode.id);
-      if (bounding) {
-        setSquareSize({ width: bounding.width, height: bounding.height });
-      } else {
-        setSquareSize({ width: 0, height: 0 });
+      const nodeInfo = mapBounding.get(focusNode.id);
+      if (nodeInfo) {
+        const newSquareSize = { width: nodeInfo.width, height: nodeInfo.height };
+        setSquareSize(newSquareSize);
+        if (width > 0 && height > 0) {
+          const padding = 0.1;
+          const maxWidthZoom = (width * (1 - padding)) / newSquareSize.width;
+          const maxHeightZoom = (height * (1 - padding)) / newSquareSize.height;
+          const newZoom = Math.min(maxWidthZoom, maxHeightZoom, 1);
+
+          setZoom(newZoom);
+          setOffset({
+            x: width / 2 - (newSquareSize.width * newZoom) / 2,
+            y: height / 2 - (newSquareSize.height * newZoom) / 2,
+          });
+        }
       }
     }
-    else{
-      setSquareSize({ width: 0, height: 0 });
-    }
-  }, [focusNode, mapBounding]);
+  }, [focusNode?.id, mapBounding, width, height]);
 
-  useEffect(() => {
-    if (width > 0 && height > 0) {
-      const padding = 0.1; // 10% padding
-      const maxWidthZoom = (width * (1 - padding)) / squareSize.width;
-      const maxHeightZoom = (height * (1 - padding)) / squareSize.height;
-      const newZoom = Math.min(maxWidthZoom, maxHeightZoom, 1);
+  const handleMouseMove = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    const stage = e.target.getStage();
+    const pointer = stage?.getPointerPosition();
+    if (!pointer) return;
 
-      setZoom(newZoom);
-
-      // Ensure the square starts centered
-      setOffset({
-        x: width / 2 - (squareSize.width * newZoom) / 2,
-        y: height / 2 - (squareSize.height * newZoom) / 2,
-      });
-    }
-  }, [width, height, squareSize]);
-
-  const setup = (p5: any, canvasParentRef: any) => {
-    p5.createCanvas(width, height).parent(canvasParentRef);
-  };
-
-  const draw = (p5: any) => {
-    p5.resizeCanvas(width, height);
-    p5.background(220);
-
-    p5.push();
-    p5.translate(offset.x, offset.y); // Apply panning
-    p5.scale(zoom);
-
-    // Draw the square
-    p5.fill(100, 200, 255);
-    p5.rect(0, 0, squareSize.width, squareSize.height);
-
-    p5.pop();
-
-    // Display relative coordinates if inside the square
-    if (relativePos.y !== null) {
-      p5.fill(0);
-      p5.textSize(16);
-      p5.text(`(${relativePos.x}, ${relativePos.y})`, p5.mouseX, p5.mouseY - 10);
-    }
-  };
-
-  const mouseMoved = (p5: any) => {
-    // Convert mouse position to unscaled coordinates
-    const unscaledX = (p5.mouseX - offset.x) / zoom;
-    const unscaledY = (p5.mouseY - offset.y) / zoom;
+    const unscaledX = (pointer.x - offset.x) / zoom;
+    const unscaledY = (pointer.y - offset.y) / zoom;
 
     if (
       unscaledX >= 0 &&
@@ -84,68 +54,94 @@ const P5Square = () => {
       unscaledY >= 0 &&
       unscaledY <= squareSize.height
     ) {
-      setRelativePos({
-        x: Math.floor(unscaledX),
-        y: Math.floor(unscaledY),
-      });
+      setRelativePos({ x: Math.floor(unscaledX), y: Math.floor(unscaledY) });
     } else {
       setRelativePos({ x: 0, y: null });
     }
   };
 
-  const mousePressed = (p5: any) => {
+  const handleMouseDown = (e: Konva.KonvaEventObject<MouseEvent>) => {
     setIsDragging(true);
-    setLastMouse({ x: p5.mouseX, y: p5.mouseY });
+    setLastMouse({ x: e.evt.clientX, y: e.evt.clientY });
   };
 
-  const mouseReleased = () => {
+  const handleMouseUp = () => {
     setIsDragging(false);
   };
 
-  const mouseDragged = (p5: any) => {
+  const handleMouseMoveDrag = (e: Konva.KonvaEventObject<MouseEvent>) => {
     if (isDragging) {
-      const dx = p5.mouseX - lastMouse.x;
-      const dy = p5.mouseY - lastMouse.y;
-      setOffset((prev) => ({
-        x: prev.x + dx,
-        y: prev.y + dy,
-      }));
-      setLastMouse({ x: p5.mouseX, y: p5.mouseY });
+      const dx = e.evt.clientX - lastMouse.x;
+      const dy = e.evt.clientY - lastMouse.y;
+      setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+      setLastMouse({ x: e.evt.clientX, y: e.evt.clientY });
     }
   };
 
-  const mouseWheel = (p5: any, event: any) => {
-    event.preventDefault();
-    let newZoom = zoom - event.delta * 0.001;
-    newZoom = p5.constrain(newZoom, 0.3, 2); // Keep zoom within limits
+  const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
+    e.evt.preventDefault();
+    const stage = stageRef.current;
+    const scaleBy = 1.05;
+    const oldScale = zoom;
+    const pointer = stage?.getPointerPosition();
+    const newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
 
-    // Get mouse position before zooming
-    const mouseXBeforeZoom = (p5.mouseX - offset.x) / zoom;
-    const mouseYBeforeZoom = (p5.mouseY - offset.y) / zoom;
+    if (!pointer) return;
+    const mouseXBeforeZoom = (pointer.x - offset.x) / oldScale;
+    const mouseYBeforeZoom = (pointer.y - offset.y) / oldScale;
 
-    // Update zoom
-    setZoom(newZoom);
+    setZoom(Math.max(0.3, Math.min(2, newScale)));
+    setOffset({
+      x: pointer.x - mouseXBeforeZoom * newScale,
+      y: pointer.y - mouseYBeforeZoom * newScale,
+    });
+  };
 
-    // Adjust offset so that zooming is centered on the mouse
-    setOffset((prev) => ({
-      x: p5.mouseX - mouseXBeforeZoom * newZoom,
-      y: p5.mouseY - mouseYBeforeZoom * newZoom,
-    }));
+  const handleRectClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    const stage = e.target.getStage();
+    const pointer = stage?.getPointerPosition();
+    if (!pointer) return;
+
+    const unscaledX = (pointer.x - offset.x) / zoom;
+    const unscaledY = (pointer.y - offset.y) / zoom;
+
+    alert(`Clicked at: (${Math.floor(unscaledX)}, ${Math.floor(unscaledY)})`);
   };
 
   return (
-    <div ref={ref} style={{ width: '100%', height: '100%' }}>
-      <Sketch
-        setup={setup}
-        draw={draw}
-        mouseMoved={mouseMoved}
-        mousePressed={mousePressed}
-        mouseReleased={mouseReleased}
-        mouseDragged={mouseDragged}
-        mouseWheel={mouseWheel}
-      />
+    <div ref={ref} style={{ width: "100%", height: "100%" }}>
+      <Stage
+        ref={stageRef}
+        width={width}
+        height={height}
+        onMouseMove={handleMouseMove}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseMoveCapture={handleMouseMoveDrag}
+        onWheel={handleWheel}
+      >
+        <Layer>
+          <Rect
+            x={offset.x}
+            y={offset.y}
+            width={squareSize.width * zoom}
+            height={squareSize.height * zoom}
+            fill="rgba(100, 200, 255, 1)"
+            onClick={handleRectClick} // Click handler added here
+          />
+          {relativePos.y !== null && (
+            <Text
+              text={`(${relativePos.x}, ${relativePos.y})`}
+              x={offset.x + relativePos.x * zoom + 10}
+              y={offset.y + relativePos.y * zoom - 10}
+              fontSize={16}
+              fill="black"
+            />
+          )}
+        </Layer>
+      </Stage>
     </div>
   );
 };
 
-export default P5Square;
+export default KonvaSquare;
