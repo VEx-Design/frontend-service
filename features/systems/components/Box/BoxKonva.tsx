@@ -25,6 +25,9 @@ const P5Square = () => {
         setSquareSize({ width: 0, height: 0 });
       }
     }
+    else{
+      setSquareSize({ width: 0, height: 0 });
+    }
   }, [focusNode, mapBounding]);
 
   useEffect(() => {
