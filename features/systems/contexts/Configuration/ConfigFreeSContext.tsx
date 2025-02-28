@@ -24,8 +24,8 @@ interface ConfigFreeSContextValue {
   currentIdFormula: FormulaFSId | undefined;
   setCurrentIdFormula: (currentIdFormula: FormulaFSId | undefined) => void;
   setCurrentInputPosition: (inputPosition: InputPosition | undefined) => void;
-  indexTofocus: number | undefined;
-  setIndexTofocus: (index: number | undefined) => void;
+  indexTofocus: InputPosition | undefined;
+  setIndexTofocus: (index: InputPosition | undefined) => void;
   freeSpaceAction: FreeSpaceAction;
   formulaAction: FormulaAction;
 }
@@ -59,7 +59,7 @@ export const ConfigFreeSProvider = ({ children }: ConfigFreeSProviderProps) => {
   const [currentInputPosition, setCurrentInputPosition] = useState<
     InputPosition | undefined
   >(undefined);
-  const [indexTofocus, setIndexTofocus] = useState<number | undefined>(
+  const [indexTofocus, setIndexTofocus] = useState<InputPosition | undefined>(
     undefined
   );
 
@@ -108,22 +108,26 @@ export const ConfigFreeSProvider = ({ children }: ConfigFreeSProviderProps) => {
         newVariable
       );
       setFormulars(newFormulars);
-      setIndexTofocus(currentInputPosition!.index + 1);
+      setIndexTofocus({ index: currentInputPosition!.index + 1, position: 0 });
       setCurrentInputPosition({
         index: currentInputPosition!.index + 1,
         position: 0,
       });
     },
     deleteVariable: () => {
-      const newFormulars = deleteVariable(
+      const { formulas: newFormulars, position } = deleteVariable(
         formulars,
         currentIdFormula!,
         currentInputPosition!.index
       );
       setFormulars(newFormulars);
+      setIndexTofocus({
+        index: currentInputPosition!.index - 1,
+        position: position,
+      });
       setCurrentInputPosition({
         index: currentInputPosition!.index - 1,
-        position: 0,
+        position: position,
       });
     },
     applyFormula: (formulaId: FormulaFSId) => {

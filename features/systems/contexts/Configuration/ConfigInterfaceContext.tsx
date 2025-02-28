@@ -29,8 +29,8 @@ interface ConfigInterfaceContextValue {
   currentIdFormula: FormulaId | undefined;
   setCurrentIdFormula: (id: FormulaId | undefined) => void;
   setCurrentInputPosition: (inputPosition: InputPosition | undefined) => void;
-  indexTofocus: number | undefined;
-  setIndexTofocus: (index: number | undefined) => void;
+  indexTofocus: InputPosition | undefined;
+  setIndexTofocus: (index: InputPosition | undefined) => void;
   interfaceAction: InterfaceAction;
   formulaAction: FormulaAction;
 }
@@ -70,7 +70,7 @@ export const ConfigInterfaceProvider = ({ children }: FormulaProviderProps) => {
   const [currentInputPosition, setCurrentInputPosition] = useState<
     InputPosition | undefined
   >(undefined);
-  const [indexTofocus, setIndexTofocus] = useState<number | undefined>(
+  const [indexTofocus, setIndexTofocus] = useState<InputPosition | undefined>(
     undefined
   );
 
@@ -134,22 +134,26 @@ export const ConfigInterfaceProvider = ({ children }: FormulaProviderProps) => {
         newVariable
       );
       setFormulars(newFormulars);
-      setIndexTofocus(currentInputPosition!.index + 1);
+      setIndexTofocus({ index: currentInputPosition!.index + 1, position: 0 });
       setCurrentInputPosition({
         index: currentInputPosition!.index + 1,
         position: 0,
       });
     },
     deleteVariable: () => {
-      const newFormulars = deleteVariable(
+      const { formula: newFormulars, position } = deleteVariable(
         formulars,
         currentIdFormula!,
         currentInputPosition!.index
       );
       setFormulars(newFormulars);
+      setIndexTofocus({
+        index: currentInputPosition!.index - 1,
+        position: position,
+      });
       setCurrentInputPosition({
         index: currentInputPosition!.index - 1,
-        position: 0,
+        position: position,
       });
     },
     setStream: (stream: string) => {

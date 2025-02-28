@@ -82,7 +82,7 @@ export default function FormulaInput({ conditionId, paramId }: Props) {
       currentIdFormula?.paramId === paramId &&
       indexTofocus !== undefined
     ) {
-      moveCursorToPosition(indexTofocus ?? 0, 0);
+      moveCursorToPosition(indexTofocus.index ?? 0, indexTofocus.position ?? 0);
       setIndexTofocus(undefined);
     }
   }, [

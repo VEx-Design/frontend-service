@@ -75,7 +75,7 @@ export default function FormulaInput({ paramId }: Props) {
 
   useEffect(() => {
     if (currentIdFormula?.paramId === paramId && indexTofocus !== undefined) {
-      moveCursorToPosition(indexTofocus ?? 0, 0);
+      moveCursorToPosition(indexTofocus.index ?? 0, indexTofocus.position ?? 0);
       setIndexTofocus(undefined);
     }
   }, [
