@@ -3,8 +3,13 @@
 import { AppNode } from "@/features/systems/libs/ClassNode/types/AppNode";
 import { createProjectData, createProjectSchema } from "../schema/project";
 import { client } from "@/lib/service";
-import { Config } from "@/features/systems/libs/ClassConfig/types/Config";
+import parameterConfig from "@/features/systems/libs/standard/parameter.json";
+import parameterGroupConfig from "@/features/systems/libs/standard/parameterGroup.json";
 import { AppEdge } from "@/features/systems/libs/ClassEdge/types/AppEdge";
+import { Config } from "@/features/systems/libs/ClassConfig/types/Config";
+
+// type of optical
+import typePBS from "@/features/systems/libs/standard/type/PBS.json";
 
 export default async function createProject(form: createProjectData) {
   const { success, data } = createProjectSchema.safeParse(form);
@@ -15,9 +20,9 @@ export default async function createProject(form: createProjectData) {
   };
 
   const config: Config = {
-    types: [],
-    parameters: [],
-    parameterGroups: [],
+    types: [JSON.parse(JSON.stringify(typePBS))],
+    ...parameterConfig,
+    ...parameterGroupConfig,
     freeSpaces: [{ id: crypto.randomUUID(), name: "Regular", formulas: [] }],
   };
 

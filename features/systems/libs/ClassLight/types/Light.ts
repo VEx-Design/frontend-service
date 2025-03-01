@@ -7,4 +7,5 @@ export interface Light {
 export interface LightParam {
   paramId: string;
   value: number;
+  unitPrefixId: string;
 }

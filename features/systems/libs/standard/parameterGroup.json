@@ -1,0 +1,22 @@
+{
+  "parameterGroups": [
+    {
+      "id": "62fbcf8f-7179-411b-b91d-2d9e85799df6",
+      "name": "Beam properties",
+      "parameterIds": [
+        "e82e6c79-4e2b-457f-aef7-02ab28cd19c1",
+        "2c6b38a6-ebd5-4132-b4be-c5757e418d51",
+        "c1ff5f01-8383-44e3-b5f1-b2aca399c8fd",
+        "68046322-f647-4c6e-90a2-3eda1a717a3e"
+      ]
+    },
+    {
+      "id": "0344f7bf-6196-4c5f-94c9-92c2c40cc8d7",
+      "name": "Polarization properties",
+      "parameterIds": [
+        "4f1cf485-92ba-4152-a731-ea0ccfae7b93",
+        "678d3330-961c-442b-8a9e-12df7536ee6e"
+      ]
+    }
+  ]
+}

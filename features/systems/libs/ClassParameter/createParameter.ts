@@ -16,6 +16,7 @@ export default function createParameter(
   return Promise.resolve({
     id: crypto.randomUUID(),
     name: data.name,
+    isStadard: false,
     symbol: data.symbol,
   });
 }

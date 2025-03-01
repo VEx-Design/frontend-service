@@ -149,7 +149,7 @@ export const ConfigFreeSProvider = ({ children }: ConfigFreeSProviderProps) => {
       const formula = getFormula(formulars, formulaId);
       if (!formula) return;
       const newFormulars = formulars.map((f) => {
-        if (f.formula.paramId === formulaId.paramId) {
+        if (f.formula?.paramId === formulaId.paramId) {
           return {
             ...f,
             formula: getFormulaFreeSpace(currentConfigFreeS!, formulaId)!,

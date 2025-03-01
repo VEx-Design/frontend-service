@@ -6,7 +6,7 @@ import { useEditor } from "@/features/systems/contexts/EditorContext";
 import { useProject } from "@/features/systems/contexts/ProjectContext";
 import { Property } from "@/features/systems/libs/ClassType/types/Type";
 import getValue from "@/features/systems/libs/ClassObject/getValue";
-import getPrefixId from "@/features/systems/libs/ClassObject/getPrefixId";
+import { getVarPrefixId } from "@/features/systems/libs/ClassObject/getPrefixId";
 
 export default function ObjectInspector() {
   const { focusNode, nodeAction } = useEditor();
@@ -45,7 +45,7 @@ export default function ObjectInspector() {
                   nodeAction.setValue(prop.id, parseFloat(e.target.value));
                 }}
                 unitId={prop.unitId}
-                prefixId={getPrefixId(focusNode.data, prop.id)}
+                prefixId={getVarPrefixId(focusNode.data, prop.id)}
               />
             ))}
           </div>

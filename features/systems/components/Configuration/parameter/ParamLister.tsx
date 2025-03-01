@@ -14,11 +14,18 @@ import { Loading } from "@/src/components/loading";
 import CreateParameterDialog from "./CreateParameterDialog";
 import { useProject } from "@/features/systems/contexts/ProjectContext";
 import ParamItem from "./ParamItem";
+import { Parameter } from "@/features/systems/libs/ClassParameter/types/Parameter";
 
 export default function ParamLister() {
   const { config, configAction } = useProject();
 
   const display: ListerDisplay = {};
+
+  const indepParams: Parameter[] = config.parameters.filter((param) =>
+    config.parameterGroups.every(
+      (group) => !group.parameterIds.includes(param.id)
+    )
+  );
 
   return (
     <Lister
@@ -44,7 +51,7 @@ export default function ParamLister() {
           listDisplay={display}
           render={({}) => (
             <div className="flex flex-1 flex-col gap-2">
-              {config.parameters.map((param) => (
+              {indepParams.map((param) => (
                 <ParamItem key={param.id?.toString()} param={param} />
               ))}
               {config.parameterGroups.map((group) => (
@@ -52,7 +59,9 @@ export default function ParamLister() {
                   key={group.id?.toString()}
                   className="flex flex-col gap-2 border border-gray-300 p-2 rounded-md"
                 >
-                  <p className="text-sm font-bold">{group.name}</p>
+                  <p className="text-sm font-bold border-b pb-2">
+                    {group.name}
+                  </p>
                   <div className="flex flex-col gap-2">
                     {group.parameterIds.map((item) => {
                       const param = configAction.getParameter(item);

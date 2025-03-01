@@ -2,6 +2,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { Parameter } from "@/features/systems/libs/ClassParameter/types/Parameter";
 import { useConfigFreeS } from "@/features/systems/contexts/Configuration/ConfigFreeSContext";
+import SymbolDisplay from "@/components/SymbolDisplay";
 
 interface Props {
   canClick?: boolean;
@@ -34,7 +35,9 @@ export default function VariableBadge({ canClick, type, param }: Props) {
       }}
     >
       <span className="inline-block align-baseline text-sm font-semibold">
-        {type === "distance" ? "l" : param?.symbol}
+        <SymbolDisplay
+          symbol={type === "distance" ? "distance" : param?.symbol ?? ""}
+        />
       </span>
     </div>
   );

@@ -1,9 +1,11 @@
 import React from "react";
-import Input from "../InspectorInput";
+import Input, { InputLabel } from "../InspectorInput";
 import { useProject } from "@/features/systems/contexts/ProjectContext";
 import { useEditor } from "@/features/systems/contexts/EditorContext";
 import getInitial from "@/features/systems/libs/ClassNode/getInitial";
 import { CircleFadingPlus } from "lucide-react";
+import SymbolDisplay from "@/components/SymbolDisplay";
+import { getParamPrefixId } from "@/features/systems/libs/ClassObject/getPrefixId";
 
 export default function StarterInspector() {
   const { config } = useProject();
@@ -24,6 +26,8 @@ export default function StarterInspector() {
                 type="number"
                 key={`${light.id} + ${index}`}
                 title={`${param.name} [${param.symbol}]`}
+                unitId={param.unitId}
+                prefixId={getParamPrefixId(focusNode.data, light.id, param.id)}
                 value={getInitial(
                   focusNode.data,
                   light.id,
@@ -36,7 +40,14 @@ export default function StarterInspector() {
                     parseFloat(e.target.value)
                   );
                 }}
-              />
+              >
+                <InputLabel>
+                  <div className="flex items-center">
+                    <SymbolDisplay symbol={param.symbol} />
+                    <p className="text-sm ms-1">{` : ${param.name}`}</p>
+                  </div>
+                </InputLabel>
+              </Input>
             ))}
           </div>
         </div>

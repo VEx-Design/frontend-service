@@ -17,6 +17,7 @@ export default function ObjectNodeTemp({
   currentInterfaceId,
 }: Props) {
   const connection = objectType.interfaces || [];
+  const [divWidth, setDivWidth] = React.useState<number>(0);
 
   const connectionLenght = {
     [Position.Top]: 0,
@@ -39,7 +40,7 @@ export default function ObjectNodeTemp({
   );
 
   const nodeHeight = Math.max(52 * lengthVerti + 90, 180);
-  const nodeWidth = Math.max(82 * lengthHori, 90);
+  const nodeWidth = Math.max(Math.max(82 * lengthHori, 90), divWidth + 32);
 
   const connectionCount = {
     [Position.Top]: 0,
@@ -51,8 +52,6 @@ export default function ObjectNodeTemp({
   const placeholderImage =
     "https://static-00.iconduck.com/assets.00/placeholder-icon-2048x2048-48kucnce.png";
 
-  const [divWidth, setDivWidth] = React.useState<number>(0);
-
   return (
     <div
       className={cn(
@@ -61,7 +60,7 @@ export default function ObjectNodeTemp({
       )}
       style={{
         height: `${nodeHeight}px`,
-        width: `${Math.max(nodeWidth, divWidth + 32)}px`,
+        width: `${nodeWidth}px`,
       }}
     >
       <div

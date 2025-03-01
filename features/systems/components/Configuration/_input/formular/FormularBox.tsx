@@ -3,6 +3,7 @@ import { Parameter } from "@/features/systems/libs/ClassParameter/types/Paramete
 import FormulaInput from "./FormulaInput";
 import VariableLister from "./VariableLister";
 import { useConfigInterface } from "@/features/systems/contexts/Configuration/ConfigInterfaceContext";
+import SymbolDisplay from "@/components/SymbolDisplay";
 
 interface Props {
   conditionId: string;
@@ -45,7 +46,10 @@ export default function FormularBox({ conditionId, param }: Props) {
 
   return (
     <div className="flex flex-col justify-between py-3 px-3 border border-editbar-border rounded-xl gap-2">
-      <span className="text-sm font-bold">{`${param.name} [${param.symbol}]`}</span>
+      <div className="flex items-center">
+        <SymbolDisplay symbol={param.symbol} />
+        <p className="text-sm ms-1">{` : ${param.name}`}</p>
+      </div>
       <div className="flex items-center gap-2">
         <span className="text-sm font-bold">{" = "}</span>
         <FormulaInput conditionId={conditionId} paramId={param.id} />
