@@ -8,7 +8,7 @@ interface Props {
   type?: "submit" | "reset" | "button";
   children: React.ReactNode;
   handleButtonClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  variant?: "primary" | "secondary" | "sensitive" | "danger";
+  variant?: "primary" | "secondary" | "sensitive" | "danger" | "transparent";
   className?: string;
 }
 

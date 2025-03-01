@@ -23,6 +23,7 @@ interface ConfigContextValue {
 const ConfigContext = createContext<ConfigContextValue | undefined>(undefined);
 
 interface TypeAction {
+  addType: (newType: Type) => void;
   addProperty: (newProperty: Property) => void;
   addInterface: () => Interface;
   setInterface: (interfaceId: string, newInterface: Interface) => void;
@@ -47,6 +48,10 @@ export const ConfigProvider = ({ children }: ConfigConsoleProviderProps) => {
   const { configAction } = useProject();
 
   const typeAction: TypeAction = {
+    addType: (newType: Type) => {
+      configAction.addType(newType);
+      setCurrentType(newType);
+    },
     addProperty: (newProperty: Property) => {
       if (currentType) {
         const newType = addProperty(currentType, newProperty);

@@ -55,6 +55,7 @@ export default function Diagram() {
 
   const onConnect = useCallback(
     (connection: Connection) => {
+      console.log(connection);
       edgeAction.createEdge(connection);
     },
     [edgeAction]

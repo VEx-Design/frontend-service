@@ -22,13 +22,13 @@ export default function Configuration() {
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={20} minSize={15} maxSize={25}>
         <ResizablePanelGroup direction="vertical">
-          <ResizablePanel defaultSize={60} minSize={15}>
+          <ResizablePanel defaultSize={50} minSize={15}>
             <div className="flex flex-1 flex-col h-full bg-editbar text-foreground border-l-1 border-editbar-border py-4 px-3">
               <TypeLister />
             </div>
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel defaultSize={40} minSize={15}>
+          <ResizablePanel defaultSize={50} minSize={15}>
             <div className="flex flex-1 flex-col h-full bg-editbar text-foreground border-l-1 border-editbar-border py-4 px-3">
               <ParamLister />
             </div>

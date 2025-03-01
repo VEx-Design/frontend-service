@@ -17,6 +17,7 @@ export default async function createProject(form: createProjectData) {
   const config: Config = {
     types: [],
     parameters: [],
+    parameterGroups: [],
     freeSpaces: [{ id: crypto.randomUUID(), name: "Regular", formulas: [] }],
   };
 

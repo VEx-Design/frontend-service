@@ -51,18 +51,27 @@ export default function ObjectNodeTemp({
   const placeholderImage =
     "https://static-00.iconduck.com/assets.00/placeholder-icon-2048x2048-48kucnce.png";
 
+  const [divWidth, setDivWidth] = React.useState<number>(0);
+
   return (
     <div
       className={cn(
-        "flex p-4 flex-1 bg-white justify-center items-center flex-col rounded-lg border-2 border-gray-200",
+        "flex !p-4 flex-1 bg-white justify-center items-center flex-col rounded-lg border-2 border-gray-200",
         isSelect && "border-sky-400"
       )}
       style={{
         height: `${nodeHeight}px`,
-        width: `${nodeWidth}px`,
+        width: `${Math.max(nodeWidth, divWidth + 32)}px`,
       }}
     >
-      <div className="flex flex-col justify-center items-center gap-2">
+      <div
+        className="flex flex-col justify-center items-center gap-2"
+        ref={(el) => {
+          if (el) {
+            setDivWidth(el.offsetWidth);
+          }
+        }}
+      >
         <div className="relative w-[30px] h-[30px]">
           <Image
             src={objectType.picture || placeholderImage}
@@ -74,7 +83,7 @@ export default function ObjectNodeTemp({
             className="object-contain"
           />
         </div>
-        <p className="font-semibold text-lg text-center">
+        <p className="w-full font-semibold text-lg text-center truncate">
           {objectType.displayName}
         </p>
       </div>

@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { ProjectResponse } from "../actions/getProjectWithID";
-import { Config } from "../libs/ClassConfig/types/Config";
+import { Config, ParameterGroup } from "../libs/ClassConfig/types/Config";
 import { Type } from "../libs/ClassType/types/Type";
 import addType from "../libs/ClassConfig/addType";
 import getType from "../libs/ClassConfig/getType";
@@ -31,6 +31,8 @@ import editType from "../libs/ClassConfig/editType";
 import { Flow } from "../libs/ClassFlow/types/Flow";
 import { FreeSpace } from "../libs/ClassConfig/types/FreeSpace";
 import editFreeSpace from "../libs/ClassConfig/editFreeSpace";
+import addParameterGroup from "../libs/ClassConfig/addParameterGroup";
+import getParameter from "../libs/ClassConfig/getParameter";
 
 interface ProjectContextValue {
   projId: string;
@@ -73,6 +75,7 @@ interface ConfigAction {
   addParameter: (parameter: Parameter) => void;
   getParameter: (parameterId: string) => Parameter;
   editFreeSpace: (freeSpace: FreeSpace) => void;
+  addParameterGroup: (parameterGroup: ParameterGroup) => void;
 }
 
 interface ProjectProviderProps {
@@ -124,11 +127,16 @@ export const ProjectProvider = ({
     getType: (typeId: string) => getType(config, typeId),
     addParameter: (parameter: Parameter) =>
       setConfig(addParameter(config, parameter)),
-    getParameter: (parameterId: string) => {
-      return config.parameters.find((param) => param.id === parameterId)!;
-    },
+    getParameter: (parameterId: string) => getParameter(config, parameterId)!,
     editFreeSpace: (freeSpace: FreeSpace) => {
       setConfig(editFreeSpace(config, freeSpace));
+    },
+    addParameterGroup: (parameterGroup: ParameterGroup) => {
+      console.log(
+        "addParameterGroup",
+        addParameterGroup(config, parameterGroup)
+      );
+      setConfig(addParameterGroup(config, parameterGroup));
     },
   };
 

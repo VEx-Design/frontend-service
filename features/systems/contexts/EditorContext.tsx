@@ -13,6 +13,7 @@ import { CreateEdgeLight } from "../libs/ClassEdge/createFlowEdge";
 import setInitial from "../libs/ClassNode/setInitial";
 import setValue from "../libs/ClassObject/setValue";
 import addInitialLight from "../libs/ClassNode/addInitialLight";
+import { toast } from "sonner";
 
 type FocusNode = {
   id: string;
@@ -123,12 +124,35 @@ export function EditorProvider(props: { children: React.ReactNode }) {
 
   const edgeAction: EdgeAction = {
     createEdge: (connection: Connection) => {
-      const isDuplicate = edgesState.edges.some(
-        (e) => e.source === connection.source && e.target === connection.target
-      );
-      if (isDuplicate) return;
       const edge = CreateEdgeLight(connection);
-      edgesState.setEdges([...edgesState.edges, edge]);
+      if (!edge) {
+        console.error("Edge creation failed!");
+        return;
+      }
+
+      const currentEdges = edgesState.edges;
+      const isDuplicate = currentEdges.some(
+        (e) =>
+          e.sourceHandle === connection.sourceHandle ||
+          e.targetHandle === connection.targetHandle
+      );
+      if (isDuplicate) {
+        toast.warning("Interface Already Connected", {
+          id: "add-edge",
+          description: `Each interface can only have one connection.`,
+        });
+        return;
+      }
+      const isSelf = connection.source === connection.target;
+      if (isSelf) {
+        toast.warning("Self Connection", {
+          id: "add-edge",
+          description: `Cannot connect to itself.`,
+        });
+        return;
+      }
+
+      edgesState.setEdges([...currentEdges, edge]);
     },
   };
 
