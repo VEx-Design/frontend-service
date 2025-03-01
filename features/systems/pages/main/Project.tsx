@@ -36,14 +36,14 @@ export default function Project() {
               <GitGraph />
             </TabsTriggerIcon>
           </TabsTrigger>
-          <TabsTrigger name="Configuration">
-            <TabsTriggerIcon>
-              <FileSliders />
-            </TabsTriggerIcon>
-          </TabsTrigger>
           <TabsTrigger name="Execution">
             <TabsTriggerIcon>
               <Airplay />
+            </TabsTriggerIcon>
+          </TabsTrigger>
+          <TabsTrigger name="Configuration">
+            <TabsTriggerIcon>
+              <FileSliders />
             </TabsTriggerIcon>
           </TabsTrigger>
           <TabsTrigger name="ObjectDefine">

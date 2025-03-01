@@ -1,35 +1,43 @@
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import { useExecution } from "@/features/systems/contexts/ExecutionContext";
-import { useProject } from "@/features/systems/contexts/ProjectContext";
 import React from "react";
+import LightLister from "./LightLister";
+import BeamCrossSectional from "../BeamCrossSectional";
+import PolarizationScene from "../PolarizationCanvas";
 
 export default function EdgeInfomation() {
   const { focusEdge } = useExecution();
   const lights = focusEdge?.data?.lights;
 
-  const { configAction } = useProject();
-
   if (!lights) return null;
   return (
-    <div className="flex flex-col">
-      {/* <p>{focusEdge?.id}</p> */}
-      <div className="flex flex-col overflow-auto">
-        {lights.map((light, index) => {
-          return (
-            <div key={index}>
-              {light.params.map((param) => {
-                const paramInfo = configAction.getParameter(param.paramId);
-                return (
-                  <div key={param.paramId}>
-                    <p>{`${paramInfo.name} [${paramInfo.symbol}]`}</p>
-                    <p>{param.value}</p>
-                  </div>
-                );
-              })}
-              <div className="flex flex-1 border"></div>
+    <ResizablePanelGroup direction="horizontal" className="h-full w-full">
+      <ResizablePanel defaultSize={10} minSize={5} maxSize={15}>
+        <LightLister />
+      </ResizablePanel>
+      <ResizableHandle />
+      <ResizablePanel defaultSize={70} minSize={15} maxSize={85}>
+        <ResizablePanelGroup direction="horizontal" className="h-full w-full">
+          <ResizablePanel defaultSize={40} minSize={30} maxSize={50}>
+            <div className="flex flex-1 items-center">
+              <div className="flex flex-1 border-r justify-center items-center">
+                <BeamCrossSectional rx={30} ry={20} />
+              </div>
+              <div className="flex flex-1">
+                <PolarizationScene />
+              </div>
             </div>
-          );
-        })}
-      </div>
-    </div>
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel defaultSize={60} minSize={15} maxSize={85}>
+            <div className="flex flex-1">ddd</div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </ResizablePanel>
+    </ResizablePanelGroup>
   );
 }

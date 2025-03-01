@@ -63,10 +63,15 @@ const PolarizationWave = ({
   return (
     <>
       {/* Polarization Wave Line */}
-      {/* @ts-ignore */}
-      <line ref={pointsRef} geometry={geometry}>
-        <lineBasicMaterial attach="material" color="#17202a" linewidth={2} />
-      </line>
+      <primitive
+        object={
+          new THREE.Line(
+            geometry,
+            new THREE.LineBasicMaterial({ color: "#17202a", linewidth: 2 })
+          )
+        }
+        ref={pointsRef}
+      />
 
       {/* X-axis Fill */}
       <mesh ref={meshRef} geometry={meshGeometry}>
@@ -87,7 +92,7 @@ const XAxis = () => {
       <bufferGeometry attach="geometry">
         <bufferAttribute
           attach="attributes-position"
-          args={[new Float32Array([0, 1, 2, 3]), 1]}
+          args={[new Float32Array([-20, 0, 0, 20, 0, 0]), 1]}
           count={2}
           itemSize={3}
         />
@@ -98,9 +103,9 @@ const XAxis = () => {
 };
 
 const PolarizationScene = () => {
-  const [Ex, setEx] = useState(1);
-  const [Ey, setEy] = useState(1);
-  const [phase, setPhase] = useState(0);
+  const [Ex] = useState(1);
+  const [Ey] = useState(1);
+  const [phase] = useState(0);
 
   return (
     <div className="flex flex-col items-center">
@@ -114,38 +119,6 @@ const PolarizationScene = () => {
         <XAxis />
         <PolarizationWave Ex={Ex} Ey={Ey} phase={phase} />
       </Canvas>
-
-      <div className="mt-4 flex flex-col gap-2">
-        <label>Ex Amplitude: {Ex.toFixed(2)}</label>
-        <input
-          type="range"
-          min="-1"
-          max="1"
-          step="0.1"
-          value={Ex}
-          onChange={(e) => setEx(Number(e.target.value))}
-        />
-
-        <label>Ey Amplitude: {Ey.toFixed(2)}</label>
-        <input
-          type="range"
-          min="-1"
-          max="1"
-          step="0.1"
-          value={Ey}
-          onChange={(e) => setEy(Number(e.target.value))}
-        />
-
-        <label>Phase Difference: {phase.toFixed(2)} rad</label>
-        <input
-          type="range"
-          min="0"
-          max="6.28"
-          step="0.1"
-          value={phase}
-          onChange={(e) => setPhase(Number(e.target.value))}
-        />
-      </div>
     </div>
   );
 };

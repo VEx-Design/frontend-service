@@ -133,8 +133,10 @@ export function EditorProvider(props: { children: React.ReactNode }) {
       const currentEdges = edgesState.edges;
       const isDuplicate = currentEdges.some(
         (e) =>
-          e.sourceHandle === connection.sourceHandle ||
-          e.targetHandle === connection.targetHandle
+          (e.sourceHandle === connection.sourceHandle ||
+            e.targetHandle === connection.targetHandle) &&
+          e.source === connection.source &&
+          e.target === connection.target
       );
       if (isDuplicate) {
         toast.warning("Interface Already Connected", {
