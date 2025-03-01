@@ -6,7 +6,10 @@ export default function InfomationBar() {
   return (
     <div>
       <EdgeInfomation />
-      {/* <PolarizationCanvas /> */}
+      <div className="flex flex-row gap-4">
+        <PolarizationCanvas />
+        <PolarizationCanvas />
+      </div>
     </div>
   );
 }
