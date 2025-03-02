@@ -1,7 +1,7 @@
 "use client";
 import { Canvas } from "@react-three/fiber";
 import { useFrame } from "@react-three/fiber";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import * as THREE from "three";
 
 const PolarizationWave = ({
@@ -102,14 +102,19 @@ const XAxis = () => {
   );
 };
 
-const PolarizationScene = () => {
-  const [Ex] = useState(1);
-  const [Ey] = useState(1);
-  const [phase] = useState(0);
-
+const PolarizationScene = ({
+  Ex,
+  Ey,
+  phase,
+}: {
+  Ex: number;
+  Ey: number;
+  phase: number;
+}) => {
   return (
-    <div className="flex flex-col items-center">
+    <div className="w-full h-full flex items-center justify-center">
       <Canvas
+        style={{ width: "100%", height: "100%" }}
         camera={{
           position: [30, 15, 30], // Perspective view with depth
           fov: 50, // Adjust field of view for better perspective

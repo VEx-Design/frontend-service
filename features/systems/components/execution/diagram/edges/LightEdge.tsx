@@ -6,7 +6,7 @@ import {
   type EdgeProps,
 } from "@xyflow/react";
 import { EdgeData } from "@/features/systems/libs/ClassEdge/types/AppEdge";
-import { useExecution } from "@/features/systems/contexts/ExecutionContext";
+import { useExecution } from "@/features/systems/contexts/Execution/ExecutionContext";
 
 export default function LightEdge(props: EdgeProps) {
   const edgeData = props.data?.data as EdgeData;

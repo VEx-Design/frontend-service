@@ -4,7 +4,7 @@ import StarterNode from "./nodes/StarterNode";
 import TerminalNode from "./nodes/TerminalNode";
 import ObjectNode from "./nodes/ObjectNode";
 import LightEdge from "./edges/LightEdge";
-import { useExecution } from "@/features/systems/contexts/ExecutionContext";
+import { useExecution } from "@/features/systems/contexts/Execution/ExecutionContext";
 
 const rfStyle = {
   backgroundColor: "#FAFAFA",

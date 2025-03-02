@@ -4,10 +4,10 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import React, { useCallback, useRef } from "react";
-import ViewDiagram from "../components/execution/diagram/ViewDiagram";
-import InfomationBar from "../components/execution/infomation/InfomationBar";
 import { useReactFlow } from "@xyflow/react";
 import { ImperativePanelHandle } from "react-resizable-panels";
+import ViewDiagram from "../components/Execution/diagram/ViewDiagram";
+import InfomationBar from "../components/Execution/infomation/InfomationBar";
 
 export default function Execution() {
   const panelRef = useRef<ImperativePanelHandle>(null);

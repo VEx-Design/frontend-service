@@ -15,7 +15,7 @@ import Editor from "../Editor";
 import Configuration from "../Configuration";
 import { EditorProvider } from "../../contexts/EditorContext";
 import Execution from "../Execution";
-import { ExecutionProvider } from "../../contexts/ExecutionContext";
+import { ExecutionProvider } from "../../contexts/Execution/ExecutionContext";
 import { ConfigProvider } from "../../contexts/Configuration/ConfigContext";
 
 export default function Project() {

@@ -14,7 +14,12 @@ const BeamCrossSectional: React.FC<BeamCrossSectionalProps> = ({
   cy = 110,
 }) => {
   return (
-    <svg width="220" height="220">
+    <svg
+      width="100%"
+      height="100%"
+      viewBox="0 0 220 220"
+      preserveAspectRatio="xMidYMid meet"
+    >
       {rx === ry ? (
         <circle
           cx={cx}
