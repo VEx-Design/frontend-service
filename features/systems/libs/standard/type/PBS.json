@@ -125,7 +125,7 @@
               "formulaTokens": [
                 {
                   "id": "f7186845-cef0-4eca-bae6-51eb2e1d64d2",
-                  "stream": "",
+                  "stream": "1/2*(",
                   "variable": {
                     "id": "3643ae7f-c0a8-49dc-b885-d2189a235d5e",
                     "type": "interface",
@@ -144,8 +144,8 @@
                   }
                 }
               ],
-              "lastStream": "",
-              "completeStream": "x[1]+x[2]",
+              "lastStream": ")",
+              "completeStream": "1/2*(x[1]+x[2])",
               "variables": [
                 {
                   "id": "3643ae7f-c0a8-49dc-b885-d2189a235d5e",
@@ -167,7 +167,7 @@
               "formulaTokens": [
                 {
                   "id": "9a64eb23-78df-47d5-9a06-a75e879f02a2",
-                  "stream": "",
+                  "stream": "1/2*(",
                   "variable": {
                     "id": "a24a24d0-2829-4a86-9cf3-5af9f51bb4e6",
                     "type": "interface",
@@ -186,8 +186,8 @@
                   }
                 }
               ],
-              "lastStream": "",
-              "completeStream": "x[1]+x[2]",
+              "lastStream": ")",
+              "completeStream": "1/2*(x[1]+x[2])",
               "variables": [
                 {
                   "id": "a24a24d0-2829-4a86-9cf3-5af9f51bb4e6",
@@ -336,7 +336,7 @@
               "formulaTokens": [
                 {
                   "id": "3977d0a5-784b-47e4-a5b9-44dc8acd912a",
-                  "stream": "",
+                  "stream": "1/2*(",
                   "variable": {
                     "id": "2b566025-c4db-4cc5-8ee5-a245444c6756",
                     "type": "interface",
@@ -355,8 +355,8 @@
                   }
                 }
               ],
-              "lastStream": "",
-              "completeStream": "x[1]-x[2]",
+              "lastStream": ")",
+              "completeStream": "1/2*(x[1]-x[2])",
               "variables": [
                 {
                   "id": "2b566025-c4db-4cc5-8ee5-a245444c6756",
@@ -378,7 +378,7 @@
               "formulaTokens": [
                 {
                   "id": "daf49aae-da23-4d71-a25e-1329aa9ff20e",
-                  "stream": "-",
+                  "stream": "1/2*(-",
                   "variable": {
                     "id": "60633316-5111-4cee-a34f-58b14d2fb900",
                     "type": "interface",
@@ -397,8 +397,8 @@
                   }
                 }
               ],
-              "lastStream": "",
-              "completeStream": "-x[1]+x[2]",
+              "lastStream": ")",
+              "completeStream": "1/2*(-x[1]+x[2])",
               "variables": [
                 {
                   "id": "60633316-5111-4cee-a34f-58b14d2fb900",
@@ -554,7 +554,7 @@
               "formulaTokens": [
                 {
                   "id": "311d9149-4726-454e-a4da-1ef852d952bc",
-                  "stream": "",
+                  "stream": "1/2*(",
                   "variable": {
                     "id": "ce24ee2e-f20b-4c85-a1d5-2040074e0e48",
                     "type": "interface",
@@ -573,8 +573,8 @@
                   }
                 }
               ],
-              "lastStream": "",
-              "completeStream": "x[1]+x[2]",
+              "lastStream": ")",
+              "completeStream": "1/2*(x[1]+x[2])",
               "variables": [
                 {
                   "id": "ce24ee2e-f20b-4c85-a1d5-2040074e0e48",
@@ -596,7 +596,7 @@
               "formulaTokens": [
                 {
                   "id": "f291acca-96a5-49ac-b7e8-68341ad5ad66",
-                  "stream": "",
+                  "stream": "1/2*(",
                   "variable": {
                     "id": "d42ecaf3-48ee-45d5-bb97-f696cdabf58f",
                     "type": "interface",
@@ -615,8 +615,8 @@
                   }
                 }
               ],
-              "lastStream": "",
-              "completeStream": "x[1]+x[2]",
+              "lastStream": ")",
+              "completeStream": "1/2*(x[1]+x[2])",
               "variables": [
                 {
                   "id": "d42ecaf3-48ee-45d5-bb97-f696cdabf58f",
@@ -765,7 +765,7 @@
               "formulaTokens": [
                 {
                   "id": "f6e08da5-f8d4-4eb2-9452-bb51b57e3cd3",
-                  "stream": "",
+                  "stream": "1/2*(",
                   "variable": {
                     "id": "5a95d3e9-d51d-41d1-a4d1-de3aa8c293fc",
                     "type": "interface",
@@ -784,8 +784,8 @@
                   }
                 }
               ],
-              "lastStream": "",
-              "completeStream": "x[1]-x[2]",
+              "lastStream": ")",
+              "completeStream": "1/2*(x[1]-x[2])",
               "variables": [
                 {
                   "id": "5a95d3e9-d51d-41d1-a4d1-de3aa8c293fc",
@@ -807,7 +807,7 @@
               "formulaTokens": [
                 {
                   "id": "14fb7f61-d3cd-4e00-857e-958b0fb2076f",
-                  "stream": "-",
+                  "stream": "1/2*(-",
                   "variable": {
                     "id": "c061e5ee-6b0b-4b39-90be-8ad4588daa24",
                     "type": "interface",
@@ -826,8 +826,8 @@
                   }
                 }
               ],
-              "lastStream": "",
-              "completeStream": "-x[1]+x[2]",
+              "lastStream": ")",
+              "completeStream": "1/2*(-x[1]+x[2])",
               "variables": [
                 {
                   "id": "c061e5ee-6b0b-4b39-90be-8ad4588daa24",
@@ -983,7 +983,7 @@
               "formulaTokens": [
                 {
                   "id": "708515ae-f40d-4a18-9cc8-1f06b34d6fd6",
-                  "stream": "",
+                  "stream": "1/2*(",
                   "variable": {
                     "id": "9366a395-3062-4c90-bff6-c94f9cb13f7d",
                     "type": "interface",
@@ -1002,8 +1002,8 @@
                   }
                 }
               ],
-              "lastStream": "",
-              "completeStream": "x[1]+x[2]",
+              "lastStream": ")",
+              "completeStream": "1/2*(x[1]+x[2])",
               "variables": [
                 {
                   "id": "9366a395-3062-4c90-bff6-c94f9cb13f7d",
@@ -1025,7 +1025,7 @@
               "formulaTokens": [
                 {
                   "id": "38a1ca7e-fb6a-427a-a439-3f32ec676969",
-                  "stream": "",
+                  "stream": "1/2*(",
                   "variable": {
                     "id": "44207b93-d3f7-4620-aed5-601ce54fb83d",
                     "type": "interface",
@@ -1044,8 +1044,8 @@
                   }
                 }
               ],
-              "lastStream": "",
-              "completeStream": "x[1]+x[2]",
+              "lastStream": ")",
+              "completeStream": "1/2*(x[1]+x[2])",
               "variables": [
                 {
                   "id": "44207b93-d3f7-4620-aed5-601ce54fb83d",
@@ -1194,7 +1194,7 @@
               "formulaTokens": [
                 {
                   "id": "1b750b04-0b12-40da-975d-14ed9427265c",
-                  "stream": "",
+                  "stream": "1/2*(",
                   "variable": {
                     "id": "7eea1a98-ab45-4e99-a5bd-b3ad15a2163f",
                     "type": "interface",
@@ -1213,8 +1213,8 @@
                   }
                 }
               ],
-              "lastStream": "",
-              "completeStream": "x[1]-x[2]",
+              "lastStream": ")",
+              "completeStream": "1/2*(x[1]-x[2])",
               "variables": [
                 {
                   "id": "7eea1a98-ab45-4e99-a5bd-b3ad15a2163f",
@@ -1236,7 +1236,7 @@
               "formulaTokens": [
                 {
                   "id": "244c453d-d065-472f-b50a-8d63bfd56354",
-                  "stream": "-",
+                  "stream": "1/2*(-",
                   "variable": {
                     "id": "90f60b17-a84d-47bd-a2e2-ef8dbe341efc",
                     "type": "interface",
@@ -1255,8 +1255,8 @@
                   }
                 }
               ],
-              "lastStream": "",
-              "completeStream": "-x[1]+x[2]",
+              "lastStream": ")",
+              "completeStream": "1/2*(-x[1]+x[2])",
               "variables": [
                 {
                   "id": "90f60b17-a84d-47bd-a2e2-ef8dbe341efc",
@@ -1412,7 +1412,7 @@
               "formulaTokens": [
                 {
                   "id": "a27b8add-0c3e-470d-98cb-e845ace13ba2",
-                  "stream": "",
+                  "stream": "1/2*(",
                   "variable": {
                     "id": "681b7191-a4a1-42d1-890d-f5ae37d9c741",
                     "type": "interface",
@@ -1431,8 +1431,8 @@
                   }
                 }
               ],
-              "lastStream": "",
-              "completeStream": "x[1]+x[2]",
+              "lastStream": ")",
+              "completeStream": "1/2*(x[1]+x[2])",
               "variables": [
                 {
                   "id": "681b7191-a4a1-42d1-890d-f5ae37d9c741",
@@ -1454,7 +1454,7 @@
               "formulaTokens": [
                 {
                   "id": "22c8d205-553d-4be2-8380-258222880aec",
-                  "stream": "",
+                  "stream": "1/2*(",
                   "variable": {
                     "id": "83e28e94-5786-4fae-a9a9-771c7b98cf2f",
                     "type": "interface",
@@ -1473,8 +1473,8 @@
                   }
                 }
               ],
-              "lastStream": "",
-              "completeStream": "x[1]+x[2]",
+              "lastStream": ")",
+              "completeStream": "1/2*(x[1]+x[2])",
               "variables": [
                 {
                   "id": "83e28e94-5786-4fae-a9a9-771c7b98cf2f",
@@ -1623,7 +1623,7 @@
               "formulaTokens": [
                 {
                   "id": "d1a346b5-3280-409d-a74b-080681299944",
-                  "stream": "",
+                  "stream": "1/2*(",
                   "variable": {
                     "id": "e6182b41-6460-4f3a-9547-7e745e667a93",
                     "type": "interface",
@@ -1642,8 +1642,8 @@
                   }
                 }
               ],
-              "lastStream": "",
-              "completeStream": "x[1]-x[2]",
+              "lastStream": ")",
+              "completeStream": "1/2*(x[1]-x[2])",
               "variables": [
                 {
                   "id": "e6182b41-6460-4f3a-9547-7e745e667a93",
@@ -1665,7 +1665,7 @@
               "formulaTokens": [
                 {
                   "id": "2de0945d-1968-4c25-851f-0a6d1cefae41",
-                  "stream": "-",
+                  "stream": "1/2*(-",
                   "variable": {
                     "id": "e77151c1-0bdc-4647-a222-d120dd6263cb",
                     "type": "interface",
@@ -1684,8 +1684,8 @@
                   }
                 }
               ],
-              "lastStream": "",
-              "completeStream": "-x[1]+x[2]",
+              "lastStream": ")",
+              "completeStream": "1/2*(-x[1]+x[2])",
               "variables": [
                 {
                   "id": "e77151c1-0bdc-4647-a222-d120dd6263cb",
