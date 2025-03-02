@@ -17,7 +17,6 @@ import { EditorProvider } from "../../contexts/EditorContext";
 import Execution from "../Execution";
 import { ExecutionProvider } from "../../contexts/ExecutionContext";
 import { ConfigProvider } from "../../contexts/Configuration/ConfigContext";
-import ObjectBox from "../../components/ObjectDefine/ObjectBox";
 
 export default function Project() {
   const { projName, onSave, savePending } = useProject();
@@ -68,7 +67,8 @@ export default function Project() {
           </ExecutionProvider>
         </TabsContent>
         <TabsContent name="ObjectDefine">
-          <ObjectBox />
+          {/* <DrawingCanvas /> */}
+          <div></div>
         </TabsContent>
       </Tabs>
     </>
