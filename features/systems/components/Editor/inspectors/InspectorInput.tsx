@@ -61,7 +61,6 @@ function Input({
   }, []);
 
   const label = useMemo(() => getChild(children, InputLabel), [children]);
-  console.log("label", label);
 
   return (
     <div className="flex flex-col">

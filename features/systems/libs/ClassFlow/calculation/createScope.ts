@@ -13,6 +13,8 @@ export default function createScope(
       const prop = object.vars.find((prop) => prop.propId === variable.propId);
       if (prop) {
         scope.push(prop.value);
+      } else {
+        scope.push(0);
       }
     } else if (variable.type === "interface") {
       const light = inputLight.params.find(
