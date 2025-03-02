@@ -1,35 +1,15 @@
 "use client";
+
 import {
   createContext,
   useContext,
   useState,
   ReactNode,
-  useEffect,
+  useCallback,
 } from "react";
 
-// กำหนดโครงของข้อมูลของ Canvas
-interface CanvasType {
-  width: number;
-  height: number;
-  showGrid: boolean;
-  gridSize: number;
-  gridColor: string;
-  gridOpacity: number;
-  gridStyle: "dot" | "line";
-}
-
-// กำหนดค่าเริ่มต้นของ Canvas
-const DefaultCanvasType: CanvasType = {
-  width: 800,
-  height: 600,
-  showGrid: true,
-  gridSize: 25,
-  gridColor: "#CCCCCC",
-  gridOpacity: 0.5,
-  gridStyle: "dot",
-};
-
-interface CanvasObjectType {
+// Define Types
+interface ObjectProps {
   id: string;
   name: string;
   x: number;
@@ -39,73 +19,142 @@ interface CanvasObjectType {
   fill: string;
   imageUrl: string;
   connectedTo: string[];
-  isStartNode?: boolean;
+  isStartNode: boolean;
+  referencePosition: number[];
+}
+
+interface GridProps {
+  showGrid: boolean;
+  gridSize: number;
+  gridColor: string;
+  gridOpacity: number;
+  gridStyle: "dot" | "line";
 }
 
 interface CanvasState {
-  canvas: CanvasType;
-  objects: CanvasObjectType[];
-  selectedObject: CanvasObjectType | null;
+  objects: ObjectProps[];
+  selectedObjectId: string | null;
+  canvasWidth: number;
+  canvasHeight: number;
+  grid: GridProps;
 }
 
-// กำหนดโครงร่างของ Canvas Context ที่จะใช้ในการแชร์ไป Component อื่น
-interface CanvasContextProps {
-  canvasState: CanvasState;
-  setCanvasState: React.Dispatch<React.SetStateAction<CanvasState>>;
+interface CanvasContextType {
+  // Canvas state
+  canvas: CanvasState;
+  // Canvas methods
+  setCanvasSize: (width: number, height: number) => void;
+  setGrid: (settings: Partial<GridProps>) => void;
+  updateCanvas: (updates: Partial<CanvasState>) => void;
+
+  // Object methods
+  selectObject: (id: string | null) => void;
+  getSelectedObject: () => ObjectProps | null;
+  updateObject: (id: string, updates: Partial<ObjectProps>) => void;
 }
 
-// สร้าง Canvas Context สำหรับแชร์ข้อมูลไปยัง Component อื่น ผ่าน Provider ซึ่งเป็น ContextAPI ของ React
-const CanvasContext = createContext<CanvasContextProps>({
-  canvasState: {
-    canvas: DefaultCanvasType,
-    objects: [],
-    selectedObject: null,
-  },
-  setCanvasState: () => {},
-});
-
-{
-  /* 
-  สร้าง CanvasProvider สำหรับใช้ครอบ Component ซึ่งจะ return CanvasContext ออกไป
-  โดยรับค่า children ที่เป็น ReactNode(JSX, React Compoent) ซึ่งเป็น Component ที่ต้องการใช้ข้อมูลจาก CanvasContext
-  สร้าง State สำหรับเก็บข้อมูลของ Canvas โดยการ Check ว่ามีข้อมูลใน LocalStorage หรือไม่ ถ้ามีก็ใช้จาก LocalStorage ถ้าไม่มีก็ใช้ค่า Default
-*/
+interface CanvasProviderProps {
+  children: ReactNode;
+  initialObjects: ObjectProps[];
+  initialCanvasSize: { width: number; height: number };
 }
-export function CanvasProvider({ children }: { children: ReactNode }) {
-  const [canvas, setCanvasState] = useState<CanvasState>(getCanvasDimensions());
 
-  useEffect(() => {
-    localStorage.setItem("CanvasDimensions", JSON.stringify(canvas));
-  }, [canvas]);
+const CanvasContext = createContext<CanvasContextType | null>(null);
+
+export const CanvasProvider = ({
+  children,
+  initialObjects,
+  initialCanvasSize,
+}: CanvasProviderProps) => {
+  const [canvas, setCanvas] = useState<CanvasState>({
+    objects: initialObjects,
+    selectedObjectId: null,
+    canvasWidth: initialCanvasSize?.width,
+    canvasHeight: initialCanvasSize?.height,
+    grid: {
+      showGrid: true,
+      gridSize: 25,
+      gridColor: "#CCCCCC",
+      gridOpacity: 1,
+      gridStyle: "dot",
+    },
+  });
+
+  // console.log("CanvasProvider", canvas);
+
+  const setCanvasSize = useCallback((width: number, height: number) => {
+    setCanvas((prev) => {
+      return {
+        ...prev,
+        canvasWidth: width,
+        canvasHeight: height,
+      };
+    });
+  }, []);
+
+  const setGrid = useCallback((settings: Partial<GridProps>) => {
+    setCanvas((prev) => ({
+      ...prev,
+      grid: {
+        ...prev.grid,
+        ...settings,
+      },
+    }));
+  }, []);
+
+  const selectObject = useCallback((id: string | null) => {
+    setCanvas((prev) => ({
+      ...prev,
+      selectedObjectId: id,
+    }));
+  }, []);
+
+  const getSelectedObject = useCallback(() => {
+    return (
+      canvas.objects.find((obj) => obj.id === canvas.selectedObjectId) || null
+    );
+  }, [canvas.objects, canvas.selectedObjectId]);
+
+  const updateObject = useCallback(
+    (id: string, updates: Partial<ObjectProps>) => {
+      setCanvas((prev) => ({
+        ...prev,
+        objects: prev.objects.map((obj) =>
+          obj.id === id ? { ...obj, ...updates } : obj
+        ),
+      }));
+    },
+    []
+  );
+
+  const updateCanvas = useCallback((updates: Partial<CanvasState>) => {
+    setCanvas((prev) => ({
+      ...prev,
+      ...updates,
+    }));
+  }, []);
+
+  const contextValue: CanvasContextType = {
+    canvas,
+    setCanvasSize,
+    setGrid,
+    selectObject,
+    getSelectedObject,
+    updateObject,
+    updateCanvas,
+  };
 
   return (
-    <CanvasContext.Provider value={{ canvasState: canvas, setCanvasState }}>
+    <CanvasContext.Provider value={contextValue}>
       {children}
     </CanvasContext.Provider>
   );
-}
+};
 
-// สร้าง Custom Hook สำหรับใช้งานข้อมูลจาก CanvasContext โดยจะ return ค่าของ CanvasContext ออกไป
-export function useCanvas() {
+export const useCanvas = () => {
   const context = useContext(CanvasContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error("useCanvas must be used within a CanvasProvider");
   }
   return context;
-}
-
-// สร้าง Function สำหรับดึงข้อมูลของ Canvas จาก LocalStorage
-export function getCanvasDimensions(): CanvasState {
-  const dimension = localStorage.getItem("CanvasDimensions");
-  return dimension
-    ? JSON.parse(dimension)
-    : { canvas: DefaultCanvasType, objects: [] };
-}
-
-// สร้าง Function สำหรับ Set ขนาดของ Canvas โดยรับค่า width และ height
-export function setCanvasDimensions(width: number, height: number): void {
-  const LocalStorageCanvas = getCanvasDimensions();
-  LocalStorageCanvas.canvas.width = width;
-  LocalStorageCanvas.canvas.height = height;
-  localStorage.setItem("CanvasDimensions", JSON.stringify(LocalStorageCanvas));
-}
+};

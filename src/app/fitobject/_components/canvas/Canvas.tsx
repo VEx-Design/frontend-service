@@ -1,119 +1,272 @@
-"use client";
-import { useEffect, useRef, useState } from "react";
-import { Stage, Layer, Rect, Line, Circle } from "react-konva";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Stage,
+  Layer,
+  Line,
+  Circle,
+  Image as KonvaImage,
+  Group,
+  Rect,
+} from "react-konva";
+import { useCanvas } from "./CanvasContext";
+import useImage from "use-image";
+import Konva from "konva";
 import { FaRegHandPaper } from "react-icons/fa";
 import { AiOutlineExport } from "react-icons/ai";
 import { LuMousePointer2 } from "react-icons/lu";
-import Konva from "konva";
-import { useCanvas } from "./CanvasContext";
 
-const Canvas = ({}) => {
-  // Refs
-  const stageRef = useRef<Konva.Stage | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+interface KonvaObjectProps {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  imageUrl: string;
+  isSelected: boolean;
+  onSelect: () => void;
+  onChange: (newProps: { x: number; y: number }) => void;
+  draggable: boolean;
+  allObjects: Array<{
+    id: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }>;
+  referencePosition: number[]; // Added reference position
+  gridSize: number; // Added grid size for snapping
+  showGrid: boolean; // Added to check if grid is enabled
+  gridStyle: "dot" | "line"; // Added to check if grid style is dot
+}
 
-  // Canvas dimensions
-  const { canvasState, setCanvasState } = useCanvas();
-  const CANVAS_WIDTH = canvasState.canvas.width;
-  const CANVAS_HEIGHT = canvasState.canvas.height;
-  // console.log("H:", CANVAS_HEIGHT, "W:", CANVAS_WIDTH);
+const Object: React.FC<KonvaObjectProps> = ({
+  id,
+  x,
+  y,
+  width,
+  height,
+  imageUrl,
+  isSelected,
+  onSelect,
+  onChange,
+  draggable,
+  allObjects,
+  referencePosition,
+  gridSize,
+  showGrid,
+  gridStyle,
+}) => {
+  const [image] = useImage(imageUrl);
+  const [isColliding, setIsColliding] = useState(false);
 
-  // Grid-related state from canvasState
-  const { showGrid, gridSize, gridColor, gridOpacity } = canvasState.canvas;
+  const circleSize = Math.min(width, height) * 0.8;
+  const circleX = width / 2;
+  const circleY = height / 2;
 
-  // State
-  const [action, setAction] = useState<string>("Move");
-  const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
-  const [zoomScale, setZoomScale] = useState(1);
-  const [stagePos, setStagePos] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
+  const checkCollision = useCallback(
+    (currentX: number, currentY: number) => {
+      return allObjects.some((obj) => {
+        if (obj.id === id) return false;
 
-  // Constants
-  const MIN_ZOOM = 0.1;
-  const MAX_ZOOM = 5;
-  const ZOOM_FACTOR = 1.2;
+        const isOverlapping =
+          currentX < obj.x + obj.width &&
+          currentX + width > obj.x &&
+          currentY < obj.y + obj.height &&
+          currentY + height > obj.y;
 
-  // Update stage size on window resize
-  useEffect(() => {
-    const updateSize = () => {
-      if (containerRef.current) {
-        setStageSize({
-          width: containerRef.current.offsetWidth,
-          height: containerRef.current.offsetHeight,
-        });
-      }
-    };
-
-    updateSize();
-    window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
-  }, []);
-
-  // Calculate stage scaling to fit canvas
-  const getStageScale = () => {
-    const scaleX = stageSize.width / CANVAS_WIDTH;
-    const scaleY = stageSize.height / CANVAS_HEIGHT;
-    return Math.min(scaleX, scaleY, 1);
-  };
-
-  // Zoom handlers
-  const handleZoomIn = () => {
-    setZoomScale((prev) => Math.min(prev * ZOOM_FACTOR, MAX_ZOOM));
-  };
-
-  const handleZoomOut = () => {
-    setZoomScale((prev) => Math.max(prev / ZOOM_FACTOR, MIN_ZOOM));
-  };
-
-  const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
-    e.evt.preventDefault();
-
-    const stage = stageRef.current;
-    if (!stage) return;
-
-    const oldScale = zoomScale;
-    const pointer = stage.getPointerPosition();
-    if (!pointer) return;
-
-    const mousePointTo = {
-      x: (pointer.x - stagePos.x) / oldScale,
-      y: (pointer.y - stagePos.y) / oldScale,
-    };
-
-    const newScale =
-      e.evt.deltaY > 0
-        ? Math.max(oldScale / ZOOM_FACTOR, MIN_ZOOM)
-        : Math.min(oldScale * ZOOM_FACTOR, MAX_ZOOM);
-
-    setZoomScale(newScale);
-
-    const newPos = {
-      x: pointer.x - mousePointTo.x * newScale,
-      y: pointer.y - mousePointTo.y * newScale,
-    };
-
-    setStagePos(newPos);
-  };
-
-  // Pan handlers
-  const handleDragStart = () => {
-    if (action === "Move") {
-      setIsDragging(true);
-    }
-  };
-
-  const handleDragMove = (e: Konva.KonvaEventObject<DragEvent>) => {
-    if (action === "Move" && isDragging) {
-      setStagePos({
-        x: e.target.x(),
-        y: e.target.y(),
+        return isOverlapping;
       });
-    }
+    },
+    [id, width, height, allObjects]
+  );
+
+  useEffect(() => {
+    setIsColliding(checkCollision(x, y));
+  }, [x, y, checkCollision]);
+
+  // Calculate reference point coordinates
+  const getReferencePointCoordinates = (objX: number, objY: number) => {
+    const refX = objX + width * referencePosition[0];
+    const refY = objY + height * referencePosition[1];
+    return { refX, refY };
   };
 
-  const handleDragEnd = () => {
-    setIsDragging(false);
+  // Function to snap to grid dots
+  const snapToGrid = (objX: number, objY: number) => {
+    if (!showGrid || gridStyle !== "dot") return { x: objX, y: objY };
+
+    const { refX, refY } = getReferencePointCoordinates(objX, objY);
+
+    // Calculate the closest grid point
+    const snapX = Math.round(refX / gridSize) * gridSize;
+    const snapY = Math.round(refY / gridSize) * gridSize;
+
+    // Adjust position to align reference point with the grid
+    const newX = objX + (snapX - refX);
+    const newY = objY + (snapY - refY);
+
+    return { x: newX, y: newY };
   };
+
+  return (
+    <Group
+      x={x}
+      y={y}
+      draggable={draggable}
+      onDragMove={(e) => {
+        const newX = e.target.x();
+        const newY = e.target.y();
+
+        setIsColliding(checkCollision(newX, newY));
+      }}
+      onDragEnd={(e) => {
+        let newX = e.target.x();
+        let newY = e.target.y();
+
+        // Apply snapping when drag ends
+        if (showGrid && gridStyle === "dot") {
+          const snapped = snapToGrid(newX, newY);
+          newX = snapped.x;
+          newY = snapped.y;
+
+          // Update the position on the stage
+          e.target.position({ x: newX, y: newY });
+        }
+
+        onChange({
+          x: newX,
+          y: newY,
+        });
+      }}
+      onClick={onSelect}
+    >
+      {/* Background Rectangle */}
+      <Rect
+        width={width}
+        height={height}
+        fill={isColliding ? "rgba(255, 0, 0, 0.5)" : "white"}
+        stroke={isSelected ? "#00ff00" : "#ddd"}
+        strokeWidth={isSelected ? 2 : 1}
+        cornerRadius={5}
+      />
+
+      {/* Circular Clipping Area */}
+      <Group
+        clipFunc={(ctx) => {
+          ctx.beginPath();
+          ctx.arc(circleX, circleY, circleSize / 2, 0, Math.PI * 2, false);
+          ctx.closePath();
+        }}
+      >
+        <KonvaImage
+          image={image}
+          x={circleX - circleSize / 2}
+          y={circleY - circleSize / 2}
+          width={circleSize}
+          height={circleSize}
+        />
+      </Group>
+
+      {/* Circle border */}
+      <Circle
+        x={circleX}
+        y={circleY}
+        radius={circleSize / 2}
+        stroke="#ddd"
+        strokeWidth={1}
+      />
+
+      {/* Reference Point Indicator (visible when selected) */}
+      {isSelected && (
+        <Circle
+          x={width * referencePosition[0]}
+          y={height * referencePosition[1]}
+          radius={4}
+          fill="#ff0000"
+          opacity={0.8}
+        />
+      )}
+    </Group>
+  );
+};
+
+function Canvas() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<Konva.Stage>(null);
+
+  const { canvas, selectObject, updateObject } = useCanvas();
+  const { gridSize, gridColor, gridOpacity, gridStyle } = canvas.grid;
+
+  const [zoomScale, setZoomScale] = useState<number>(1);
+
+  const [action, setAction] = useState<string>("Move");
+
+  const RenderGrid = () => {
+    if (!canvas.grid.showGrid) return null;
+
+    const gridLines = [];
+
+    if (gridStyle === "dot") {
+      for (
+        let i = gridSize * 2;
+        i < canvas.canvasWidth - gridSize;
+        i += gridSize
+      ) {
+        for (
+          let j = gridSize * 2;
+          j < canvas.canvasHeight - gridSize;
+          j += gridSize
+        ) {
+          gridLines.push(
+            <Circle
+              key={`d${i}-${j}`}
+              radius={1}
+              x={i}
+              y={j}
+              fill={gridColor}
+              opacity={gridOpacity}
+            />
+          );
+        }
+      }
+    } else {
+      for (let i = gridSize; i < canvas.canvasWidth; i += gridSize) {
+        gridLines.push(
+          <Line
+            key={`v${i}`}
+            points={[i, 0, i, canvas.canvasHeight]}
+            stroke={gridColor}
+            opacity={gridOpacity}
+            strokeWidth={1}
+          />
+        );
+      }
+    }
+    if (gridStyle === "line") {
+      for (let i = gridSize; i < canvas.canvasHeight; i += gridSize) {
+        gridLines.push(
+          <Line
+            key={`h${i}`}
+            points={[0, i, canvas.canvasWidth, i]}
+            stroke={gridColor}
+            opacity={gridOpacity}
+            strokeWidth={1}
+          />
+        );
+      }
+    }
+    return gridLines;
+  };
+
+  const handleStageClick = useCallback(
+    (e: Konva.KonvaEventObject<MouseEvent>) => {
+      console.log(e.target.getStage());
+      if (e.target === e.target.getStage()) {
+        selectObject(null);
+      }
+    },
+    [selectObject]
+  );
 
   const handleExport = () => {
     setAction("Export");
@@ -128,168 +281,75 @@ const Canvas = ({}) => {
     }
   };
 
-  // Object manipulation handlers
-  const handleObjectDragMove = (e: Konva.KonvaEventObject<DragEvent>) => {
-    if (action !== "Select") return;
+  const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
+    e.evt.preventDefault();
 
-    const rect = e.target;
-    const scale = getStageScale();
+    const stage = stageRef.current;
+    if (!stage) return;
 
-    const x = Math.max(
-      0,
-      Math.min(rect.x(), canvasState.canvas.width * scale - rect.width())
-    );
-    const y = Math.max(
-      0,
-      Math.min(rect.y(), canvasState.canvas.height * scale - rect.height())
-    );
+    const oldScale = zoomScale;
+    const pointer = stage.getPointerPosition();
+    if (!pointer) return;
 
-    rect.position({ x, y });
+    const newScale =
+      e.evt.deltaY > 0
+        ? Math.max(oldScale / 1.1, 0.1)
+        : Math.min(oldScale * 1.1, 5);
 
-    // Update object position in state
-    const updatedX = x / scale;
-    const updatedY = y / scale;
-
-    setCanvasState((prevState) => {
-      const updatedObjects = prevState.objects.map((obj) =>
-        obj.id === rect.id() ? { ...obj, x: updatedX, y: updatedY } : obj
-      );
-
-      return {
-        ...prevState,
-        objects: updatedObjects,
-        selectedObject:
-          prevState.selectedObject?.id === rect.id()
-            ? { ...prevState.selectedObject, x: updatedX, y: updatedY }
-            : prevState.selectedObject,
-      };
-    });
-  };
-
-  // // Function to create grid lines
-  const createGridLines = () => {
-    if (!showGrid) return [];
-
-    const lines = [];
-    const gridSizeScaled = gridSize;
-
-    // Vertical lines
-    for (let x = 0; x <= CANVAS_WIDTH; x += gridSizeScaled) {
-      lines.push(
-        <Line
-          key={`v${x}`}
-          points={[x, 0, x, CANVAS_HEIGHT]}
-          stroke={gridColor}
-          strokeWidth={1}
-          opacity={gridOpacity}
-        />
-      );
-    }
-
-    // Horizontal lines
-    for (let y = 0; y <= CANVAS_HEIGHT; y += gridSizeScaled) {
-      lines.push(
-        <Line
-          key={`h${y}`}
-          points={[0, y, CANVAS_WIDTH, y]}
-          stroke={gridColor}
-          strokeWidth={1}
-          opacity={gridOpacity}
-        />
-      );
-    }
-
-    return lines;
-  };
-
-  const createGridDots = () => {
-    if (!showGrid) return [];
-
-    const dots = [];
-    const gridSizeScaled = gridSize;
-
-    // สร้างจุดตามตำแหน่งที่ grid lines ตัดกัน
-    for (let x = 0; x <= CANVAS_WIDTH; x += gridSizeScaled) {
-      for (let y = 0; y <= CANVAS_HEIGHT; y += gridSizeScaled) {
-        dots.push(
-          <Circle
-            key={`${x}-${y}`}
-            x={x}
-            y={y}
-            radius={1.5} // ขนาดของจุด
-            fill={gridColor}
-            opacity={gridOpacity}
-            perfectDrawEnabled={false} // เพิ่มประสิทธิภาพการ render
-          />
-        );
-      }
-    }
-
-    return dots;
+    setZoomScale(newScale);
   };
 
   return (
     <div
+      className="w-full h-full flex items-center justify-center bg-black"
       ref={containerRef}
-      className="relative w-full h-full bg-gray-200 overflow-hidden"
     >
       <Stage
         ref={stageRef}
-        width={stageSize.width}
-        height={stageSize.height}
+        width={innerWidth}
+        height={innerHeight}
         scaleX={zoomScale}
         scaleY={zoomScale}
-        x={stagePos.x}
-        y={stagePos.y}
+        className="bg-gray-200"
         draggable={action === "Move"}
-        onDragStart={handleDragStart}
-        onDragMove={handleDragMove}
-        onDragEnd={handleDragEnd}
+        onClick={handleStageClick}
         onWheel={handleWheel}
       >
-        <Layer>
+        {/* Object Layer */}
+        <Layer width={canvas.canvasWidth} height={canvas.canvasHeight}>
           <Rect
-            x={0}
-            y={0}
-            width={CANVAS_WIDTH}
-            height={CANVAS_HEIGHT}
+            width={canvas.canvasWidth}
+            height={canvas.canvasHeight}
+            onClick={() => selectObject(null)}
             fill="white"
           />
-
-          {/* Grid */}
-          {canvasState.canvas.gridStyle === "line"
-            ? createGridLines()
-            : createGridDots()}
-
-          {/* Objects */}
-          {canvasState.objects.map((obj) => (
-            <Rect
+          {canvas.objects.map((obj) => (
+            <Object
               key={obj.id}
               id={obj.id}
               x={obj.x}
               y={obj.y}
               width={obj.width}
               height={obj.height}
-              fill={obj.fill}
+              imageUrl={obj.imageUrl}
+              isSelected={obj.id === canvas.selectedObjectId}
+              onSelect={() => {
+                selectObject(obj.id);
+              }}
+              onChange={(newProps) => updateObject(obj.id, newProps)}
               draggable={action === "Select"}
-              onDragMove={handleObjectDragMove}
-              onClick={() =>
-                action === "Select" &&
-                setCanvasState((prevState) => ({
-                  ...prevState,
-                  selectedObject: obj,
-                }))
-              }
-              stroke={
-                canvasState.selectedObject?.id === obj.id ? "red" : undefined
-              }
-              strokeWidth={2}
+              allObjects={canvas.objects}
+              referencePosition={obj.referencePosition || [0.5, 0.5]} // Default to center if not defined
+              gridSize={canvas.grid.gridSize}
+              showGrid={canvas.grid.showGrid}
+              gridStyle={canvas.grid.gridStyle}
             />
           ))}
+          {RenderGrid()}
         </Layer>
       </Stage>
 
-      {/* Controls */}
+      {/* Control */}
       <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 bg-white p-2 rounded-lg shadow">
         <button
           className={`p-2 rounded ${action === "Move" ? "bg-gray-200" : ""}`}
@@ -305,12 +365,6 @@ const Canvas = ({}) => {
           {}
           <LuMousePointer2 size={20} />
         </button>
-        {/* <button className="p-2 rounded" onClick={handleZoomIn}>
-          <ZoomIn size={20} />
-        </button>
-        <button className="p-2 rounded" onClick={handleZoomOut}>
-          <ZoomOut size={20} />
-        </button> */}
         <button
           className={`p-2 rounded ${action === "Export" ? "bg-gray-200" : ""}`}
           onClick={handleExport}
@@ -319,19 +373,8 @@ const Canvas = ({}) => {
           <AiOutlineExport size={20} />
         </button>
       </div>
-
-      {/* Zoom indicator */}
-      <div className="absolute top-5 left-1/2 -translate-x-1/2 bg-white rounded shadow flex space-x-4">
-        <button className="px-2 py-1" onClick={handleZoomIn}>
-          +
-        </button>
-        <span className="py-1">{Math.round(zoomScale * 100)}%</span>
-        <button className="px-2 py-1" onClick={handleZoomOut}>
-          -
-        </button>
-      </div>
     </div>
   );
-};
+}
 
 export default Canvas;

@@ -3,47 +3,49 @@
 import React, { useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { useRouter } from "next/navigation";
-import { setCanvasDimensions } from "../../fitobject/_components/canvas/CanvasContext";
 
 const HomePage = () => {
   const [popup, setPopup] = useState(false);
-  // dimensions
   const [width, setWidth] = useState<string | number>("");
   const [height, setHeight] = useState<string | number>("");
-  //units
-  const [unit, setUnit] = useState("cm");
-  //positions
-  const [startX, setStartX] = useState<string | number>("0");
-  const [startY, setStartY] = useState<string | number>("0");
+  const [unit, setUnit] = useState<"cm" | "m">("cm");
 
   const router = useRouter();
 
   const openPopup = () => setPopup(true);
   const closePopup = () => setPopup(false);
 
+  const convertToPixels = (value: number, unit: "cm" | "m"): number => {
+    const unitconvert: { [key in "cm" | "m"]: number } = {
+      cm: 10,
+      m: 1000,
+    };
+    return value * unitconvert[unit];
+  };
+
   const handleDone = () => {
     const numericWidth = Number(width);
     const numericHeight = Number(height);
-    const numericStartX = Number(startX);
-    const numericStartY = Number(startY);
 
-    if (
-      numericWidth > 0 &&
-      numericHeight > 0 &&
-      numericStartX >= 0 &&
-      numericStartY >= 0 &&
-      numericStartX <= numericWidth &&
-      numericStartY <= numericHeight
-    ) {
-      setCanvasDimensions(numericWidth, numericHeight);
+    if (numericWidth > 0 && numericHeight > 0) {
+      const pixelWidth = convertToPixels(numericWidth, unit);
+      const pixelHeight = convertToPixels(numericHeight, unit);
+
       localStorage.setItem(
-        "startNodePosition",
-        JSON.stringify({ x: numericStartX, y: numericStartY })
+        "CanvasDimensions",
+        JSON.stringify({
+          width: pixelWidth,
+          height: pixelHeight,
+          unit,
+          originalWidth: numericWidth,
+          originalHeight: numericHeight,
+          originalUnit: unit,
+        })
       );
 
       router.push("/fitobject");
     } else {
-      alert("Please enter valid dimensions and start position!");
+      alert("Please enter valid dimensions!");
     }
   };
 
@@ -61,8 +63,8 @@ const HomePage = () => {
             <div className="bg-C1 text-white rounded-t-lg flex justify-between py-2 px-4">
               <h1 className="text-lg flex items-center gap-3">Fit to space</h1>
               <button>
-                <IoClose size={25} onClick={closePopup} />
                 {}
+                <IoClose size={25} onClick={closePopup} />
               </button>
             </div>
             <div className="p-4">
@@ -82,10 +84,9 @@ const HomePage = () => {
                   <select
                     aria-label="select unit"
                     value={unit}
-                    onChange={(e) => setUnit(e.target.value)}
+                    onChange={(e) => setUnit(e.target.value as "cm" | "m")}
                     className="mt-1 p-2 border border-gray-300 rounded-md"
                   >
-                    <option value="mm">mm</option>
                     <option value="cm">cm</option>
                     <option value="m">m</option>
                   </select>
@@ -108,41 +109,12 @@ const HomePage = () => {
                   <select
                     aria-label="select unit"
                     value={unit}
-                    onChange={(e) => setUnit(e.target.value)}
+                    onChange={(e) => setUnit(e.target.value as "cm" | "m")}
                     className="mt-1 p-2 border border-gray-300 rounded-md"
                   >
-                    <option value="mm">mm</option>
                     <option value="cm">cm</option>
                     <option value="m">m</option>
                   </select>
-                </div>
-              </div>
-
-              {/* Start X & Y Position */}
-              <div className="mb-4 grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Start X Position:
-                  </label>
-                  <input
-                    type="number"
-                    value={startX}
-                    onChange={(e) => setStartX(e.target.value)}
-                    className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                    placeholder="Start X"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Start Y Position:
-                  </label>
-                  <input
-                    type="number"
-                    value={startY}
-                    onChange={(e) => setStartY(e.target.value)}
-                    className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                    placeholder="Start Y"
-                  />
                 </div>
               </div>
 
