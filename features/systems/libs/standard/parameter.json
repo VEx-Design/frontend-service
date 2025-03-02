@@ -34,19 +34,35 @@
     },
     {
       "id": "4f1cf485-92ba-4152-a731-ea0ccfae7b93",
-      "name": "Polarization in x-axis",
-      "description": "Polarization in x-axis",
-      "unitId": "VOLT_PER_METER",
+      "name": "Total intensity",
+      "description": "Total intensity",
+      "unitId": "WATT_PER_METER_SQUARE",
       "isStadard": true,
-      "symbol": "E_x"
+      "symbol": "S_0"
     },
     {
       "id": "678d3330-961c-442b-8a9e-12df7536ee6e",
-      "name": "Polarization in y-axis",
-      "description": "Polarization in y-axis",
-      "unitId": "VOLT_PER_METER",
+      "name": "Horizontal (0°) vs. Vertical (90°) polarization",
+      "description": "Horizontal (0°) vs. Vertical (90°) polarization",
+      "unitId": "WATT_PER_METER_SQUARE",
       "isStadard": true,
-      "symbol": "E_y"
+      "symbol": "S_1"
+    },
+    {
+      "id": "c039c4d3-8e79-42b8-9c31-486e0cf36b20",
+      "name": "+45° vs. -45° polarization",
+      "description": "+45° vs. -45° polarization",
+      "unitId": "WATT_PER_METER_SQUARE",
+      "isStadard": true,
+      "symbol": "S_2"
+    },
+    {
+      "id": "f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5",
+      "name": "Right circular vs. Left circular polarization",
+      "description": "Right circular vs. Left circular polarization",
+      "unitId": "WATT_PER_METER_SQUARE",
+      "isStadard": true,
+      "symbol": "S_3"
     }
   ]
 }

@@ -21,6 +21,7 @@ export default async function createProject(form: createProjectData) {
 
   const config: Config = {
     types: [JSON.parse(JSON.stringify(typePBS))],
+    // types: [],
     ...parameterConfig,
     ...parameterGroupConfig,
     freeSpaces: [{ id: crypto.randomUUID(), name: "Regular", formulas: [] }],

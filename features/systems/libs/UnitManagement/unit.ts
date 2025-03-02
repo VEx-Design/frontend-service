@@ -10,8 +10,9 @@ export type Unit =
       tag: "compound" | "simple";
       id: string;
       isCompound: true;
-      unit: Unit;
-      perUnit: Unit;
+      firstUnit: Unit;
+      action: "MULTIPLY" | "DIVIDE";
+      secondUnit: Unit;
     };
 
 export type UnitPrefix = {
@@ -50,6 +51,13 @@ export const units: Unit[] = [
     symbol: "V",
     havePrefix: true,
   },
+  {
+    tag: "simple",
+    id: "WATT",
+    name: "Watt",
+    symbol: "W",
+    havePrefix: true,
+  },
 ];
 
 export const getUnitById = (id: string): Unit | undefined => {
@@ -60,13 +68,32 @@ export const getPrefixById = (id: string): UnitPrefix | undefined => {
   return unitPrefixes.find((prefix) => prefix.id === id);
 };
 
-units.push({
-  tag: "compound",
-  id: "VOLT_PER_METER",
-  isCompound: true,
-  unit: getUnitById("VOLT")!,
-  perUnit: getUnitById("METER")!,
-});
+units.push(
+  {
+    tag: "compound",
+    id: "VOLT_PER_METER",
+    isCompound: true,
+    firstUnit: getUnitById("VOLT")!,
+    action: "DIVIDE",
+    secondUnit: getUnitById("METER")!,
+  },
+  {
+    tag: "compound",
+    id: "METER_SQUARE",
+    isCompound: true,
+    firstUnit: getUnitById("METER")!,
+    action: "MULTIPLY",
+    secondUnit: getUnitById("METER")!,
+  },
+  {
+    tag: "compound",
+    id: "METER_SQUARE",
+    isCompound: true,
+    firstUnit: getUnitById("METER")!,
+    action: "MULTIPLY",
+    secondUnit: getUnitById("METER")!,
+  }
+);
 
 export const unitPrefixes: UnitPrefix[] = [
   {

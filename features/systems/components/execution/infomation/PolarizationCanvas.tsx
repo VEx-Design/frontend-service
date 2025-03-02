@@ -77,7 +77,7 @@ const PolarizationWave = ({
       <mesh ref={meshRef} geometry={meshGeometry}>
         <meshBasicMaterial
           attach="material"
-          color="blue"
+          color="black"
           opacity={0.3}
           transparent
         />

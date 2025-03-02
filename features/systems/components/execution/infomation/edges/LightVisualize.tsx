@@ -8,10 +8,18 @@ export default function LightVisualize() {
   if (!lightInfo) {
     return null;
   }
+
   const rx = lightParam("e82e6c79-4e2b-457f-aef7-02ab28cd19c1");
   const ry = lightParam("c1ff5f01-8383-44e3-b5f1-b2aca399c8fd");
-  const Ex = lightParam("4f1cf485-92ba-4152-a731-ea0ccfae7b93");
-  const Ey = lightParam("678d3330-961c-442b-8a9e-12df7536ee6e");
+  const S0 = lightParam("4f1cf485-92ba-4152-a731-ea0ccfae7b93")?.value ?? 0;
+  const S1 = lightParam("678d3330-961c-442b-8a9e-12df7536ee6e")?.value ?? 0;
+  const S2 = lightParam("c039c4d3-8e79-42b8-9c31-486e0cf36b20")?.value ?? 0;
+  const S3 = lightParam("f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5")?.value ?? 0;
+
+  const Ex: number = Math.sqrt((S0 + S1) / 2);
+  const Ey: number = Math.sqrt((S0 - S1) / 2);
+  const phase: number = Math.atan2(S3, S2);
+
   return (
     <div className="flex flex-1 h-full">
       <div className="flex w-[50%] flex-col border-r h-full">
@@ -21,16 +29,12 @@ export default function LightVisualize() {
             ry={(ry?.value ?? 0) * 10}
           />
         </div>
-        <div className="h-[50%]  border-t">in</div>
+        <div className="h-[50%] border-t">in</div>
       </div>
       <div className="flex w-[50%] flex-col h-full">
         <div className="h-[50%] justify-center">
           <div className="w-full h-full">
-            <PolarizationScene
-              Ex={Ex?.value ?? 0}
-              Ey={Ey?.value ?? 0}
-              phase={0}
-            />
+            <PolarizationScene Ex={Ex} Ey={Ey} phase={phase} />
           </div>
         </div>
         <div className="h-[50%] border-t">in</div>
