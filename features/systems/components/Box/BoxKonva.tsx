@@ -3,10 +3,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { Stage, Layer, Rect, Text, Circle } from "react-konva";
 import { useResizeDetector } from "react-resize-detector";
 import { useBox } from "../../contexts/BoxContext";
+import { useProject } from "../../contexts/ProjectContext";
 
 const KonvaSquare = () => {
   const { ref, width = 400, height = 400 } = useResizeDetector();
-  const { focusNode, mapBounding, setMapBounding, focusPoint , config, nodesState} = useBox();
+  const { focusNode, focusPoint , config, nodesState} = useBox();
+  const {mapBounding, setMapBounding} = useProject();
 
   const [squareSize, setSquareSize] = useState({ width: 0, height: 0 });
   const [relativePos, setRelativePos] = useState<{ x: number; y: number | null }>({ x: 0, y: 0 });

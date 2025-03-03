@@ -6,9 +6,11 @@ import { forEach } from "lodash";
 import Button from "@/components/Button";
 import { e } from "mathjs";
 import { Config } from "tailwindcss";
+import { useProject } from "../../contexts/ProjectContext";
 
 export default function BoxSizing() {
-  const { focusNode, mapBounding, setMapBounding, focusPoint, setFocusPoint, config, nodesState, blueprint, setBlueprint} = useBox();
+  const {mapBounding, setMapBounding,blueprint, setBlueprint} = useProject();
+  const { focusNode,  focusPoint, setFocusPoint, config, nodesState} = useBox();
   const [height, setHeight] = useState("");
   const [width, setWidth] = useState("");
   const [interfaces, setInterfaces] = useState<[string, string][]>([]);

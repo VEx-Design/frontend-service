@@ -29,6 +29,7 @@ import saveFlow from "../actions/saveFlow";
 import saveConfig from "../actions/saveConfig";
 import editType from "../libs/ClassConfig/editType";
 import { Flow } from "../libs/ClassFlow/types/Flow";
+import { BoundingConfiguration } from "../libs/ClassBox/types/BoundingConfiguration";
 
 interface ProjectContextValue {
   projId: string;
@@ -45,6 +46,12 @@ interface ProjectContextValue {
   // execution
   executedFlow: Flow | undefined;
   setExecutedFlow: (flow: Flow | undefined) => void;
+  // Bounding
+  mapBounding: Map<string, BoundingConfiguration>;
+  setMapBounding: (map: Map<string, BoundingConfiguration>) => void;
+  blueprint: Map<string, BoundingConfiguration[]>;
+  setBlueprint: (map: Map<string, BoundingConfiguration[]>) => void;
+  
 }
 
 const ProjectContext = createContext<ProjectContextValue | undefined>(
@@ -99,6 +106,14 @@ export const ProjectProvider = ({
   const [savePending, setSavePending] = useState<boolean>(false);
 
   const [executedFlow, setExecutedFlow] = useState<Flow | undefined>(undefined);
+
+  const [mapBounding, setMapBounding] = useState(
+    new Map<string, BoundingConfiguration>()
+  );
+
+  const [blueprint, setBlueprint] = useState(
+    new Map<string, BoundingConfiguration[]>()
+  );
 
   useEffect(() => {
     const flow = JSON.parse(project.flow);
@@ -179,6 +194,10 @@ export const ProjectProvider = ({
         configAction,
         executedFlow,
         setExecutedFlow,
+        mapBounding,
+        setMapBounding,
+        blueprint,
+        setBlueprint,
       }}
     >
       {children}
