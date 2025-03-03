@@ -197,6 +197,10 @@ export const ProjectProvider = ({
       configAction,
       executedFlow,
       setExecutedFlow,
+      mapBounding,
+      setMapBounding,
+      blueprint,
+      setBlueprint,
     }),
     [
       project.id,
@@ -211,11 +215,7 @@ export const ProjectProvider = ({
       setEdges,
       onEdgesChange,
       configAction,
-      executedFlow,
-      mapBounding,
-      setMapBounding,
-      blueprint,
-      setBlueprint,
+      executedFlow, 
     ]
   );
 

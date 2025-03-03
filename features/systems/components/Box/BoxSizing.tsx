@@ -9,7 +9,12 @@ import { Config } from "tailwindcss";
 import { useProject } from "../../contexts/ProjectContext";
 
 export default function BoxSizing() {
-  const {mapBounding, setMapBounding,blueprint, setBlueprint} = useProject();
+  const { mapBounding, setMapBounding, blueprint, setBlueprint } = useProject() as {
+    mapBounding: Map<string, BoundingConfiguration>;
+    setMapBounding: React.Dispatch<React.SetStateAction<Map<string, BoundingConfiguration>>>;
+    blueprint: Map<string, BoundingConfiguration[]>;
+    setBlueprint: React.Dispatch<React.SetStateAction<Map<string, BoundingConfiguration[]>>>;
+  };
   const { focusNode,  focusPoint, setFocusPoint, config, nodesState} = useBox();
   const [height, setHeight] = useState("");
   const [width, setWidth] = useState("");
@@ -95,14 +100,17 @@ export default function BoxSizing() {
 
   const setReferencePoint = (point: [number, number]) => {
     if (!focusNode) return;
-    setMapBounding((prev) => {
+    setMapBounding((prev: Map<string,BoundingConfiguration>) => {
       const newMapBounding = new Map(prev);
       const nodeInfo = newMapBounding.get(focusNode.id);
       if (nodeInfo) {
-        newMapBounding.set(focusNode.id, {
-          ...nodeInfo,
-          referencePosition: point,
-        });
+        newMapBounding.set(focusNode.id, new BoundingConfiguration(
+          nodeInfo.name,
+          nodeInfo.height,
+          nodeInfo.width,
+          point,
+          nodeInfo.interfacePositions
+        ));
       }
       return newMapBounding;
     });
@@ -116,10 +124,13 @@ export default function BoxSizing() {
       if (nodeInfo) {
         const newInterfacePositions = new Map(nodeInfo.interfacePositions);
         newInterfacePositions.set(intf, point);
-        newMapBounding.set(focusNode.id, {
-          ...nodeInfo,
-          interfacePositions: newInterfacePositions,
-        });
+        newMapBounding.set(focusNode.id, new BoundingConfiguration(
+          nodeInfo.name,
+          nodeInfo.height,
+          nodeInfo.width,
+          nodeInfo.referencePosition,
+          newInterfacePositions
+        ));
       }
       return newMapBounding;
     });
@@ -137,11 +148,13 @@ export default function BoxSizing() {
         interfaces.forEach((inft,_) => {
           newInterfacePositions.set(inft[0], [0.5, 0.5]);
         });
-        newMapBounding.set(focusNode.id, {
-          ...nodeInfo,
-          referencePosition: [0.5, 0.5],
-          interfacePositions: newInterfacePositions,
-        });
+        newMapBounding.set(focusNode.id, new BoundingConfiguration(
+          nodeInfo.name,
+          nodeInfo.height,
+          nodeInfo.width,
+          [0.5, 0.5],
+          newInterfacePositions
+        ));
       } else {
         const newInterfacePositions = new Map<string, [number, number]>();
         interfaces.forEach((inft) => {
@@ -171,11 +184,13 @@ export default function BoxSizing() {
   
             setMapBounding((prev) => {
               const newMapBounding = new Map(prev);
-              newMapBounding.set(node.id, {
-                ...nodeInfo,
-                referencePosition: [0.5, 0.5],
-                interfacePositions: newInterfacePositions,
-              });
+              newMapBounding.set(node.id, new BoundingConfiguration(
+                  nodeInfo.name,
+                  nodeInfo.height,
+                  nodeInfo.width,
+                  [0.5, 0.5],
+                  newInterfacePositions
+                ));
               return newMapBounding;
             });
           }
@@ -184,11 +199,13 @@ export default function BoxSizing() {
           if (nodeInfo) {
             setMapBounding((prev) => {
               const newMapBounding = new Map(prev);
-              newMapBounding.set(node.id, {
-                ...nodeInfo,
-                referencePosition: [0.5, 0.5],
-                interfacePositions: new Map<string, [number, number]>(),
-              });
+              newMapBounding.set(node.id, new BoundingConfiguration(
+                nodeInfo.name,
+                nodeInfo.height,
+                nodeInfo.width,
+                [0.5, 0.5],
+                new Map<string, [number, number]>()
+              ));
               return newMapBounding;
             });
           }
@@ -201,11 +218,13 @@ export default function BoxSizing() {
   
           setMapBounding((prev) => {
             const newMapBounding = new Map(prev);
-            newMapBounding.set(node.id, {
-              ...nodeInfo,
-              referencePosition: [0.5, 0.5],
-              interfacePositions: newInterfacePositions,
-            });
+            newMapBounding.set(node.id, new BoundingConfiguration(
+              nodeInfo.name,
+              nodeInfo.height,
+              nodeInfo.width,
+              [0.5, 0.5],
+              newInterfacePositions
+            ));
             return newMapBounding;
           });
         }
@@ -217,11 +236,13 @@ export default function BoxSizing() {
   
           setMapBounding((prev) => {
             const newMapBounding = new Map(prev);
-            newMapBounding.set(node.id, {
-              ...nodeInfo,
-              referencePosition: [0.5, 0.5],
-              interfacePositions: newInterfacePositions,
-            });
+            newMapBounding.set(node.id, new BoundingConfiguration(
+              nodeInfo.name,
+              nodeInfo.height,
+              nodeInfo.width,
+              [0.5, 0.5],
+              newInterfacePositions
+            ));
             return newMapBounding;
           });
         }
@@ -229,16 +250,6 @@ export default function BoxSizing() {
     });
   };
 
-const addBlueprint = (name: string) => {
-  const typeID = focusNode?.data?.data?.object?.typeId;
-  setBlueprint((prev) => {
-    const newBoundingConfiguration = mapBounding.get(focusNode?.id);
-    if (!newBoundingConfiguration) return prev;
-    prev.set(typeID, [...(prev.get(typeID) || []), new BoundingConfiguration(name, newBoundingConfiguration.height, newBoundingConfiguration.width, newBoundingConfiguration.referencePosition, newBoundingConfiguration.interfacePositions)]);
-    return prev;
-  });
-};
-  
   const ReferencePointActions = [
     { name: "Top Left", onClick: () => setReferencePoint([0, 0]) },
     { name: "Top Center", onClick: () => setReferencePoint([0.5, 0]) },

@@ -19,17 +19,4 @@ export class BoundingConfiguration {
     this.interfacePositions = interfacePositions;
   }
 
-  updateConfig(
-    name: string,
-    height: number,
-    width: number,
-    referencePoint: [number,number],
-    interfacePositions: Map<string, [number, number]>
-  ) {
-    this.name = name;
-    this.height = height;
-    this.width = width;
-    this.referencePosition = referencePoint
-    this.interfacePositions = interfacePositions;
-  }
 }
