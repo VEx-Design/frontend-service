@@ -56,7 +56,7 @@ const Object: React.FC<KonvaObjectProps> = ({
   showGrid,
   gridStyle,
 }) => {
-  const [image] = useImage(imageUrl, 'anonymous');
+  const [image] = useImage(imageUrl, "anonymous");
   const [isColliding, setIsColliding] = useState(false);
 
   const circleSize = Math.min(width, height) * 0.8;
@@ -193,7 +193,7 @@ const Object: React.FC<KonvaObjectProps> = ({
 function Canvas() {
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Stage>(null);
-  
+
   const { canvas, selectObject, updateObject } = useCanvas();
   const { gridSize, gridColor, gridOpacity, gridStyle } = canvas.grid;
 
@@ -201,38 +201,38 @@ function Canvas() {
 
   const [action, setAction] = useState<string>("Move");
 
-  const [stageSize, setStageSize] = useState({ width: 1, height: 1 })
+  const [stageSize, setStageSize] = useState({ width: 1, height: 1 });
 
   // Function to update stage size based on container dimensions
   const updateStageDimensions = useCallback(() => {
     if (containerRef.current) {
-      const containerWidth = containerRef.current.offsetWidth
-      const containerHeight = containerRef.current.offsetHeight
+      const containerWidth = containerRef.current.offsetWidth;
+      const containerHeight = containerRef.current.offsetHeight;
 
       setStageSize({
         width: containerWidth,
         height: containerHeight,
-      })
+      });
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    updateStageDimensions()
+    updateStageDimensions();
 
     // Set up resize observer to update dimensions when container resizes
     const resizeObserver = new ResizeObserver(() => {
-      updateStageDimensions()
-    })
+      updateStageDimensions();
+    });
 
     if (containerRef.current) {
-      resizeObserver.observe(containerRef.current)
+      resizeObserver.observe(containerRef.current);
     }
 
     // Clean up
     return () => {
-      resizeObserver.disconnect()
-    }
-  }, [updateStageDimensions])
+      resizeObserver.disconnect();
+    };
+  }, [updateStageDimensions]);
 
   const RenderGrid = () => {
     if (!canvas.grid.showGrid) return null;
@@ -293,9 +293,9 @@ function Canvas() {
 
   const handleStageClick = useCallback(
     (e: Konva.KonvaEventObject<MouseEvent>) => {
-      console.log(e.target.getStage());
       if (e.target === e.target.getStage()) {
         selectObject(null);
+        setAction("Move");
       }
     },
     [selectObject]
@@ -333,7 +333,10 @@ function Canvas() {
   };
 
   return (
-    <div className="w-full h-full flex items-center justify-center bg-black" ref={containerRef}>
+    <div
+      className="w-full h-full flex items-center justify-center bg-black"
+      ref={containerRef}
+    >
       <Stage
         ref={stageRef}
         width={stageSize.width}
@@ -344,13 +347,22 @@ function Canvas() {
         draggable={action === "Move"}
         onClick={handleStageClick}
         onWheel={handleWheel}
+        // onDragStart={(e) => {
+        //   if (e.target === e.target.getStage()) {
+        //     selectObject(null);
+        //     setAction("Move");
+        //   }
+        // }}
       >
         {/* Object Layer */}
         <Layer width={canvas.canvasWidth} height={canvas.canvasHeight}>
           <Rect
             width={canvas.canvasWidth}
             height={canvas.canvasHeight}
-            onClick={() => selectObject(null)}
+            onClick={() => {
+              selectObject(null);
+              setAction("Move");
+            }}
             fill="white"
           />
           {canvas.objects.map((obj) => (
@@ -364,7 +376,8 @@ function Canvas() {
               imageUrl={obj.imageUrl}
               isSelected={obj.id === canvas.selectedObjectId}
               onSelect={() => {
-                selectObject(obj.id)
+                selectObject(obj.id);
+                setAction("Select");
               }}
               onChange={(newProps) => updateObject(obj.id, newProps)}
               draggable={action === "Select"}
@@ -381,7 +394,10 @@ function Canvas() {
 
       {/* Control */}
       <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 bg-white p-2 rounded-lg shadow">
-        <button className={`p-2 rounded ${action === "Move" ? "bg-gray-200" : ""}`} onClick={() => setAction("Move")}>
+        <button
+          className={`p-2 rounded ${action === "Move" ? "bg-gray-200" : ""}`}
+          onClick={() => setAction("Move")}
+        >
           <FaRegHandPaper size={20} />
         </button>
         <button
@@ -390,12 +406,15 @@ function Canvas() {
         >
           <LuMousePointer2 size={20} />
         </button>
-        <button className={`p-2 rounded ${action === "Export" ? "bg-gray-200" : ""}`} onClick={handleExport}>
+        <button
+          className={`p-2 rounded ${action === "Export" ? "bg-gray-200" : ""}`}
+          onClick={handleExport}
+        >
           <AiOutlineExport size={20} />
         </button>
       </div>
     </div>
-  )
+  );
 }
 
 export default Canvas;

@@ -4,14 +4,14 @@ import {
   FormulaFStatus,
   VariableFreeS,
 } from "../../libs/ClassConfig/types/FreeSpace";
-import { useProject } from "../ProjectContext";
-import { useConfig } from "./ConfigContext";
 import getFormula from "../../libs/ClassConfig/FeatureFreeSpace/getFormula";
 import setFormula from "../../libs/ClassConfig/FeatureFreeSpace/setFormula";
 import setStream from "../../libs/ClassConfig/FeatureFreeSpace/setStream";
 import addVariable from "../../libs/ClassConfig/FeatureFreeSpace/addVariable";
 import deleteVariable from "../../libs/ClassConfig/FeatureFreeSpace/deleteVariable";
 import getFormulaFreeSpace from "../../libs/ClassConfig/getFormulaFreeSpace";
+import { useConfig } from "../ProjectWrapper/ConfigContext";
+import { useConfigType } from "./ConfigTypeContext";
 
 type InputPosition = {
   index: number;
@@ -63,8 +63,8 @@ export const ConfigFreeSProvider = ({ children }: ConfigFreeSProviderProps) => {
     undefined
   );
 
-  const { configAction } = useProject();
-  const { currentConfigFreeS, setCurrentConfigFreeS } = useConfig();
+  const { configAction } = useConfig();
+  const { currentConfigFreeS, setCurrentConfigFreeS } = useConfigType();
 
   useEffect(() => {
     if (currentConfigFreeS) {

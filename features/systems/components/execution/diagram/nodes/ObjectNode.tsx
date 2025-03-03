@@ -1,12 +1,12 @@
 import { NodeProps } from "@xyflow/react";
 import { memo, useEffect, useMemo, useState } from "react";
 import { NodeData } from "@/features/systems/libs/ClassNode/types/AppNode";
-import { useProject } from "@/features/systems/contexts/ProjectContext";
 import ObjectNodeTemp from "../../../_components/ObjectNodeTemp";
 import { useExecution } from "@/features/systems/contexts/Execution/ExecutionContext";
+import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext";
 
 const NodeComponent = memo((props: NodeProps) => {
-  const { configAction, config } = useProject();
+  const { configAction, config } = useConfig();
   const { focusNode, setFocusNode } = useExecution();
   const { object } = props.data.data as NodeData;
   const typeId = object?.typeId || "";

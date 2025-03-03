@@ -1,5 +1,5 @@
 import SymbolDisplay from "@/components/SymbolDisplay";
-import { useProject } from "@/features/systems/contexts/ProjectContext";
+import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext";
 import { LightParam } from "@/features/systems/libs/ClassLight/types/Light";
 import React from "react";
 
@@ -10,7 +10,7 @@ interface LightPropertyBoxProps {
 export default function LightPropertyBox({
   lightParam,
 }: LightPropertyBoxProps) {
-  const { configAction } = useProject();
+  const { configAction } = useConfig();
   const parameter = configAction.getParameter(lightParam.paramId);
 
   return (

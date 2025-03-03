@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/Dialog";
 import { Upload } from "lucide-react";
 import ImageUploader from "@/components/ImageUploader";
-import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
+import { useConfigType } from "@/features/systems/contexts/Configuration/ConfigTypeContext";
 
 interface CreatePropertyDialogProps {
   onCreated?: () => void;
 }
 
 export default function CreatePropertyDialog({}: CreatePropertyDialogProps) {
-  const { currentType, typeAction } = useConfig();
+  const { currentType, typeAction } = useConfigType();
 
   const [isOpen, setOpen] = useState(false);
 

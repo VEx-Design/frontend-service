@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useConfig } from "./ConfigContext";
 import { Position } from "@xyflow/react";
 import { Interface } from "../../libs/ClassInterface/types/Interface";
 import {
@@ -15,6 +14,7 @@ import addVariable from "../../libs/ClassInterface/FeatureFomula/addVariable";
 import deleteVariable from "../../libs/ClassInterface/FeatureFomula/deleteVariable";
 import setStream from "../../libs/ClassInterface/FeatureFomula/setStream";
 import getFormulaInterface from "../../libs/ClassInterface/getFormulaInterface";
+import { useConfigType } from "./ConfigTypeContext";
 
 type InputPosition = {
   index: number;
@@ -74,7 +74,7 @@ export const ConfigInterfaceProvider = ({ children }: FormulaProviderProps) => {
     undefined
   );
 
-  const { currentType, typeAction } = useConfig();
+  const { currentType, typeAction } = useConfigType();
 
   useEffect(() => {
     if (currentType) {

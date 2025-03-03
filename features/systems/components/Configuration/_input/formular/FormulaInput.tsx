@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import AutoWidthInput from "./AutoWidthInput";
 import VariableBox from "./VariableBadge";
-import { useProject } from "@/features/systems/contexts/ProjectContext";
 import { useConfigInterface } from "@/features/systems/contexts/Configuration/ConfigInterfaceContext";
-import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
+import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext";
+import { useConfigType } from "@/features/systems/contexts/Configuration/ConfigTypeContext";
 
 interface Props {
   conditionId: string;
@@ -25,8 +25,8 @@ export default function FormulaInput({ conditionId, paramId }: Props) {
   const myFormula = interfaceAction.getFormular({ conditionId, paramId });
   const varLength = myFormula?.formula.formulaTokens.length ?? 0;
 
-  const { typeAction } = useConfig();
-  const { configAction } = useProject();
+  const { typeAction } = useConfigType();
+  const { configAction } = useConfig();
 
   const updateCursorPosition =
     (index: number) => (e: React.SyntheticEvent<HTMLInputElement>) => {

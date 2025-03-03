@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { useProject } from "@/features/systems/contexts/ProjectContext";
 import VariableBadge from "./VariableBadge";
 import AutoWidthInput from "../formular/AutoWidthInput";
 import { useConfigFreeS } from "@/features/systems/contexts/Configuration/ConfigFreeSContext";
+import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext";
 
 interface Props {
   paramId: string;
@@ -23,7 +23,7 @@ export default function FormulaInput({ paramId }: Props) {
   const myFormula = freeSpaceAction.getFormular({ paramId });
   const varLength = myFormula?.formula.formulaTokens.length ?? 0;
 
-  const { configAction } = useProject();
+  const { configAction } = useConfig();
 
   const updateCursorPosition =
     (index: number) => (e: React.SyntheticEvent<HTMLInputElement>) => {

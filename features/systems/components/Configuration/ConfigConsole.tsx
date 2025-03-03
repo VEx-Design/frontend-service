@@ -8,12 +8,12 @@ import MainInfo from "./information/MainInfo";
 import FormulaLister from "./interface/FormulaLister";
 import InterfaceLister from "./interface/InterfaceLister";
 import { ReactFlowProvider } from "@xyflow/react";
-import { useConfig } from "../../contexts/Configuration/ConfigContext";
 import { useConfigInterface } from "../../contexts/Configuration/ConfigInterfaceContext";
+import { useConfigType } from "../../contexts/Configuration/ConfigTypeContext";
 
 /**  */
 export default function ConfigTerminal() {
-  const { currentType } = useConfig();
+  const { currentType } = useConfigType();
   const { currentInterface } = useConfigInterface();
 
   return currentType ? (

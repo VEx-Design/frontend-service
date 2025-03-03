@@ -21,13 +21,13 @@ import {
 import { toast } from "sonner";
 
 import createParameter from "@/features/systems/libs/ClassParameter/createParameter";
-import { useProject } from "@/features/systems/contexts/ProjectContext";
 import { cn } from "@/lib/utils";
 import {
   createParameterGroupData,
   createParameterGroupSchema,
 } from "@/features/systems/schema/parameterGroup";
 import createParameterGroup from "@/features/systems/libs/ClassParameter/createParameterGroup";
+import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext";
 
 interface CreateProjectDialogProps {
   onCreated?: () => void;
@@ -54,7 +54,7 @@ export default function CreateParameterDialog({}: CreateProjectDialogProps) {
     createParameterForm.reset();
   }, [createParameterForm]);
 
-  const { configAction } = useProject();
+  const { configAction } = useConfig();
 
   const onSubmit = useCallback(
     (values: createParameterData) => {

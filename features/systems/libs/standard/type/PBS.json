@@ -3,7 +3,7 @@
   "name": "Polarizing Beamsplitters",
   "displayName": "PBS",
   "description": "",
-  "picture": "http://localhost:9000/default-bucket/73761859-f5d1-42ca-8131-3ac89f0fd93f-1740925241433.png",
+  "picture": "https://raw.githubusercontent.com/vex-design/image-store/main/b-bsp.png",
   "properties": [],
   "interfaces": [
     {

@@ -1,10 +1,10 @@
 import React from "react";
 import CreatePropertyDialog from "./CreatePropertyDialog";
 import PropertyBox from "./PropertyBox";
-import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
+import { useConfigType } from "@/features/systems/contexts/Configuration/ConfigTypeContext";
 
 export default function PropertiesLister() {
-  const { currentType } = useConfig();
+  const { currentType } = useConfigType();
 
   return (
     <div className="ms-6">

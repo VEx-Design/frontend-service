@@ -11,12 +11,12 @@ import TypeLister from "../components/Configuration/type/TypeLister";
 import ParamLister from "../components/Configuration/parameter/ParamLister";
 import ConfigTerminal from "../components/Configuration/ConfigConsole";
 import ConfigFreeS from "../components/Configuration/ConfigFreeS";
-import { useConfig } from "../contexts/Configuration/ConfigContext";
 import { ConfigFreeSProvider } from "../contexts/Configuration/ConfigFreeSContext";
 import { ConfigInterfaceProvider } from "../contexts/Configuration/ConfigInterfaceContext";
+import { useConfigType } from "../contexts/Configuration/ConfigTypeContext";
 
 export default function Configuration() {
-  const { currentConfigFreeS } = useConfig();
+  const { currentConfigFreeS } = useConfigType();
 
   return (
     <ResizablePanelGroup direction="horizontal">

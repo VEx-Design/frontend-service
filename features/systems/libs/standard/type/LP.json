@@ -3,7 +3,7 @@
   "name": "Linear polarizer",
   "displayName": "LP",
   "description": "",
-  "picture": "http://localhost:9000/default-bucket/074d13a5-3ac5-40fa-8e34-32163f813072-1740928825396.png",
+  "picture": "https://raw.githubusercontent.com/vex-design/image-store/main/b-lp.png",
   "properties": [
     {
       "id": "a9e58ce9-5b38-4afa-859c-3989590480bf",

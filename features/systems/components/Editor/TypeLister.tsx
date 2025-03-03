@@ -1,7 +1,5 @@
 import React from "react";
 
-import { useProject } from "../../contexts/ProjectContext";
-
 import {
   Lister,
   ListerContent,
@@ -19,9 +17,10 @@ import {
   ViewItem,
   ViewTitle,
 } from "@/components/lists/views/View";
+import { useConfig } from "../../contexts/ProjectWrapper/ConfigContext";
 
 export default function TypeLister() {
-  const { config } = useProject();
+  const { config } = useConfig();
 
   const onDragStart = (event: React.DragEvent, getData: GetDataType) => {
     event.dataTransfer.setData("application/reactflow", String(getData("id")));

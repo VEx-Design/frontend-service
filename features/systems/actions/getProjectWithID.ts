@@ -59,8 +59,8 @@ export default async function getProjectByID(
       flow: project.flow,
       config: project.typeConfig,
     };
-  } catch (error) {
-    console.error("Error fetching projects:", error);
+  } catch {
+    // console.error("Error fetching projects:", error);
     return undefined;
   }
 }

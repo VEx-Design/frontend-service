@@ -21,9 +21,9 @@ import {
   createPropertySchema,
 } from "@/features/systems/schema/property";
 import createProperty from "@/features/systems/libs/ClassType/createProperty";
-import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
 import DropdownForm from "@/components/inputs/DropdownForm";
 import { units } from "@/features/systems/libs/UnitManagement/unit";
+import { useConfigType } from "@/features/systems/contexts/Configuration/ConfigTypeContext";
 
 interface CreatePropertyDialogProps {
   onCreated?: () => void;
@@ -42,7 +42,7 @@ export default function CreatePropertyDialog({}: CreatePropertyDialogProps) {
     defaultValues: {},
   });
 
-  const { typeAction } = useConfig();
+  const { typeAction } = useConfigType();
 
   const onSubmit = useCallback(
     (values: createPropertyData) => {

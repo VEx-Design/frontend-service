@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
-import { useProject } from "../../contexts/ProjectContext";
 import FormularBox from "./_input/freeSFormular/FormularBox";
-import { useConfig } from "../../contexts/Configuration/ConfigContext";
+import { useConfigType } from "../../contexts/Configuration/ConfigTypeContext";
+import { useConfig } from "../../contexts/ProjectWrapper/ConfigContext";
 
 export default function ConfigFreeS() {
   const { ref, height } = useResizeDetector();
@@ -14,8 +14,8 @@ export default function ConfigFreeS() {
     }
   }, [height]);
 
-  const { currentConfigFreeS } = useConfig();
-  const { config } = useProject();
+  const { currentConfigFreeS } = useConfigType();
+  const { config } = useConfig();
 
   return (
     <div className="flex flex-1 flex-col h-full bg-editbar text-foreground border-r-1 border-editbar-border py-4 px-6">

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { EllipsisVertical } from "lucide-react";
 import { Parameter } from "@/features/systems/libs/ClassParameter/types/Parameter";
-import { useProject } from "@/features/systems/contexts/ProjectContext";
+import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext";
 
 interface ParamDropdownProps {
   param: Parameter;
@@ -25,7 +25,7 @@ export default function DropdownMenuDemo({
   param,
   paramGroup,
 }: ParamDropdownProps) {
-  const { config } = useProject();
+  const { config } = useConfig();
 
   return (
     <DropdownMenu>

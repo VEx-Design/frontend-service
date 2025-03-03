@@ -6,6 +6,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { ScrollArea } from "../ui/scroll-area";
@@ -258,29 +259,37 @@ export function ListerContentView(props: ListerContentViewProps) {
 
   const { ref, height } = useResizeDetector();
   const [parentHeight, setParentHeight] = useState<number>(0);
+  const prevHeightRef = useRef<number>(0);
 
   useEffect(() => {
-    if (height) {
-      setParentHeight(height); // Update height automatically
+    if (height && height !== prevHeightRef.current) {
+      setParentHeight(height);
+      prevHeightRef.current = height; // Update the reference after setting state
     }
   }, [height]);
+
+  const contextValue = useMemo(
+    () => context,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [context.currentView, context.data]
+  );
 
   return (
     <div ref={ref} className="flex flex-1">
       <ScrollArea className="w-full" style={{ height: parentHeight - 15 }}>
-        {context.currentView === "card" && (
+        {contextValue.currentView === "card" && (
           <div className={props.listDisplay.card || ""}>
             {props.render({
-              data: context.data,
-              type: context.currentView,
+              data: contextValue.data,
+              type: contextValue.currentView,
             })}
           </div>
         )}
-        {context.currentView === "list" && (
+        {contextValue.currentView === "list" && (
           <div className={props.listDisplay.list || ""}>
             {props.render({
-              data: context.data,
-              type: context.currentView,
+              data: contextValue.data,
+              type: contextValue.currentView,
             })}
           </div>
         )}

@@ -33,6 +33,7 @@ export default function calculate(flow: Flow, config: Config): Flow {
 
     const inputs: Light[] = [];
     if (sourceNode?.type === "starter") {
+      console.log("sourceData", sourceData);
       sourceData.initials?.forEach((light) => {
         const input: Light = {
           id: light.id,

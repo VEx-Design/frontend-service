@@ -1,21 +1,21 @@
 import React from "react";
 import Input, { InputLabel } from "../InspectorInput";
-import { useProject } from "@/features/systems/contexts/ProjectContext";
 import { useEditor } from "@/features/systems/contexts/EditorContext";
 import getInitial from "@/features/systems/libs/ClassNode/getInitial";
 import { CircleFadingPlus } from "lucide-react";
 import SymbolDisplay from "@/components/SymbolDisplay";
 import { getParamPrefixId } from "@/features/systems/libs/ClassObject/getPrefixId";
+import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext";
 
 export default function StarterInspector() {
-  const { config } = useProject();
+  const { config } = useConfig();
   const { focusNode, nodeAction } = useEditor();
 
   if (!focusNode) return null;
 
   return (
     <div className="flex flex-col pt-5 gap-4 px-6">
-      {(focusNode.data.initials ?? []).map((light, index) => (
+      {(focusNode.data?.initials ?? []).map((light, index) => (
         <div key={light.id}>
           <div className="flex flex-1 items-center">
             <p className="text-sm font-semibold">{`Light ${index + 1}`}</p>

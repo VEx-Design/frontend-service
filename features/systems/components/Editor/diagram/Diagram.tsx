@@ -10,8 +10,8 @@ import StarterNode from "./nodes/StarterNode";
 import TerminalNode from "./nodes/TerminalNode";
 import ObjectNode from "./nodes/ObjectNode";
 import LightEdge from "./edges/LightEdge";
-import { useProject } from "@/features/systems/contexts/ProjectContext";
 import { useEditor } from "@/features/systems/contexts/EditorContext";
+import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext";
 
 const rfStyle = {
   backgroundColor: "#FAFAFA",
@@ -29,11 +29,19 @@ const edgeTypes = {
 
 export default function Diagram() {
   const { screenToFlowPosition } = useReactFlow();
-  const { nodesState, edgesState, configAction } = useProject();
+  const { configAction } = useConfig();
+
+  const {
+    nodeAction,
+    edgeAction,
+    setFocusNode,
+    setFocusEdge,
+    nodesState,
+    edgesState,
+  } = useEditor();
+
   const { nodes, onNodesChange } = nodesState;
   const { edges, onEdgesChange } = edgesState;
-
-  const { nodeAction, edgeAction, setFocusNode, setFocusEdge } = useEditor();
 
   // Memoized nodes and edges for performance
   const memoizedNodes = useMemo(() => nodes, [nodes]);
