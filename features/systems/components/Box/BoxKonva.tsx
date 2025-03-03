@@ -105,8 +105,8 @@ const KonvaSquare = () => {
     const unscaledX = (pointer.x - offset.x) / zoom;
     const unscaledY = (pointer.y - offset.y) / zoom;
 
-    const x = Math.floor(unscaledX) / squareSize.width;
-    const y = Math.floor(unscaledY) / squareSize.height;
+    const x = unscaledX / squareSize.width;
+    const y = unscaledY / squareSize.height;
 
     if (focusPoint !== "") {
       if (focusPoint === "Reference Point") {
@@ -116,10 +116,9 @@ const KonvaSquare = () => {
             ...newMapBounding.get(focusNode!.id)!,
             referencePosition: [x, y] as [number, number],
           });
-          console.log(newMapBounding);
           return newMapBounding;
         });
-        alert(focusPoint + " at" + ` (${relativePos.x * squareSize.width}, ${relativePos.y * squareSize.height})`);
+        alert(focusPoint + " at" + ` (${x}, ${y})`);
       } else {
         setMapBounding((prev) => {
           const newMapBounding = new Map(prev);
@@ -134,7 +133,7 @@ const KonvaSquare = () => {
           }
           return newMapBounding;
         });
-        alert(focusPoint + " at" + ` (${relativePos.x * squareSize.width}, ${relativePos.y * squareSize.height})`);
+        alert(focusPoint + " at" + ` (${x}, ${y})`);
       }
     } else {
       alert("no focus point selected");
@@ -169,7 +168,7 @@ const KonvaSquare = () => {
                   <>
           {relativePos.y !== null && (
             <Text
-              text={`(${relativePos.x * squareSize.width}, ${relativePos.y * squareSize.height})`}
+              text={`(${relativePos.x}, ${relativePos.y})`}
               x={offset.x + relativePos.x * zoom + 10}
               y={offset.y + relativePos.y * zoom - 10}
               fontSize={16}
@@ -198,7 +197,7 @@ const KonvaSquare = () => {
               interfacePositions.forEach((pos, key) => {
               const interfaceName = config.types.find((type) => type.id === focusNode.type)?.interfaces.find((intf) => intf.id === key)?.name;
               const [intX, intY] = pos;
-              const pointKey = `${intX},${intY}`;
+              const pointKey = `${intX},intY}`;
               if (combinedPoints.has(pointKey)) {
                 combinedPoints.get(pointKey)!.labels.push(interfaceName || key);
               } else {
@@ -221,7 +220,7 @@ const KonvaSquare = () => {
                   fill="green"
                 />
                 <Text
-                  text={`(${x}, ${y})\n${labels.join(', ')}`}
+                  text={`(${x*squareSize.width}, ${y*squareSize.height})\n${labels.join(', ')}`}
                   x={offset.x + x * squareSize.width * zoom + 10}
                   y={offset.y + y * squareSize.height * zoom - 10}
                   fontSize={16}

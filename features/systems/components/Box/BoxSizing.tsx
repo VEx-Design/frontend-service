@@ -88,16 +88,31 @@ export default function BoxSizing() {
     setShowSaveWidth(true);
   };
 
+  const setReferencePoint = (point: [number, number]) => {
+    if (!focusNode) return;
+    setMapBounding((prev) => {
+      const newMapBounding = new Map(prev);
+      const nodeInfo = newMapBounding.get(focusNode.id);
+      if (nodeInfo) {
+        newMapBounding.set(focusNode.id, {
+          ...nodeInfo,
+          referencePosition: point,
+        });
+      }
+      return newMapBounding;
+    });
+  };
+
   const referencePointActions = [
-    { name: "Top Left", onClick: () => alert("Top Left") },
-    { name: "Top Center", onClick: () => alert("Top Center") },
-    { name: "Top Right", onClick: () => alert("Top Right") },
-    { name: "Middle Left", onClick: () => alert("Middle Left") },
-    { name: "Middle Center", onClick: () => alert("Middle Center") },
-    { name: "Middle Right", onClick: () => alert("Middle Right") },
-    { name: "Bottom Left", onClick: () => alert("Bottom Left") },
-    { name: "Bottom Center", onClick: () => alert("Bottom Center") },
-    { name: "Bottom Right", onClick: () => alert("Bottom Right") },
+    { name: "Top Left", onClick: () => setReferencePoint([0, 0]) },
+    { name: "Top Center", onClick: () => setReferencePoint([0.5, 0]) },
+    { name: "Top Right", onClick: () => setReferencePoint([1, 0]) },
+    { name: "Middle Left", onClick: () => setReferencePoint([0, 0.5]) },
+    { name: "Middle Center", onClick: () => setReferencePoint([0.5, 0.5]) },
+    { name: "Middle Right", onClick: () => setReferencePoint([1, 0.5]) },
+    { name: "Bottom Left", onClick: () => setReferencePoint([0, 1]) },
+    { name: "Bottom Center", onClick: () => setReferencePoint([0.5, 1]) },
+    { name: "Bottom Right", onClick: () => setReferencePoint([1, 1]) },
   ];
 
   const DropdownMenuComponent = ({ label, actions }: { label: string; actions: { name: string; onClick: () => void }[] }) => {
@@ -109,7 +124,7 @@ export default function BoxSizing() {
         <DropdownMenu.Portal>
           <DropdownMenu.Content side="bottom" align="start" style={{ maxHeight: "100px", overflowY: "auto" }}>
             {actions.map((action, index) => (
-              <DropdownMenu.Item key={index} onClick={action.onClick}>
+              <DropdownMenu.Item key={index} onClick={(e) => { e.stopPropagation(); action.onClick(); }}>
                 {action.name}
               </DropdownMenu.Item>
             ))}
