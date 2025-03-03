@@ -9,7 +9,7 @@ import {
   TabsTrigger,
   TabsTriggerIcon,
 } from "@/components/Tabs";
-import { Airplay, FileSliders, GitGraph, Grid2X2Plus , SquareDashed} from "lucide-react";
+import { Airplay, FileSliders, GitGraph, Grid2X2Plus , SquareDashed, SquareMousePointer} from "lucide-react";
 import { useProject } from "../../contexts/ProjectContext";
 import Editor from "../Editor";
 import Configuration from "../Configuration";
@@ -19,6 +19,9 @@ import { ExecutionProvider } from "../../contexts/Execution/ExecutionContext";
 import { ConfigProvider } from "../../contexts/Configuration/ConfigContext";
 import Box from "../Box";
 import { BoxProvider } from "../../contexts/BoxContext";
+import FitObject from "@/src/app/fitobject/page";
+import { GiTable } from "react-icons/gi";
+
 
 export default function Project() {
   const { projName, onSave, savePending } = useProject();
@@ -47,14 +50,14 @@ export default function Project() {
               <FileSliders />
             </TabsTriggerIcon>
           </TabsTrigger>
-          <TabsTrigger name="ObjectDefine">
-            <TabsTriggerIcon>
-              <Grid2X2Plus />
-            </TabsTriggerIcon>
-          </TabsTrigger>
           <TabsTrigger name="Box">
             <TabsTriggerIcon>
-              <SquareDashed />
+              <SquareMousePointer />
+            </TabsTriggerIcon>
+          </TabsTrigger>
+          <TabsTrigger name="Table">
+            <TabsTriggerIcon>
+              <GiTable />
             </TabsTriggerIcon>
           </TabsTrigger>
         </TabsList>
@@ -76,6 +79,11 @@ export default function Project() {
         <TabsContent name="Box">
           <BoxProvider>
             <Box />
+          </BoxProvider>
+        </TabsContent>
+        <TabsContent name="Table">
+          <BoxProvider>
+            <FitObject />
           </BoxProvider>
         </TabsContent>
       </Tabs>

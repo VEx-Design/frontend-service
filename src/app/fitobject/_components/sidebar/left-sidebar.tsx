@@ -13,13 +13,14 @@ const LeftSidebar = ({}) => {
   };
 
   return (
-    <div className="w-64 h-full overflow-y-auto p-2 bg-transparent">
+    <div className="w-fit h-full overflow-y-auto p-2 bg-transparent">
       <div
         className={`bg-white rounded-md h-full p-4 space-y-4 ${
           isOpen ? "" : "hidden"
         }`}
       >
-        {/* Main */}
+
+        {/* Main
         <div className="flex justify-between items-center">
           <a href="/project">
             <Image
@@ -34,7 +35,8 @@ const LeftSidebar = ({}) => {
             <LuPanelTopClose size={18} />
             {}
           </button>
-        </div>
+        </div> */}
+
         {/* Project */}
         <div className="flex flex-col gap-1 border-b">
           <div className="text-sm">Project</div>
