@@ -53,7 +53,7 @@ export function BoxProvider(props: { children: React.ReactNode }) {
   const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<AppEdge>([]);
   const [blueprint, setBlueprint] = useState(
-    new Map<string, BoundingConfiguration>()
+    new Map<string, BoundingConfiguration[]>()
   );
 
   useEffect(() => {
