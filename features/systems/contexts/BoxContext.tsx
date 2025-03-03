@@ -24,6 +24,8 @@ interface BoxContextValue {
   mapBounding: Map<string, BoundingConfiguration>;
   setMapBounding: (map: Map<string, BoundingConfiguration>) => void;
   config: Config;
+  blueprint: Map<string, BoundingConfiguration>;
+  setBlueprint: (map: Map<string, BoundingConfiguration>) => void;
 }
 
 interface NodesState {
@@ -50,6 +52,9 @@ export function BoxProvider(props: { children: React.ReactNode }) {
   const [focusNode, setFocusNode] = useState<AppNode | undefined>(undefined);
   const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<AppEdge>([]);
+  const [blueprint, setBlueprint] = useState(
+    new Map<string, BoundingConfiguration>()
+  );
 
   useEffect(() => {
     if (flow) {
@@ -79,6 +84,8 @@ export function BoxProvider(props: { children: React.ReactNode }) {
         mapBounding,
         setMapBounding,
         config,
+        blueprint,
+        setBlueprint,
       }}
     >
       {props.children}
