@@ -6,6 +6,7 @@ import {
 import React from "react";
 import FocusDistanceSelector from "../FocusDistanceSelector";
 import LightVisualize from "./LightVisualize";
+import LightPropertyLister from "./LightPropertyLister";
 
 export default function LightProperties() {
   return (
@@ -21,7 +22,7 @@ export default function LightProperties() {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={60} minSize={15} maxSize={85}>
-          <div className="flex flex-1">ddd</div>
+          <LightPropertyLister />
         </ResizablePanel>
       </ResizablePanelGroup>
     </>

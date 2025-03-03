@@ -39,14 +39,6 @@ export default function Diagram() {
   const memoizedNodes = useMemo(() => nodes, [nodes]);
   const memoizedEdges = useMemo(() => edges, [edges]);
 
-  const onNodeDragStart = useCallback(() => {
-    document.body.style.cursor = "grabbing";
-  }, []);
-
-  const onNodeDragStop = useCallback(() => {
-    document.body.style.cursor = "default";
-  }, []);
-
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
@@ -113,8 +105,6 @@ export default function Diagram() {
       fitViewOptions={fitViewOptions}
       onPaneClick={handleBackgroundClick}
       onSelectionChange={handleSelectionChange}
-      onNodeDragStart={onNodeDragStart}
-      onNodeDragStop={onNodeDragStop}
       deleteKeyCode={[]}
       panOnDrag
     >
