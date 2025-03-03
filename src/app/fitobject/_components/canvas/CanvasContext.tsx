@@ -6,6 +6,7 @@ import {
   useState,
   ReactNode,
   useCallback,
+  useEffect,
 } from "react";
 
 // Define Types
@@ -80,7 +81,13 @@ export const CanvasProvider = ({
     },
   });
 
-  // console.log("CanvasProvider", canvas);
+  useEffect(() => {
+    setCanvas((prev) => ({
+      ...prev,
+      objects: initialObjects,
+    }));
+  }
+  , [initialObjects]);
 
   const setCanvasSize = useCallback((width: number, height: number) => {
     setCanvas((prev) => {
