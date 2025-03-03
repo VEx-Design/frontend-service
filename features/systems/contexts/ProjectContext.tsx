@@ -6,6 +6,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { ProjectResponse } from "../actions/getProjectWithID";
@@ -33,20 +34,17 @@ import { FreeSpace } from "../libs/ClassConfig/types/FreeSpace";
 import editFreeSpace from "../libs/ClassConfig/editFreeSpace";
 import addParameterGroup from "../libs/ClassConfig/addParameterGroup";
 import getParameter from "../libs/ClassConfig/getParameter";
+import { debounce } from "lodash"; // Debounce function to optimize saves
 
 interface ProjectContextValue {
   projId: string;
   projName: string;
   onSave: () => void;
-  setOnSave: (onSave: () => void) => void;
   savePending: boolean;
-  setSavePending: (isPending: boolean) => void;
   config: Config;
-  setConfig: (config: Config) => void;
   nodesState: NodesState;
   edgesState: EdgesState;
   configAction: ConfigAction;
-  // execution
   executedFlow: Flow | undefined;
   setExecutedFlow: (flow: Flow | undefined) => void;
 }
@@ -87,12 +85,13 @@ export const ProjectProvider = ({
   children,
   project,
 }: ProjectProviderProps) => {
-  const [onSave, setOnSave] = useState<() => void>(() => () => {});
-
   const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<AppEdge>([]);
+  const [savePending, setSavePending] = useState(false);
+  const [executedFlow, setExecutedFlow] = useState<Flow | undefined>(undefined);
 
-  const [config, setConfig] = useState<Config>(() => {
+  // Parse project config once and memoize it
+  const initialConfig = useMemo(() => {
     try {
       return project.config
         ? JSON.parse(project.config)
@@ -101,102 +100,108 @@ export const ProjectProvider = ({
       console.error("Error parsing config:", error);
       return { types: [], parameters: [] };
     }
-  });
-  const [savePending, setSavePending] = useState<boolean>(false);
+  }, [project.config]);
 
-  const [executedFlow, setExecutedFlow] = useState<Flow | undefined>(undefined);
+  const [config, setConfig] = useState<Config>(initialConfig);
 
+  // Initialize nodes and edges once
   useEffect(() => {
-    const flow = JSON.parse(project.flow);
-    if (!flow) return;
-    setNodes(flow.nodes || []);
-    setEdges(flow.edges || []);
+    try {
+      const flow = JSON.parse(project.flow);
+      if (flow) {
+        setNodes(flow.nodes || []);
+        setEdges(flow.edges || []);
+      }
+    } catch (error) {
+      console.error("Error parsing flow:", error);
+    }
   }, [project.flow, setEdges, setNodes]);
 
-  const configAction: ConfigAction = {
-    editNode: (nodeId: string, data: NodeData) => {
-      const node = nodes.find((node) => node.id === nodeId);
-      if (!node) return;
-      node.data.data = data;
-      setNodes([...nodes]);
-    },
-    addType: (type: Type) => setConfig(addType(config, type)),
-    editType: (type: Type) => {
-      setConfig(editType(config, type));
-    },
-    getType: (typeId: string) => getType(config, typeId),
-    addParameter: (parameter: Parameter) =>
-      setConfig(addParameter(config, parameter)),
-    getParameter: (parameterId: string) => getParameter(config, parameterId)!,
-    editFreeSpace: (freeSpace: FreeSpace) => {
-      setConfig(editFreeSpace(config, freeSpace));
-    },
-    addParameterGroup: (parameterGroup: ParameterGroup) => {
-      console.log(
-        "addParameterGroup",
-        addParameterGroup(config, parameterGroup)
-      );
-      setConfig(addParameterGroup(config, parameterGroup));
-    },
-  };
+  // Config Actions
+  const configAction: ConfigAction = useMemo(
+    () => ({
+      editNode: (nodeId: string, data: NodeData) => {
+        setNodes((prevNodes) =>
+          prevNodes.map((node) =>
+            node.id === nodeId
+              ? { ...node, data: { ...node.data, data } }
+              : node
+          )
+        );
+      },
+      addType: (type: Type) => setConfig((prev) => addType(prev, type)),
+      editType: (type: Type) => setConfig((prev) => editType(prev, type)),
+      getType: (typeId: string) => getType(config, typeId),
+      addParameter: (parameter: Parameter) =>
+        setConfig((prev) => addParameter(prev, parameter)),
+      getParameter: (parameterId: string) => getParameter(config, parameterId)!,
+      editFreeSpace: (freeSpace: FreeSpace) =>
+        setConfig((prev) => editFreeSpace(prev, freeSpace)),
+      addParameterGroup: (parameterGroup: ParameterGroup) =>
+        setConfig((prev) => addParameterGroup(prev, parameterGroup)),
+    }),
+    [config, setNodes]
+  );
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: async ({
-      projId,
-      flow,
-      config,
-    }: {
-      projId: string;
-      flow: { nodes: AppNode[]; edges: AppEdge[] };
-      config: Config;
-    }) => {
-      await saveFlow(projId, flow);
-      await saveConfig(projId, config);
+  // Save project mutation
+  const { mutate } = useMutation({
+    mutationFn: async () => {
+      await saveFlow(project.id, { nodes, edges });
+      await saveConfig(project.id, config);
     },
     onSuccess: () => {
       toast.success("Project saved", { id: "save-project" });
+      setSavePending(false);
     },
     onError: () => {
       toast.error("Failed to save project", { id: "save-project" });
+      setSavePending(false);
     },
   });
 
-  const onSubmit = useCallback(() => {
-    toast.loading("Saving project...", { id: "save-project" });
-    mutate({ projId: project.id, flow: { nodes, edges }, config });
-  }, [project.id, mutate, edges, nodes, config]);
+  // Debounced save function
+  const debouncedSave = useMemo(() => debounce(() => mutate(), 500), [mutate]);
 
-  useEffect(() => {
-    setOnSave(() => () => onSubmit());
-    setSavePending(isPending);
-  }, [isPending, setSavePending, onSubmit, setOnSave]);
+  // Trigger save
+  const onSave = useCallback(() => {
+    toast.loading("Saving project...", { id: "save-project" });
+    setSavePending(true);
+    debouncedSave();
+  }, [debouncedSave]);
+
+  // Memoized context value to prevent unnecessary re-renders
+  const contextValue = useMemo(
+    () => ({
+      projId: project.id,
+      projName: project.name,
+      onSave,
+      savePending,
+      config,
+      nodesState: { nodes, setNodes, onNodesChange },
+      edgesState: { edges, setEdges, onEdgesChange },
+      configAction,
+      executedFlow,
+      setExecutedFlow,
+    }),
+    [
+      project.id,
+      project.name,
+      onSave,
+      savePending,
+      config,
+      nodes,
+      setNodes,
+      onNodesChange,
+      edges,
+      setEdges,
+      onEdgesChange,
+      configAction,
+      executedFlow,
+    ]
+  );
 
   return (
-    <ProjectContext.Provider
-      value={{
-        projId: project.id,
-        projName: project.name,
-        onSave,
-        setOnSave,
-        savePending,
-        setSavePending,
-        config,
-        setConfig,
-        nodesState: {
-          nodes,
-          setNodes,
-          onNodesChange,
-        },
-        edgesState: {
-          edges,
-          setEdges,
-          onEdgesChange,
-        },
-        configAction,
-        executedFlow,
-        setExecutedFlow,
-      }}
-    >
+    <ProjectContext.Provider value={contextValue}>
       {children}
     </ProjectContext.Provider>
   );

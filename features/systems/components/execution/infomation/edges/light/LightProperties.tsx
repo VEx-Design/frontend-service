@@ -4,7 +4,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import React from "react";
-import FocusDistanceSelector from "./FocusDistanceSelector";
+import FocusDistanceSelector from "../FocusDistanceSelector";
 import LightVisualize from "./LightVisualize";
 
 export default function LightProperties() {

@@ -6,7 +6,7 @@ import {
 import { useExecution } from "@/features/systems/contexts/Execution/ExecutionContext";
 import React from "react";
 import LightLister from "./LightLister";
-import LightProperties from "./LightProperties";
+import LightProperties from "./light/LightProperties";
 
 export default function EdgeInfomation() {
   const { focusEdge } = useExecution();

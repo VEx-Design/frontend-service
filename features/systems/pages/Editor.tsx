@@ -14,23 +14,30 @@ import { useReactFlow } from "@xyflow/react";
 
 export default function Editor() {
   const panelRef = useRef<ImperativePanelHandle>(null);
+  const lastFitViewCall = useRef<number>(0);
   const { fitView } = useReactFlow();
 
   const handleResize = useCallback(() => {
-    if (panelRef.current) {
+    const now = Date.now();
+    if (now - lastFitViewCall.current > 200) {
+      // Limit updates to avoid excessive calls
       fitView({ maxZoom: 0.8, minZoom: 0.005, padding: 0.25 });
+      lastFitViewCall.current = now;
     }
   }, [fitView]);
 
   return (
-    <ResizablePanelGroup direction="horizontal" className="h-full w-full">
+    <ResizablePanelGroup
+      direction="horizontal"
+      className="h-full w-full"
+      onLayout={handleResize} // Use onLayout instead of onResize for better resizing
+    >
       <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
         <TypeLister />
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel
         ref={panelRef}
-        onResize={handleResize}
         defaultSize={70}
         minSize={15}
         maxSize={85}

@@ -1,6 +1,12 @@
-import React, { createContext, useState } from "react";
+import React, {
+  createContext,
+  useState,
+  useCallback,
+  useMemo,
+  useContext,
+} from "react";
 import { EdgeData } from "../libs/ClassEdge/types/AppEdge";
-import { AppNode, NodeData } from "../libs/ClassNode/types/AppNode";
+import { NodeData } from "../libs/ClassNode/types/AppNode";
 import {
   CreateObjectNode,
   CreateStarterNode,
@@ -15,28 +21,28 @@ import setValue from "../libs/ClassObject/setValue";
 import addInitialLight from "../libs/ClassNode/addInitialLight";
 import { toast } from "sonner";
 
-type FocusNode = {
+interface Coordinate {
+  x: number;
+  y: number;
+}
+
+interface FocusNode {
   id: string;
   type: string;
   data: NodeData;
-};
+}
 
-type FocusEdge = {
+interface FocusEdge {
   id: string;
   type: string;
   data: EdgeData;
-};
-
-export type Coordinate = {
-  x: number;
-  y: number;
-};
+}
 
 interface EditorContextValue {
-  focusNode: FocusNode | undefined;
-  setFocusNode: (node: FocusNode | undefined) => void;
-  focusEdge: FocusEdge | undefined;
-  setFocusEdge: (edge: FocusEdge | undefined) => void;
+  focusNode?: FocusNode;
+  setFocusNode: (node?: FocusNode) => void;
+  focusEdge?: FocusEdge;
+  setFocusEdge: (edge?: FocusEdge) => void;
   contextMenuPosition: Coordinate | null;
   setContextMenuPosition: (position: Coordinate | null) => void;
   nodeAction: NodeAction;
@@ -56,130 +62,125 @@ interface EdgeAction {
 
 const EditorContext = createContext<EditorContextValue | undefined>(undefined);
 
-export function EditorProvider(props: { children: React.ReactNode }) {
-  const [focusNode, setFocusNode] = useState<FocusNode | undefined>(undefined);
-  const [focusEdge, setFocusEdge] = useState<FocusEdge | undefined>(undefined);
+export function EditorProvider({ children }: { children: React.ReactNode }) {
+  const [focusNode, setFocusNode] = useState<FocusNode | undefined>();
+  const [focusEdge, setFocusEdge] = useState<FocusEdge | undefined>();
   const [contextMenuPosition, setContextMenuPosition] =
     useState<Coordinate | null>(null);
 
   const { configAction, nodesState, edgesState } = useProject();
 
-  const updateFocusNodeData = (newData: NodeData) => {
-    setFocusNode((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        data: newData,
-      };
-    });
-  };
+  const updateFocusNodeData = useCallback((newData: NodeData) => {
+    setFocusNode((prev) => (prev ? { ...prev, data: newData } : prev));
+  }, []);
 
-  const nodeAction: NodeAction = {
-    createNode: (type: string, position: Coordinate, objectType?: Type) => {
-      let newNode: AppNode | null = null;
-      if (type === "starter") {
-        newNode = CreateStarterNode(position);
-      } else if (type === "terminal") {
-        newNode = CreateTerminalNode(position);
-      } else if (type === "object") {
-        if (objectType) {
-          newNode = CreateObjectNode(objectType, position);
-        } else {
-          throw new Error("objectType is required to create an object node");
+  const nodeAction = useMemo(
+    () => ({
+      createNode: (type: string, position: Coordinate, objectType?: Type) => {
+        const newNode =
+          type === "starter"
+            ? CreateStarterNode(position)
+            : type === "terminal"
+            ? CreateTerminalNode(position)
+            : type === "object" && objectType
+            ? CreateObjectNode(objectType, position)
+            : null;
+
+        if (newNode) nodesState.setNodes([...nodesState.nodes, newNode]);
+      },
+      setInitial: (lightId: string, paramId: string, value: number) => {
+        if (focusNode?.data) {
+          const updatedData = setInitial(
+            focusNode.data,
+            lightId,
+            paramId,
+            value
+          );
+          updateFocusNodeData(updatedData);
+          configAction.editNode(focusNode.id, updatedData);
         }
-      }
-      if (newNode) {
-        nodesState.setNodes([...nodesState.nodes, newNode]);
-      }
-    },
-    setInitial: (lightId: string, paramId: string, value: number) => {
-      if (focusNode?.data) {
-        const newFocusNode = setInitial(
-          focusNode.data,
-          lightId,
-          paramId,
-          value
+      },
+      setValue: (propId: string, value: number) => {
+        if (focusNode?.data) {
+          const updatedData = setValue(focusNode.data, propId, value);
+          updateFocusNodeData(updatedData);
+          configAction.editNode(focusNode.id, updatedData);
+        }
+      },
+      addInitialLight: () => {
+        if (focusNode?.data) {
+          const updatedData = addInitialLight(focusNode.data);
+          updateFocusNodeData(updatedData);
+          configAction.editNode(focusNode.id, updatedData);
+        }
+      },
+    }),
+    [
+      nodesState,
+      focusNode?.data,
+      focusNode?.id,
+      updateFocusNodeData,
+      configAction,
+    ]
+  );
+
+  const edgeAction = useMemo(
+    () => ({
+      createEdge: (connection: Connection) => {
+        const edge = CreateEdgeLight(connection);
+        if (!edge) return console.error("Edge creation failed!");
+
+        const isDuplicate = edgesState.edges.some(
+          (e) =>
+            (e.sourceHandle === connection.sourceHandle ||
+              e.targetHandle === connection.targetHandle) &&
+            e.source === connection.source &&
+            e.target === connection.target
         );
-        updateFocusNodeData(newFocusNode);
-        configAction.editNode(focusNode.id, newFocusNode);
-      }
-    },
-    setValue: (propId: string, value: number) => {
-      if (focusNode?.data) {
-        updateFocusNodeData(setValue(focusNode.data, propId, value));
-        configAction.editNode(
-          focusNode.id,
-          setValue(focusNode.data, propId, value)
-        );
-      }
-    },
-    addInitialLight: () => {
-      if (focusNode?.data) {
-        const newFocusNode = addInitialLight(focusNode.data);
-        updateFocusNodeData(newFocusNode);
-        configAction.editNode(focusNode.id, newFocusNode);
-      }
-    },
-  };
+        if (isDuplicate) {
+          return toast.warning("Interface Already Connected", {
+            id: "add-edge",
+            description: "Each interface can only have one connection.",
+          });
+        }
 
-  const edgeAction: EdgeAction = {
-    createEdge: (connection: Connection) => {
-      const edge = CreateEdgeLight(connection);
-      if (!edge) {
-        console.error("Edge creation failed!");
-        return;
-      }
+        if (connection.source === connection.target) {
+          return toast.warning("Self Connection", {
+            id: "add-edge",
+            description: "Cannot connect to itself.",
+          });
+        }
 
-      const currentEdges = edgesState.edges;
-      const isDuplicate = currentEdges.some(
-        (e) =>
-          (e.sourceHandle === connection.sourceHandle ||
-            e.targetHandle === connection.targetHandle) &&
-          e.source === connection.source &&
-          e.target === connection.target
-      );
-      if (isDuplicate) {
-        toast.warning("Interface Already Connected", {
-          id: "add-edge",
-          description: `Each interface can only have one connection.`,
-        });
-        return;
-      }
-      const isSelf = connection.source === connection.target;
-      if (isSelf) {
-        toast.warning("Self Connection", {
-          id: "add-edge",
-          description: `Cannot connect to itself.`,
-        });
-        return;
-      }
+        edgesState.setEdges([...edgesState.edges, edge]);
+      },
+    }),
+    [edgesState]
+  );
 
-      edgesState.setEdges([...currentEdges, edge]);
-    },
-  };
+  const contextValue = useMemo(
+    () => ({
+      focusNode,
+      setFocusNode,
+      focusEdge,
+      setFocusEdge,
+      contextMenuPosition,
+      setContextMenuPosition,
+      nodeAction,
+      edgeAction,
+    }),
+    [focusNode, focusEdge, contextMenuPosition, nodeAction, edgeAction]
+  );
 
   return (
-    <EditorContext.Provider
-      value={{
-        focusNode,
-        setFocusNode,
-        focusEdge,
-        setFocusEdge,
-        contextMenuPosition,
-        setContextMenuPosition,
-        nodeAction,
-        edgeAction,
-      }}
-    >
-      <ReactFlowProvider>{props.children}</ReactFlowProvider>
+    <EditorContext.Provider value={contextValue}>
+      <ReactFlowProvider>{children}</ReactFlowProvider>
     </EditorContext.Provider>
   );
 }
 
 export function useEditor() {
-  const context = React.useContext(EditorContext);
-  if (!context) {
+  const context = useContext(EditorContext);
+  if (!context)
     throw new Error("useEditor must be used within an EditorProvider");
-  }
   return context;
 }

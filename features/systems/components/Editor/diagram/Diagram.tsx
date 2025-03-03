@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   ReactFlow,
   Controls,
@@ -35,6 +35,18 @@ export default function Diagram() {
 
   const { nodeAction, edgeAction, setFocusNode, setFocusEdge } = useEditor();
 
+  // Memoized nodes and edges for performance
+  const memoizedNodes = useMemo(() => nodes, [nodes]);
+  const memoizedEdges = useMemo(() => edges, [edges]);
+
+  const onNodeDragStart = useCallback(() => {
+    document.body.style.cursor = "grabbing";
+  }, []);
+
+  const onNodeDragStop = useCallback(() => {
+    document.body.style.cursor = "default";
+  }, []);
+
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
@@ -55,7 +67,6 @@ export default function Diagram() {
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      console.log(connection);
       edgeAction.createEdge(connection);
     },
     [edgeAction]
@@ -63,7 +74,7 @@ export default function Diagram() {
 
   const handleSelectionChange = useCallback(
     (changes: { edges: Edge[] }) => {
-      if (changes.edges && changes.edges.length > 0) {
+      if (changes.edges.length > 0) {
         setFocusNode(undefined);
         setFocusEdge({
           id: changes.edges[0].id,
@@ -77,14 +88,19 @@ export default function Diagram() {
     [setFocusEdge, setFocusNode]
   );
 
-  const handleBackgroundClick = () => {
+  const handleBackgroundClick = useCallback(() => {
     setFocusNode(undefined);
-  };
+  }, [setFocusNode]);
+
+  const fitViewOptions = useMemo(
+    () => ({ maxZoom: 0.8, minZoom: 0.005, padding: 0.25 }),
+    []
+  );
 
   return (
     <ReactFlow
-      nodes={nodes}
-      edges={edges}
+      nodes={memoizedNodes}
+      edges={memoizedEdges}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       onNodesChange={onNodesChange}
@@ -94,10 +110,13 @@ export default function Diagram() {
       onDrop={onDrop}
       style={rfStyle}
       fitView
-      fitViewOptions={{ maxZoom: 0.8, minZoom: 0.005, padding: 0.25 }}
+      fitViewOptions={fitViewOptions}
       onPaneClick={handleBackgroundClick}
       onSelectionChange={handleSelectionChange}
+      onNodeDragStart={onNodeDragStart}
+      onNodeDragStop={onNodeDragStop}
       deleteKeyCode={[]}
+      panOnDrag
     >
       <Controls />
     </ReactFlow>
