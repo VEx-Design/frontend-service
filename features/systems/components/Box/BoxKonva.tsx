@@ -1,5 +1,7 @@
+"use client"
+
 import type Konva from "konva"
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, useCallback } from "react"
 import { Stage, Layer, Rect, Text, Circle } from "react-konva"
 import { useResizeDetector } from "react-resize-detector"
 import { useBox } from "../../contexts/BoxContext"
@@ -7,7 +9,8 @@ import { useProject } from "../../contexts/ProjectContext"
 import type { BoundingConfiguration } from "../../libs/ClassBox/types/BoundingConfiguration"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { ZoomIn, ZoomOut, Eye, EyeOff, Maximize } from "lucide-react"
+import { Eye, EyeOff, Maximize, Move } from "lucide-react"
+import { FaRegHandPaper } from "react-icons/fa";
 
 export default function BoxKonva() {
   const { ref, width = 400, height = 400 } = useResizeDetector()
@@ -31,6 +34,10 @@ export default function BoxKonva() {
   const [showPoints, setShowPoints] = useState(true)
   const stageRef = useRef<Konva.Stage>(null)
 
+  // Add new state variables and functions
+  const [action, setAction] = useState<"move" | "select">("select")
+  const [stagePos, setStagePos] = useState({ x: 0, y: 0 })
+
   useEffect(() => {
     if (focusNode) {
       const nodeInfo = mapBounding.get(focusNode.id)
@@ -46,7 +53,7 @@ export default function BoxKonva() {
         const newSquareSize = { width: scaledWidth, height: scaledHeight }
         setSquareSize(newSquareSize)
 
-        // Auto-fit the box in the viewport
+        // Center the square and set initial zoom
         if (width > 0 && height > 0 && scaledWidth > 0 && scaledHeight > 0) {
           const padding = 0.1
           const maxWidthZoom = (width * (1 - padding)) / scaledWidth
@@ -54,9 +61,9 @@ export default function BoxKonva() {
           const newZoom = Math.min(maxWidthZoom, maxHeightZoom, 1)
 
           setZoom(newZoom)
-          setOffset({
-            x: width / 2 - (scaledWidth * newZoom) / 2,
-            y: height / 2 - (scaledHeight * newZoom) / 2,
+          setStagePos({
+            x: (width - scaledWidth * newZoom) / 2,
+            y: (height - scaledHeight * newZoom) / 2,
           })
         }
       } else {
@@ -67,13 +74,42 @@ export default function BoxKonva() {
     }
   }, [focusNode, mapBounding, width, height])
 
+  const handleStageMouseDown = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    // Only start dragging if in move mode and not clicking on a point
+    if (action === "move" && e.target === e.target.getStage()) {
+      setIsDragging(true)
+      setLastMouse(e.target.getStage()!.getPointerPosition()!)
+    }
+  }
+
+  const handleStageMouseMove = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    if (!isDragging) return
+
+    const stage = e.target.getStage()!
+    const pointerPos = stage.getPointerPosition()!
+    const dragDistance = {
+      x: pointerPos.x - lastMouse.x,
+      y: pointerPos.y - lastMouse.y,
+    }
+
+    setStagePos({
+      x: stagePos.x + dragDistance.x,
+      y: stagePos.y + dragDistance.y,
+    })
+    setLastMouse(pointerPos)
+  }
+
+  const handleStageMouseUp = () => {
+    setIsDragging(false)
+  }
+
   const handleMouseMove = (e: Konva.KonvaEventObject<MouseEvent>) => {
     const stage = e.target.getStage()
     const pointer = stage?.getPointerPosition()
     if (!pointer) return
 
-    const unscaledX = (pointer.x - offset.x) / zoom
-    const unscaledY = (pointer.y - offset.y) / zoom
+    const unscaledX = (pointer.x - stagePos.x) / zoom
+    const unscaledY = (pointer.y - stagePos.y) / zoom
 
     if (unscaledX >= 0 && unscaledX <= squareSize.width && unscaledY >= 0 && unscaledY <= squareSize.height) {
       setRelativePos({
@@ -87,14 +123,36 @@ export default function BoxKonva() {
 
   const handleMouseDown = (e: Konva.KonvaEventObject<MouseEvent>) => {
     // Only start dragging if not clicking on a point (circle)
-    if (e.target.getClassName() !== "Circle") {
-      setIsDragging(true)
-      setLastMouse({ x: e.evt.clientX, y: e.evt.clientY })
+    if (e.target.getClassName() === "Circle") {
+      return // Don't start dragging when clicking on circles
+    }
+
+    const stage = e.target.getStage()
+    const pointer = stage?.getPointerPosition()
+
+    if (pointer) {
+      // Check if we're in point placement mode and clicking inside the square
+      const unscaledX = (pointer.x - offset.x) / zoom
+      const unscaledY = (pointer.y - offset.y) / zoom
+
+      const isInsideSquare =
+        unscaledX >= 0 && unscaledX <= squareSize.width && unscaledY >= 0 && unscaledY <= squareSize.height
+
+      // Allow dragging if:
+      // 1. We're not in point placement mode (focusPoint is empty), OR
+      // 2. We're clicking outside the square
+      if (!focusPoint || !isInsideSquare) {
+        setIsDragging(true)
+        setLastMouse({ x: e.evt.clientX, y: e.evt.clientY })
+        e.evt.preventDefault() // Prevent default browser behavior
+      }
     }
   }
 
   const handleMouseUp = () => {
-    setIsDragging(false)
+    if (isDragging) {
+      setIsDragging(false)
+    }
   }
 
   const handleMouseMoveDrag = (e: Konva.KonvaEventObject<MouseEvent>) => {
@@ -106,71 +164,78 @@ export default function BoxKonva() {
     }
   }
 
-  const handleWheel = (e: Konva.KonvaEventObject<WheelEvent>) => {
-    e.evt.preventDefault()
-    const stage = stageRef.current
-    const scaleBy = 1.05
-    const oldScale = zoom
-    const pointer = stage?.getPointerPosition()
-    const newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy
+  const handleWheel = useCallback(
+    (e: Konva.KonvaEventObject<WheelEvent>) => {
+      e.evt.preventDefault()
+      const scaleBy = 1.1
+      const stage = stageRef.current
+      const oldScale = zoom
+      const pointer = stage!.getPointerPosition()!
 
-    if (!pointer) return
-    const mouseXBeforeZoom = (pointer.x - offset.x) / oldScale
-    const mouseYBeforeZoom = (pointer.y - offset.y) / oldScale
+      const mousePointTo = {
+        x: (pointer.x - stage!.x()) / oldScale,
+        y: (pointer.y - stage!.y()) / oldScale,
+      }
 
-    setZoom(Math.max(0.3, Math.min(2, newScale)))
-    setOffset({
-      x: pointer.x - mouseXBeforeZoom * newScale,
-      y: pointer.y - mouseYBeforeZoom * newScale,
-    })
-  }
+      const newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy
+
+      setZoom(newScale)
+      setStagePos({
+        x: pointer.x - mousePointTo.x * newScale,
+        y: pointer.y - mousePointTo.y * newScale,
+      })
+    },
+    [zoom],
+  )
 
   const handlePointClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
-    // Prevent the stage from starting drag
+    if (action !== "select" || isDragging) return
+
     e.cancelBubble = true
 
     const stage = e.target.getStage()
     const pointer = stage?.getPointerPosition()
     if (!pointer || !focusNode || squareSize.width === 0 || squareSize.height === 0) return
 
-    const unscaledX = (pointer.x - offset.x) / zoom
-    const unscaledY = (pointer.y - offset.y) / zoom
+    const unscaledX = (pointer.x - stagePos.x) / zoom
+    const unscaledY = (pointer.y - stagePos.y) / zoom
 
     // Ensure we're within bounds
     if (unscaledX < 0 || unscaledX > squareSize.width || unscaledY < 0 || unscaledY > squareSize.height) return
+
+    // Only proceed with point placement if we have a focusPoint
+    if (focusPoint === "") return
 
     // Convert to normalized coordinates (0-1)
     const x = unscaledX / squareSize.width
     const y = unscaledY / squareSize.height
 
-    if (focusPoint !== "") {
-      if (focusPoint === "Reference Point") {
-        setMapBounding((prev) => {
-          const newMapBounding = new Map(prev)
-          const nodeInfo = newMapBounding.get(focusNode.id)
-          if (!nodeInfo) return prev
+    if (focusPoint === "Reference Point") {
+      setMapBounding((prev) => {
+        const newMapBounding = new Map(prev)
+        const nodeInfo = newMapBounding.get(focusNode.id)
+        if (!nodeInfo) return prev
 
-          newMapBounding.set(focusNode.id, {
-            ...nodeInfo,
-            referencePosition: [x, y] as [number, number],
-          })
-          return newMapBounding
+        newMapBounding.set(focusNode.id, {
+          ...nodeInfo,
+          referencePosition: [x, y] as [number, number],
         })
-      } else {
-        setMapBounding((prev) => {
-          const newMapBounding = new Map(prev)
-          const nodeInfo = newMapBounding.get(focusNode.id)
-          if (!nodeInfo) return prev
+        return newMapBounding
+      })
+    } else {
+      setMapBounding((prev) => {
+        const newMapBounding = new Map(prev)
+        const nodeInfo = newMapBounding.get(focusNode.id)
+        if (!nodeInfo) return prev
 
-          const newInterfacePositions = new Map(nodeInfo.interfacePositions)
-          newInterfacePositions.set(focusPoint, [x, y] as [number, number])
-          newMapBounding.set(focusNode.id, {
-            ...nodeInfo,
-            interfacePositions: newInterfacePositions,
-          })
-          return newMapBounding
+        const newInterfacePositions = new Map(nodeInfo.interfacePositions)
+        newInterfacePositions.set(focusPoint, [x, y] as [number, number])
+        newMapBounding.set(focusNode.id, {
+          ...nodeInfo,
+          interfacePositions: newInterfacePositions,
         })
-      }
+        return newMapBounding
+      })
     }
   }
 
@@ -234,9 +299,9 @@ export default function BoxKonva() {
       const newZoom = Math.min(maxWidthZoom, maxHeightZoom, 1)
 
       setZoom(newZoom)
-      setOffset({
-        x: width / 2 - (squareSize.width * newZoom) / 2,
-        y: height / 2 - (squareSize.height * newZoom) / 2,
+      setStagePos({
+        x: (width - squareSize.width * newZoom) / 2,
+        y: (height - squareSize.height * newZoom) / 2,
       })
     }
   }
@@ -246,24 +311,7 @@ export default function BoxKonva() {
       <div className="p-2 border-b flex items-center justify-between bg-muted/30">
         <div className="flex items-center gap-2">
           <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleZoomIn}>
-                  <ZoomIn className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Zoom In</TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleZoomOut}>
-                  <ZoomOut className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Zoom Out</TooltipContent>
-            </Tooltip>
-
+          
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleReset}>
@@ -286,11 +334,38 @@ export default function BoxKonva() {
               </TooltipTrigger>
               <TooltipContent>{showPoints ? "Hide Points" : "Show Points"}</TooltipContent>
             </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={action === "move" ? "default" : "outline"}
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => setAction(action === "move" ? "select" : "move")}
+                >
+                  <FaRegHandPaper className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{action === "move" ? "Switch to Select" : "Switch to Move"}</TooltipContent>
+            </Tooltip>
           </TooltipProvider>
         </div>
 
-        <div className="text-xs text-muted-foreground">
-          {focusPoint && <span className="font-medium text-primary">Placing: {focusPoint}</span>}
+        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+          <span className="font-medium">Zoom: {(zoom * 100).toFixed(0)}%</span>
+          {relativePos.y !== null ? (
+            <span>
+              Position: ({relativePos.x}, {relativePos.y}) mm
+            </span>
+          ) : (
+            <span>Position: Outside</span>
+          )}
+          {squareSize.width > 0 && (
+            <span>
+              Size: {(squareSize.width / scalingFactor).toFixed(1)}mm × {(squareSize.height / scalingFactor).toFixed(1)}
+              mm
+            </span>
+          )}
         </div>
       </div>
 
@@ -298,7 +373,7 @@ export default function BoxKonva() {
         ref={ref}
         className="relative flex-grow"
         style={{
-          cursor: isDragging ? "grabbing" : focusPoint ? "crosshair" : "grab",
+          cursor: isDragging ? "grabbing" : focusPoint && relativePos.y !== null ? "crosshair" : "grab",
         }}
       >
         {squareSize.width === 0 && (
@@ -307,45 +382,40 @@ export default function BoxKonva() {
           </div>
         )}
 
-        <div className="absolute bottom-2 left-2 text-xs bg-background/90 px-2 py-1 rounded-md border shadow-sm z-10">
-          <div className="flex items-center gap-2">
-            <span className="font-medium">Zoom: {(zoom * 100).toFixed(0)}%</span>
-            {relativePos.y !== null && (
-              <span>
-                Position: ({relativePos.x}, {relativePos.y}) mm
-              </span>
-            )}
-          </div>
-          {squareSize.width > 0 && (
-            <div>
-              Size: {(squareSize.width / scalingFactor).toFixed(1)}mm × {(squareSize.height / scalingFactor).toFixed(1)}
-              mm
-            </div>
-          )}
-        </div>
-
         <Stage
           ref={stageRef}
           width={width}
           height={height}
+          onMouseDown={handleStageMouseDown}
           onMouseMove={handleMouseMove}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseMoveCapture={handleMouseMoveDrag}
-          onWheel={handleWheel}
+          onMouseUp={handleStageMouseUp}
           onClick={handlePointClick}
+          onWheel={handleWheel}
+          draggable={action === "move"}
+          x={stagePos.x}
+          y={stagePos.y}
+          scaleX={zoom}
+          scaleY={zoom}
           className="bg-[#f8f9fa]"
         >
           <Layer>
             {/* Background grid */}
-            <Rect x={0} y={0} width={width} height={height} fill="transparent" onMouseDown={handleMouseDown} />
+            <Rect
+              x={0}
+              y={0}
+              width={width}
+              height={height}
+              fill="rgba(240, 240, 240, 0.5)"
+              onMouseDown={handleMouseDown}
+              perfectDrawEnabled={false}
+            />
 
             {squareSize.width > 0 && (
               <Rect
-                x={offset.x}
-                y={offset.y}
-                width={squareSize.width * zoom}
-                height={squareSize.height * zoom}
+                x={0}
+                y={0}
+                width={squareSize.width}
+                height={squareSize.height}
                 fill="rgba(220, 240, 255, 0.8)"
                 stroke="#2563eb"
                 strokeWidth={1}
@@ -355,20 +425,6 @@ export default function BoxKonva() {
                 shadowOpacity={0.5}
                 onClick={handlePointClick}
                 cornerRadius={2}
-              />
-            )}
-
-            {relativePos.y !== null && (
-              <Text
-                text={`(${relativePos.x}, ${relativePos.y})`}
-                x={offset.x + relativePos.x * scalingFactor * zoom + 10}
-                y={offset.y + relativePos.y * scalingFactor * zoom - 30}
-                fontSize={14}
-                fill="#333"
-                fontStyle="bold"
-                padding={4}
-                background="#fff"
-                cornerRadius={3}
               />
             )}
 
@@ -431,31 +487,31 @@ export default function BoxKonva() {
                   return (
                     <React.Fragment key={`${x},${y}`}>
                       <Circle
-                        x={offset.x + x * squareSize.width * zoom}
-                        y={offset.y + y * squareSize.height * zoom}
-                        radius={6}
+                        x={x * squareSize.width}
+                        y={y * squareSize.height}
+                        radius={6 / zoom}
                         fill={isReferencePoint ? "#ef4444" : "#10b981"}
                         stroke="#fff"
-                        strokeWidth={2}
+                        strokeWidth={2 / zoom}
                         shadowColor="rgba(0,0,0,0.3)"
-                        shadowBlur={3}
-                        shadowOffset={{ x: 1, y: 1 }}
+                        shadowBlur={3 / zoom}
+                        shadowOffset={{ x: 1 / zoom, y: 1 / zoom }}
                         shadowOpacity={0.5}
                         onClick={(e) => handleCircleClick(e, [x, y])}
                       />
                       <Text
                         text={`(${Math.round((x * squareSize.width) / scalingFactor)}, ${Math.round((y * squareSize.height) / scalingFactor)}) mm\n${labels.join(", ")}`}
-                        x={offset.x + x * squareSize.width * zoom + 10}
-                        y={offset.y + y * squareSize.height * zoom - 20}
-                        fontSize={14}
+                        x={x * squareSize.width + 10 / zoom}
+                        y={y * squareSize.height - 20 / zoom}
+                        fontSize={14 / zoom}
                         fontStyle={isReferencePoint ? "bold" : "normal"}
                         fill={isReferencePoint ? "#ef4444" : "#10b981"}
-                        padding={4}
+                        padding={4 / zoom}
                         background="rgba(255,255,255,0.8)"
-                        cornerRadius={3}
+                        cornerRadius={3 / zoom}
                         shadowColor="rgba(0,0,0,0.1)"
-                        shadowBlur={2}
-                        shadowOffset={{ x: 1, y: 1 }}
+                        shadowBlur={2 / zoom}
+                        shadowOffset={{ x: 1 / zoom, y: 1 / zoom }}
                       />
                     </React.Fragment>
                   )

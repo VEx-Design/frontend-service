@@ -25,6 +25,7 @@ interface CanvasObject {
 }
 
 const FitObject = () => {
+
   const [canvaObjects, setCanvaObjects] = useState<CanvasObject[]>([]);
   const { mapBounding } = useProject();
 
