@@ -3,7 +3,7 @@ import React, { memo, useMemo } from "react";
 import { NodeData } from "@/features/systems/libs/ClassNode/types/AppNode";
 import { useProject } from "@/features/systems/contexts/ProjectContext";
 import ObjectNodeTemp from "../../_components/ObjectNodeTemp";
-import { useConfigInterface } from "@/features/systems/contexts/ConfigInterfaceContext";
+import { useConfigInterface } from "@/features/systems/contexts/Configuration/ConfigInterfaceContext";
 
 const NodeComponent = memo((props: NodeProps) => {
   const { configAction } = useProject();

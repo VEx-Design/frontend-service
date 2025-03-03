@@ -1,10 +1,11 @@
-import { LightInput } from "../ClassLight/types/Light";
+import setLightEdge from "../ClassEdge/setLightEdge";
+import { Light } from "../ClassLight/types/Light";
 import { Flow } from "./types/Flow";
 
-export default function setInput(
+export default function setEdgeInput(
   flow: Flow,
   edgeId: string,
-  input: LightInput[]
+  input: Light[]
 ): Flow {
   const resultFlow = {
     ...flow,
@@ -15,13 +16,7 @@ export default function setInput(
             data: {
               ...edge.data,
               data: {
-                ...edge.data.data,
-                light: edge.data.data.light
-                  ? {
-                      ...edge.data.data.light,
-                      input,
-                    }
-                  : undefined,
+                ...setLightEdge(edge.data.data, input),
               },
             },
           }

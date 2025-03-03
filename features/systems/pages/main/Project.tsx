@@ -9,14 +9,14 @@ import {
   TabsTrigger,
   TabsTriggerIcon,
 } from "@/components/Tabs";
-import { Airplay, FileSliders, GitGraph, SquareDashed } from "lucide-react";
+import { Airplay, FileSliders, GitGraph, Grid2X2Plus , SquareDashed} from "lucide-react";
 import { useProject } from "../../contexts/ProjectContext";
 import Editor from "../Editor";
 import Configuration from "../Configuration";
-import { ConfigProvider } from "../../contexts/ConfigContext";
 import { EditorProvider } from "../../contexts/EditorContext";
 import Execution from "../Execution";
-import { ExecutionProvider } from "../../contexts/ExecutionContext";
+import { ExecutionProvider } from "../../contexts/Execution/ExecutionContext";
+import { ConfigProvider } from "../../contexts/Configuration/ConfigContext";
 import Box from "../Box";
 import { BoxProvider } from "../../contexts/BoxContext";
 
@@ -37,14 +37,19 @@ export default function Project() {
               <GitGraph />
             </TabsTriggerIcon>
           </TabsTrigger>
+          <TabsTrigger name="Execution">
+            <TabsTriggerIcon>
+              <Airplay />
+            </TabsTriggerIcon>
+          </TabsTrigger>
           <TabsTrigger name="Configuration">
             <TabsTriggerIcon>
               <FileSliders />
             </TabsTriggerIcon>
           </TabsTrigger>
-          <TabsTrigger name="Execution">
+          <TabsTrigger name="ObjectDefine">
             <TabsTriggerIcon>
-              <Airplay />
+              <Grid2X2Plus />
             </TabsTriggerIcon>
           </TabsTrigger>
           <TabsTrigger name="Box">

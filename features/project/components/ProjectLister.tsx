@@ -57,19 +57,19 @@ export default function ProjectLister() {
     () => (data: Data[]) => data
   );
 
-  useEffect(() => {
-    async function fetchProjects() {
-      setLoading(true);
-      try {
-        const data = await getMyProjects();
-        setProjects(data);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      } finally {
-        setLoading(false);
-      }
+  async function fetchProjects() {
+    setLoading(true);
+    try {
+      const data = await getMyProjects();
+      setProjects(data);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    } finally {
+      setLoading(false);
     }
+  }
 
+  useEffect(() => {
     fetchProjects();
   }, []);
 
@@ -134,7 +134,7 @@ export default function ProjectLister() {
     >
       <ListerHeader title="Project">
         <ListerHeaderControl>
-          <CreateProjectDialog />
+          <CreateProjectDialog onCreated={fetchProjects} />
         </ListerHeaderControl>
       </ListerHeader>
       <ListerControl>

@@ -24,32 +24,33 @@ interface TabsProps {
 }
 
 export function Tabs(props: TabsProps) {
-  const [currentTab, setCurrentTab] = useState<string>("Flow");
-  const [tabList, setTabList] = useState<{
-    [key: string]: React.ReactNode;
-  } | null>(null);
+  const [currentTab, setCurrentTab] = useState<string>("");
 
-  const tabBar = useMemo(() => {
-    return getChild(props.children, TabsList);
-  }, [props.children]);
+  // Extract tab bar and tab contents
+  const tabBar = useMemo(
+    () => getChild(props.children, TabsList),
+    [props.children]
+  );
+  const tabContents = useMemo(
+    () => getChildren(props.children, TabsContent),
+    [props.children]
+  );
 
-  const tabContents = useMemo(() => {
-    return getChildren(props.children, TabsContent);
-  }, [props.children]);
-
-  useEffect(() => {
-    // Set the default tab to the first tab if currentTab is not set
-    if (!currentTab && tabContents.length > 0) {
-      const firstTab = tabContents[0].props.name;
-      if (firstTab) setCurrentTab(firstTab);
-    }
-
+  // Memoize tabList to avoid unnecessary re-renders
+  const tabList = useMemo(() => {
     const tabs: { [key: string]: React.ReactNode } = {};
     tabContents.forEach((content) => {
       tabs[content.props.name] = content;
     });
-    setTabList(tabs);
-  }, [tabContents, currentTab]);
+    return tabs;
+  }, [tabContents]);
+
+  // Set default tab on mount
+  useEffect(() => {
+    if (!currentTab && tabContents.length > 0) {
+      setCurrentTab(tabContents[0].props.name);
+    }
+  }, [currentTab, tabContents]);
 
   return (
     <TabsContext.Provider
@@ -58,25 +59,29 @@ export function Tabs(props: TabsProps) {
       <div
         className={cn(
           "flex",
-          props.type === "side" ? "flex h-full" : "flex flex-col h-full"
+          props.type === "side" ? "h-full w-full" : "flex-col h-full w-full"
         )}
       >
-        {/* Tab bar rendering */}
+        {/* Tab bar */}
         <div>{tabBar}</div>
-        {/* Render all tab contents but control their visibility */}
-        <div className="flex flex-1">
-          {tabList &&
-            Object.keys(tabList).map((tabName) => (
-              <div
-                className="flex flex-1"
-                key={tabName}
-                style={{
-                  display: currentTab === tabName ? "" : "none",
-                }}
-              >
-                {tabList[tabName]}
-              </div>
-            ))}
+
+        {/* Render all tab contents but only show the active one */}
+        <div className="flex flex-1 h-full w-full relative">
+          {Object.keys(tabList).map((tabName) => (
+            <div
+              key={tabName}
+              className="w-full h-full"
+              style={{
+                visibility: currentTab === tabName ? "visible" : "hidden",
+                position: currentTab === tabName ? "relative" : "absolute",
+                pointerEvents: currentTab === tabName ? "auto" : "none",
+                opacity: currentTab === tabName ? 1 : 0,
+                zIndex: currentTab === tabName ? 1 : -1,
+              }}
+            >
+              {tabList[tabName]}
+            </div>
+          ))}
         </div>
       </div>
     </TabsContext.Provider>
@@ -217,5 +222,5 @@ interface TabsContentProps {
 }
 
 export function TabsContent(props: TabsContentProps) {
-  return <div className="flex flex-1">{props.children}</div>;
+  return <div className="flex flex-1 h-full w-full">{props.children}</div>;
 }

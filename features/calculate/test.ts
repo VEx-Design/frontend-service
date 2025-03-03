@@ -1,6 +1,4 @@
-import {evaluate} from "mathjs"
 import { createConfiguration, createEdge, createType, createVariable, createVertex, Graph, evaluateGraph, freespaceInEdge } from "./graph";
-import { create } from "lodash";
 
 let types = [
     createType("start","start",[],0,1)
@@ -85,5 +83,6 @@ let g3: Graph = {
     ]
 }
 
-console.log(evaluateGraph(g3,types,configuration))
-console.log(freespaceInEdge(g3.edges[1],20,g3,configuration))
+// console.log(evaluateGraph(g,types,configuration))
+// console.log(evaluateGraph(g2,types,configuration))
+// console.log(evaluateGraph(g3,types,configuration))

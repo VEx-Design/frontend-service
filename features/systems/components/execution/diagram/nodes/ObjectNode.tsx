@@ -3,7 +3,7 @@ import { memo, useEffect, useMemo, useState } from "react";
 import { NodeData } from "@/features/systems/libs/ClassNode/types/AppNode";
 import { useProject } from "@/features/systems/contexts/ProjectContext";
 import ObjectNodeTemp from "../../../_components/ObjectNodeTemp";
-import { useExecution } from "@/features/systems/contexts/ExecutionContext";
+import { useExecution } from "@/features/systems/contexts/Execution/ExecutionContext";
 
 const NodeComponent = memo((props: NodeProps) => {
   const { configAction, config } = useProject();

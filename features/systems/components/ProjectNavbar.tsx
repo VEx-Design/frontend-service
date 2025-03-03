@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useProject } from "../contexts/ProjectContext";
-import calculate from "../libs/ClassFlow/calculate";
+import calculate from "../libs/ClassFlow/calculation/calculate";
 
 interface EditorNavbarProps {
   title?: string;
@@ -17,25 +17,24 @@ export default function EditorNavbar(props: EditorNavbarProps) {
   const handleExecute = () => {
     alert("Execute");
     setExecutedFlow(
-      calculate(
-        { nodes: nodesState.nodes, edges: edgesState.edges },
-        config.parameters
-      )
+      calculate({ nodes: nodesState.nodes, edges: edgesState.edges }, config)
     );
   };
 
   return (
     <div className="flex justify-between items-center border-b px-2 py-2 h-[55px]">
       <div className="flex gap-2">
-        <Image
-          src="/VExDesign.svg"
-          alt="Logo"
-          width={70}
-          height={200}
-          layout="intrinsic"
-          onClick={() => router.push("/project")}
-          className="cursor-pointer"
-        />
+        <div className="relative w-[70px] h-auto">
+          <Image
+            src="/VExDesign.svg"
+            alt="Logo"
+            fill
+            className="cursor-pointer"
+            priority
+            onClick={() => router.push("/project")}
+          />
+        </div>
+
         <div className="flex flex-col">
           <input
             type="text"

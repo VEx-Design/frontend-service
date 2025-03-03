@@ -13,12 +13,11 @@ export function CreateObjectNode(
         object: {
           name: type.name,
           typeId: type.id,
-          vars: type.properties.map((variable) => ({
-            id: variable.id,
-            name: variable.name,
-            symbol: variable.symbol,
-            value: "0",
+          vars: type.properties.map((prop) => ({
+            propId: prop.id,
+            value: 0,
           })),
+          interfaces: [],
         },
       },
     },
@@ -30,7 +29,16 @@ export function CreateStarterNode(position: { x: number; y: number }): AppNode {
   return {
     id: crypto.randomUUID(),
     type: "starter",
-    data: { data: {} },
+    data: {
+      data: {
+        initials: [
+          {
+            id: crypto.randomUUID(),
+            params: [],
+          },
+        ],
+      },
+    },
     position: position ?? { x: 0, y: 0 },
   };
 }

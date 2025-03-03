@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from "react";
+import React, { memo, useMemo, useCallback } from "react";
 import { LogInIcon } from "lucide-react";
 import { Handle, NodeProps, Position } from "@xyflow/react";
 import { cn } from "@/lib/utils";
@@ -9,13 +9,15 @@ const StarterNode = memo((props: NodeProps) => {
   const nodeData = props.data.data as NodeData;
   const { focusNode, setFocusNode } = useEditor();
 
-  const handleOnClick = () => {
+  // Memoize handleOnClick to prevent unnecessary re-creations
+  const handleOnClick = useCallback(() => {
     setFocusNode({ id: props.id, type: props.type, data: nodeData });
-  };
+  }, [props.id, props.type, nodeData, setFocusNode]);
 
+  // Memoize selected to avoid recalculating on every render
   const selected = useMemo(
     () => focusNode?.id === props.id,
-    [focusNode, props.id]
+    [focusNode?.id, props.id]
   );
 
   return (
@@ -40,5 +42,6 @@ const StarterNode = memo((props: NodeProps) => {
   );
 });
 
-export default StarterNode;
 StarterNode.displayName = "StarterNode";
+
+export default StarterNode;

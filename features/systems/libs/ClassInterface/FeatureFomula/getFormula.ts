@@ -1,6 +1,6 @@
 import { FormulaId, FormulaStatus } from "../types/Formula";
 
-export default function getFormular(
+export default function getFormula(
   formulas: FormulaStatus[],
   formulaId: FormulaId
 ) {

@@ -1,5 +1,3 @@
-import Mexp from "math-expression-evaluator";
-
 let flow = {
    "nodes":[
       {
@@ -395,137 +393,101 @@ let flow = {
    ]
 }
 
-// let Configuration = {
-//     parameters: ["r","θ"],
-//     equations: {
-//       "678674418d3fa3141db4480a":{
-//          "r":"r",
-//          "θ":"((-1)*r/f) + θ"
-//       }
-//     },
-//     freespace: {
-//         "r": "r+θ",
-//         "θ": "θ"
-//     }
-// }
-
-
-// let g: Graph = {
-//     nodes: [
-//         {"id":"start"},
-//         {"id":"ece10ded-8e06-4c12-bf3a-68cf987b4164"},
-//         {"id":"68d59714-ee65-4e03-9dc8-03c11b6250e4"},
-//         {"id":"ce793719-46f0-46ff-bb35-ffc464ac2e63"},
-//         {"id":"4e0628bb-4bc2-4a59-ba9a-0b338fe27e33"},
-//         {"id":"793b3499-6b6e-4637-bcfb-d3d59a9ec206"},
-//         {"id":"end"}
-//     ],
-//     edges: [
-//         {"source":"start","target":"4e0628bb-4bc2-4a59-ba9a-0b338fe27e33"},
-//         {"source":"4e0628bb-4bc2-4a59-ba9a-0b338fe27e33","target":"ece10ded-8e06-4c12-bf3a-68cf987b4164"},
-//         {"source":"ece10ded-8e06-4c12-bf3a-68cf987b4164","target":"793b3499-6b6e-4637-bcfb-d3d59a9ec206"},
-//         {"source":"793b3499-6b6e-4637-bcfb-d3d59a9ec206","target":"68d59714-ee65-4e03-9dc8-03c11b6250e4"},
-//         {"source":"68d59714-ee65-4e03-9dc8-03c11b6250e4","target":"end"}
-//     ]
-// }
-
-
-
-// let data2 ={
-//       "nodes":[
-//          {
-//             "id":"start",
-//             "type":"StartNode",
-//             "data":{
-//                "data":{
-//                   "type":"Start"
-//                }
-//             },
-//             "output":{
-//                "r" : "10",
-//                "θ" : "1.2"
-//             }
-//          },
-//          {
-//             "id":"4e0628bb-4bc2-4a59-ba9a-0b338fe27e33",
-//             "type":"ObjectNode",
-//             "data":{
-//                "data":{
-//                   "type":{
-//                      "id":"678674418d3fa3141db4480a",
-//                      "name":"Lens",
-//                      "picture":"http://localhost:9000/type/lens.png",
-//                      "variables":[
-//                         {
-//                            "id":"",
-//                            "name":"Focal Length",
-//                            "symbol":"f"
-//                         }
-//                      ],
-//                      "input":1,
-//                      "output":1
-//                   },
-//                   "object":{
-//                      "name":"Lens",
-//                      "vars":[
-//                         {
-//                            "id":"",
-//                            "name":"Focal Length",
-//                            "symbol":"f",
-//                            "value":"15"
-//                         }
-//                      ]
-//                   },
-//                   "output":{
-//                      "r" : "0",
-//                      "θ" : "0"
-//                   }
-//                }
-//             }
-//          },
-//          {
-//             "id":"end",
-//             "type":"EndNode",
-//             "data":{
-//                "data":{
-//                   "type":"End"
-//                }
-//             },
-//             "output":{
-//                "r" : "0",
-//                "θ" : "0"
-//             }
-//          }
-//       ],
-//       "edges":[
-//          {
-//             "source":"start",
-//             "id":"2af5174d-b051-4df3-9de9-d1cbb89b0cbd",
-//             "data":{
-//                "data":{
-//                   "light":{
-//                      "distance":"25",
-//                      "focusDistance":0,
-//                      "locked":false
-//                   }
-//                }
-//             }
-//          },
-//          {
-//             "source":"4e0628bb-4bc2-4a59-ba9a-0b338fe27e33",
-//             "id":"ac87cfa8-d5c4-4019-8d7f-a8761666f712",
-//             "data":{
-//                "data":{
-//                   "light":{
-//                      "distance":"25",
-//                      "focusDistance":0,
-//                      "locked":false
-//                   }
-//                }
-//             }
-//          }
-//       ]
-// }
+let data2 ={
+      "nodes":[
+         {
+            "id":"start",
+            "type":"StartNode",
+            "data":{
+               "data":{
+                  "type":"Start"
+               }
+            },
+            "output":{
+               "r" : "10",
+               "θ" : "1.2"
+            }
+         },
+         {
+            "id":"4e0628bb-4bc2-4a59-ba9a-0b338fe27e33",
+            "type":"ObjectNode",
+            "data":{
+               "data":{
+                  "type":{
+                     "id":"678674418d3fa3141db4480a",
+                     "name":"Lens",
+                     "picture":"http://localhost:9000/type/lens.png",
+                     "variables":[
+                        {
+                           "id":"",
+                           "name":"Focal Length",
+                           "symbol":"f"
+                        }
+                     ],
+                     "input":1,
+                     "output":1
+                  },
+                  "object":{
+                     "name":"Lens",
+                     "vars":[
+                        {
+                           "id":"",
+                           "name":"Focal Length",
+                           "symbol":"f",
+                           "value":"15"
+                        }
+                     ]
+                  },
+                  "output":{
+                     "r" : "0",
+                     "θ" : "0"
+                  }
+               }
+            }
+         },
+         {
+            "id":"end",
+            "type":"EndNode",
+            "data":{
+               "data":{
+                  "type":"End"
+               }
+            },
+            "output":{
+               "r" : "0",
+               "θ" : "0"
+            }
+         }
+      ],
+      "edges":[
+         {
+            "source":"start",
+            "id":"2af5174d-b051-4df3-9de9-d1cbb89b0cbd",
+            "data":{
+               "data":{
+                  "light":{
+                     "distance":"25",
+                     "focusDistance":0,
+                     "locked":false
+                  }
+               }
+            }
+         },
+         {
+            "source":"4e0628bb-4bc2-4a59-ba9a-0b338fe27e33",
+            "id":"ac87cfa8-d5c4-4019-8d7f-a8761666f712",
+            "data":{
+               "data":{
+                  "light":{
+                     "distance":"25",
+                     "focusDistance":0,
+                     "locked":false
+                  }
+               }
+            }
+         }
+      ]
+}
 
 
 

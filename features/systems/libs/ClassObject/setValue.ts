@@ -14,7 +14,7 @@ export default function setValue(
     variable.value = value;
   } else {
     object.vars = object.vars || [];
-    object.vars.push({ propId, value });
+    object.vars.push({ propId, value, unitPrefixId: "MILLI" });
   }
   return node;
 }

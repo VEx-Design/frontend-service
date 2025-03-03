@@ -8,11 +8,13 @@ import MainInfo from "./information/MainInfo";
 import FormulaLister from "./interface/FormulaLister";
 import InterfaceLister from "./interface/InterfaceLister";
 import { ReactFlowProvider } from "@xyflow/react";
-import { useConfig } from "../../contexts/ConfigContext";
+import { useConfig } from "../../contexts/Configuration/ConfigContext";
+import { useConfigInterface } from "../../contexts/Configuration/ConfigInterfaceContext";
 
 /**  */
 export default function ConfigTerminal() {
   const { currentType } = useConfig();
+  const { currentInterface } = useConfigInterface();
 
   return currentType ? (
     <ResizablePanelGroup direction="vertical">
@@ -24,19 +26,25 @@ export default function ConfigTerminal() {
       <ResizableHandle />
 
       <ResizablePanel defaultSize={65}>
-        <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel defaultSize={70}>
-            <div className="flex flex-1 flex-col h-full bg-editbar text-foreground border-r-1 border-editbar-border py-4 px-6">
-              <FormulaLister />
-            </div>
-          </ResizablePanel>
-          <ResizableHandle />
-          <ResizablePanel defaultSize={30} minSize={20} maxSize={35}>
-            <div className="flex flex-1 flex-col h-full bg-editbar text-foreground border-l-1 border-editbar-border py-4 px-3">
-              <InterfaceLister />
-            </div>
-          </ResizablePanel>
-        </ResizablePanelGroup>
+        {currentInterface ? (
+          <ResizablePanelGroup direction="horizontal">
+            <ResizablePanel defaultSize={70}>
+              <div className="flex flex-1 flex-col h-full bg-editbar text-foreground border-r-1 border-editbar-border py-4 px-6">
+                <FormulaLister />
+              </div>
+            </ResizablePanel>
+            <ResizableHandle />
+            <ResizablePanel defaultSize={30} minSize={20} maxSize={35}>
+              <div className="flex flex-1 flex-col h-full bg-editbar text-foreground border-l-1 border-editbar-border py-4 px-3">
+                <InterfaceLister />
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        ) : (
+          <div className="flex flex-1 flex-col h-full bg-editbar text-foreground border-l-1 border-editbar-border py-4 px-3">
+            <InterfaceLister />
+          </div>
+        )}
       </ResizablePanel>
     </ResizablePanelGroup>
   ) : (

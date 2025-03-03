@@ -1,5 +1,5 @@
 import { NodeProps } from "@xyflow/react";
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState, useCallback } from "react";
 import { NodeData } from "@/features/systems/libs/ClassNode/types/AppNode";
 import { useProject } from "@/features/systems/contexts/ProjectContext";
 import ObjectNodeTemp from "../../../_components/ObjectNodeTemp";
@@ -11,25 +11,26 @@ const NodeComponent = memo((props: NodeProps) => {
   const { object } = props.data.data as NodeData;
   const typeId = object?.typeId || "";
 
-  const [objectType, setObjectType] = useState(() =>
-    configAction.getType(typeId)
-  );
+  const [objectType, setObjectType] = useState(configAction.getType(typeId));
 
+  // Memoize objectType update only when necessary
   useEffect(() => {
     setObjectType(configAction.getType(typeId));
   }, [config.types, typeId, configAction]);
 
-  const handleOnClick = () => {
+  // Memoized handleOnClick function
+  const handleOnClick = useCallback(() => {
     setFocusNode({
       id: props.id,
       type: props.type,
       data: props.data.data as NodeData,
     });
-  };
+  }, [props.id, props.type, props.data, setFocusNode]);
 
+  // Memoize isSelect to avoid unnecessary recalculations
   const isSelect = useMemo(
     () => focusNode?.id === props.id,
-    [focusNode, props.id]
+    [focusNode?.id, props.id]
   );
 
   return (
@@ -39,5 +40,6 @@ const NodeComponent = memo((props: NodeProps) => {
   );
 });
 
-export default NodeComponent;
 NodeComponent.displayName = "NodeComponent";
+
+export default NodeComponent;

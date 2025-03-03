@@ -5,3 +5,7 @@ export type Flow = {
   nodes: AppNode[];
   edges: AppEdge[];
 };
+
+export type LightPath = {
+  id: string;
+};

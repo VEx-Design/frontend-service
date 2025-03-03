@@ -1,5 +1,5 @@
 import { FormulaId, FormulaStatus, Variable } from "../types/Formula";
-import getFormular from "./getFormular";
+import getFormular from "./getFormula";
 
 export default function addVariable(
   formulars: FormulaStatus[],
@@ -91,6 +91,9 @@ export default function addVariable(
             },
           ],
           lastStream: "",
+          completeStream: "",
+          variables: [],
+          triggers: [],
         },
         isEdited: true,
       });

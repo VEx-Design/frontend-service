@@ -20,6 +20,7 @@ interface ListerContextValue {
   currentView: ViewType;
   setView: (view: ViewType) => void;
   loading: boolean;
+  isNotEmpty?: boolean;
   data: Data[];
 }
 
@@ -31,6 +32,7 @@ interface ListerProps {
   children: React.ReactNode;
   data: Data[];
   loading: boolean;
+  isNotEmpty?: boolean;
   sortFunction?: (data: Data[]) => Data[];
   filterFunction?: (data: Data[]) => Data[];
 }
@@ -70,6 +72,7 @@ export function Lister(props: ListerProps) {
         currentView: currentView,
         setView: setView,
         loading: loading,
+        isNotEmpty: props.isNotEmpty,
         data: modifyData || [],
       }}
     >
@@ -212,7 +215,7 @@ export function ListerContent(props: ListerContentProps) {
     <div className="flex h-full w-full p-2">
       {context.loading ? (
         loading
-      ) : context.data.length === 0 ? (
+      ) : context.data.length === 0 && !context.isNotEmpty ? (
         empty
       ) : (
         <div className="flex flex-1">{view}</div>

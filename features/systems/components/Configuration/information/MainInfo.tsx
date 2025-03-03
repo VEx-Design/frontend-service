@@ -8,10 +8,11 @@ import {
 } from "@/components/ui/resizable";
 import PropertiesLister from "./PropertiesLister";
 import ObjectConfigNode from "./ObjectConfigNode";
-import { useConfig } from "@/features/systems/contexts/ConfigContext";
+import UploadImageDialog from "./UploadImageDialog";
 
 // type
 import { AppNode } from "@/features/systems/libs/ClassNode/types/AppNode";
+import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
 
 const rfStyle = {
   backgroundColor: "#FAFAFA",
@@ -24,7 +25,7 @@ const nodeTypes = {
 export default function MainInfo() {
   const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
   const { fitView } = useReactFlow();
-  const { currentType } = useConfig();
+  const { currentType, typeAction } = useConfig();
 
   useEffect(() => {
     if (!currentType) return;
@@ -37,6 +38,7 @@ export default function MainInfo() {
             name: currentType.name,
             typeId: currentType.id,
             vars: [],
+            interfaces: [],
           },
         },
       },
@@ -49,12 +51,18 @@ export default function MainInfo() {
     }, 0);
   }, [setNodes, fitView, currentType]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      fitView({ maxZoom: 0.9, duration: 300 });
+    }, 0);
+  }, [fitView, nodes]);
+
   return (
     <div className="h-full w-full p-6">
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={50}>
-          <div className="flex flex-1 gap-6">
-            <div className="h-[280px] w-[280px]">
+          <div className="flex flex-1 h-full gap-6">
+            <div className="flex flex-1">
               <ReactFlow
                 nodes={nodes}
                 onNodesChange={onNodesChange}
@@ -76,13 +84,14 @@ export default function MainInfo() {
               <Input
                 label="Name"
                 value={currentType?.name || ""}
-                onChange={() => {}}
+                onChange={(e) => typeAction.editName(e.target.value)}
               />
               <Input
                 label="Display Name"
-                value={currentType?.name || ""}
-                onChange={() => {}}
+                value={currentType?.displayName || ""}
+                onChange={(e) => typeAction.editDisplayName(e.target.value)}
               />
+              <UploadImageDialog />
             </div>
           </div>
         </ResizablePanel>

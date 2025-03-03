@@ -1,13 +1,14 @@
 import React, { createContext, useState, useEffect } from "react";
-import { AppEdge, EdgeData } from "../libs/ClassEdge/types/AppEdge";
-import { AppNode, NodeData } from "../libs/ClassNode/types/AppNode";
+import { AppEdge, EdgeData } from "../../libs/ClassEdge/types/AppEdge";
+import { AppNode, NodeData } from "../../libs/ClassNode/types/AppNode";
 import {
   useEdgesState,
   useNodesState,
   NodeChange,
   EdgeChange,
+  ReactFlowProvider,
 } from "@xyflow/react";
-import { useProject } from "./ProjectContext";
+import { useProject } from "../ProjectContext";
 
 type FocusNode = {
   id: string;
@@ -28,6 +29,7 @@ interface ExecutionContextValue {
   setFocusEdge: (edge: FocusEdge | undefined) => void;
   nodesState: NodesState;
   edgesState: EdgesState;
+  edgeAction: EdgeAction;
 }
 
 interface NodesState {
@@ -40,6 +42,10 @@ interface EdgesState {
   edges: AppEdge[];
   setEdges: (edges: AppEdge[]) => void;
   onEdgesChange: (changes: EdgeChange<AppEdge>[]) => void;
+}
+
+interface EdgeAction {
+  setFocusDistance: (focusDistance: number) => void;
 }
 
 const ExecutionContext = createContext<ExecutionContextValue | undefined>(
@@ -60,6 +66,28 @@ export function ExecutionProvider(props: { children: React.ReactNode }) {
     }
   }, [executedFlow, setEdges, setNodes]);
 
+  const edgeAction: EdgeAction = {
+    setFocusDistance: (focusDistance: number) => {
+      if (focusEdge) {
+        focusEdge.data.focusDistance = focusDistance;
+        setEdges(
+          edges.map((edge) => {
+            if (edge.id === focusEdge.id) {
+              return {
+                ...edge,
+                data: {
+                  ...edge.data,
+                  focusDistance,
+                },
+              };
+            }
+            return edge;
+          })
+        );
+      }
+    },
+  };
+
   return (
     <ExecutionContext.Provider
       value={{
@@ -77,9 +105,10 @@ export function ExecutionProvider(props: { children: React.ReactNode }) {
           setEdges,
           onEdgesChange,
         },
+        edgeAction,
       }}
     >
-      {props.children}
+      <ReactFlowProvider>{props.children}</ReactFlowProvider>
     </ExecutionContext.Provider>
   );
 }

@@ -86,9 +86,5 @@ export function DialogContent(props: DialogContentProps) {
     throw new Error("DialogTrigger must be used within a Dialog component.");
   }
 
-  return (
-    <div onClick={context.openDialog} className="cursor-pointer">
-      {props.children}
-    </div>
-  );
+  return <div onClick={context.openDialog}>{props.children}</div>;
 }

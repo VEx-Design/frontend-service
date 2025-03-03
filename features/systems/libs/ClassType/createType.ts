@@ -11,6 +11,7 @@ export default function createType(form: createTypeData): Promise<Type> {
   return Promise.resolve({
     id: crypto.randomUUID(),
     name: data.name,
+    displayName: data.name,
     description: data.description,
     picture: "",
     properties: [],

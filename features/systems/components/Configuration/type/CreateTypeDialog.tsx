@@ -21,7 +21,7 @@ import {
 import { toast } from "sonner";
 
 import createType from "@/features/systems/libs/ClassType/createType";
-import { useProject } from "@/features/systems/contexts/ProjectContext";
+import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
 
 interface CreateTypeDialogProps {
   onCreated?: () => void;
@@ -40,14 +40,14 @@ export default function CreateTypeDialog({}: CreateTypeDialogProps) {
     defaultValues: {},
   });
 
-  const { configAction } = useProject();
+  const { typeAction } = useConfig();
 
   const onSubmit = useCallback(
     (values: createTypeData) => {
       toast.loading("Creating Type...", { id: "create-type" });
       createType(values)
         .then((result) => {
-          configAction.addType(result);
+          typeAction.addType(result);
           toast.success("Type Created!", { id: "create-type" });
           form.reset();
           closeDialog();
@@ -56,7 +56,7 @@ export default function CreateTypeDialog({}: CreateTypeDialogProps) {
           toast.error(error.message, { id: "create-type" });
         });
     },
-    [form, configAction]
+    [form, typeAction]
   );
 
   return (

@@ -4,7 +4,7 @@ export default function deleteVariable(
   formula: FormulaStatus[],
   currentIdFormula: FormulaId,
   focusIndex: number
-) {
+): { formula: FormulaStatus[]; position: number } {
   const target = formula.find(
     (f) =>
       f.conditionId === currentIdFormula.conditionId &&
@@ -12,6 +12,7 @@ export default function deleteVariable(
   );
   if (target) {
     const streamLeft = target.formula.formulaTokens[focusIndex - 1].stream;
+    const position = streamLeft.length;
     if (focusIndex < target.formula.formulaTokens.length) {
       const newFormulars = formula.map((f) => {
         if (
@@ -25,10 +26,10 @@ export default function deleteVariable(
               formulaTokens: f.formula.formulaTokens
                 .filter((_, index) => index !== focusIndex - 1)
                 .map((token, index) => {
-                  if (index === focusIndex) {
+                  if (index === focusIndex - 1) {
                     return {
                       ...token,
-                      stream: streamLeft,
+                      stream: streamLeft + token.stream,
                     };
                   }
                   return token;
@@ -39,7 +40,7 @@ export default function deleteVariable(
         }
         return f;
       });
-      return newFormulars;
+      return { formula: newFormulars, position };
     } else {
       const newFormulars = formula.map((f) => {
         if (
@@ -53,15 +54,15 @@ export default function deleteVariable(
               formulaTokens: f.formula.formulaTokens.filter(
                 (_, index) => index !== focusIndex - 1
               ),
-              lastStream: streamLeft,
+              lastStream: streamLeft + f.formula.lastStream,
             },
             isEdited: true,
           };
         }
         return f;
       });
-      return newFormulars;
+      return { formula: newFormulars, position };
     }
   }
-  return formula;
+  return { formula, position: 0 };
 }

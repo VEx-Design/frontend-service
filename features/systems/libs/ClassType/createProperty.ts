@@ -17,6 +17,7 @@ export default function createProperty(
     id: crypto.randomUUID(),
     name: data.name,
     symbol: data.symbol,
+    unitId: data.unitId,
     description: data.description,
   });
 }

@@ -17,7 +17,7 @@ export default function ViewDiagram() {
     <div className="h-full" onContextMenu={handleContextMenu}>
       <ContextMenu>
         <ContextMenuTrigger>
-          <div className="flex flex-1 h-full">
+          <div className="flex flex-1 h-full w-full">
             <Diagram />
           </div>
         </ContextMenuTrigger>

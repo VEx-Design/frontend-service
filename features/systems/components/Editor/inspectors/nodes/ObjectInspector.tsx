@@ -6,6 +6,7 @@ import { useEditor } from "@/features/systems/contexts/EditorContext";
 import { useProject } from "@/features/systems/contexts/ProjectContext";
 import { Property } from "@/features/systems/libs/ClassType/types/Type";
 import getValue from "@/features/systems/libs/ClassObject/getValue";
+import { getVarPrefixId } from "@/features/systems/libs/ClassObject/getPrefixId";
 
 export default function ObjectInspector() {
   const { focusNode, nodeAction } = useEditor();
@@ -38,11 +39,13 @@ export default function ObjectInspector() {
               <Input
                 type="number"
                 key={index}
-                title={`${prop.name} [${prop.symbol}]`}
+                title={`${prop.name} (${prop.symbol})`}
                 value={getValue(focusNode.data, prop.id).toString()}
                 onChange={(e) => {
                   nodeAction.setValue(prop.id, parseFloat(e.target.value));
                 }}
+                unitId={prop.unitId}
+                prefixId={getVarPrefixId(focusNode.data, prop.id)}
               />
             ))}
           </div>

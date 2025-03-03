@@ -1,3 +1,4 @@
+
 import {evaluate} from "mathjs"
 
 export interface Vertex {
@@ -131,15 +132,7 @@ function freespaceCalculate(input: Record<string,number>, distance: number, c : 
 // function to create scope for internal calculation of a vertex
 function createInputScope(vertexID : string, graph : Graph, type : Type, configuration : Configuration): Map<string,number>{
     let result = new Map<string,number>()
-    if(type.input === 1){
-        let edges = graph.edges.filter(edge => edge.target === vertexID)
-        let sourceVertex = graph.vertices.find(v => v.id === edges[0].source)!
-        let newScope = freespaceCalculate(sourceVertex.output[edges[0].sourceInterface - 1],edges[0].distance,configuration)
-        for (const key in newScope) {
-            result.set(key,newScope[key])
-        }
-    }
-    else{
+    
         let edges = graph.edges.filter(edge => edge.target === vertexID)
         edges.forEach(edge => {
             let sourceVertext = graph.vertices.find(v => v.id === edge.source)!
@@ -148,7 +141,7 @@ function createInputScope(vertexID : string, graph : Graph, type : Type, configu
                 result.set(key + "_" +edge.targetInterface,newScope[key])
             }
         });
-        }
+        
         return result;
     }
 

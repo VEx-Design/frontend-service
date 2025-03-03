@@ -13,7 +13,8 @@ export type FormulaId = {
 
 export type FormulaCondition = {
   id: string;
-  type: "default";
+  type: "DEFAULT" | "TRIGGER AT";
+  interfaceId?: string;
   formulas: Formula[];
 };
 
@@ -21,6 +22,9 @@ export type Formula = {
   paramId: string;
   formulaTokens: FormulaToken[];
   lastStream: string;
+  completeStream: string;
+  variables: Variable[];
+  triggers: string[];
 };
 
 export type FormulaToken = {

@@ -3,7 +3,8 @@ import { cn } from "@/lib/utils";
 import { Property } from "@/features/systems/libs/ClassType/types/Type";
 import { Interface } from "@/features/systems/libs/ClassInterface/types/Interface";
 import { Parameter } from "@/features/systems/libs/ClassParameter/types/Parameter";
-import { useConfigInterface } from "@/features/systems/contexts/ConfigInterfaceContext";
+import { useConfigInterface } from "@/features/systems/contexts/Configuration/ConfigInterfaceContext";
+import SymbolDisplay from "@/components/SymbolDisplay";
 
 interface Props {
   canClick?: boolean;
@@ -46,7 +47,9 @@ export default function VariableBadge({
       }}
     >
       <span className="inline-block align-baseline text-sm font-semibold">
-        {type === "prop" ? prop?.symbol : param?.symbol}
+        <SymbolDisplay
+          symbol={type === "prop" ? prop?.symbol ?? "" : param?.symbol ?? ""}
+        />
       </span>
       {type === "interface" && (
         <span className="inline-block align-text-bottom text-[10px] text-gray-600">

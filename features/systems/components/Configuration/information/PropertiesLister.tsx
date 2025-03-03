@@ -1,7 +1,7 @@
 import React from "react";
 import CreatePropertyDialog from "./CreatePropertyDialog";
-import { useConfig } from "@/features/systems/contexts/ConfigContext";
 import PropertyBox from "./PropertyBox";
+import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
 
 export default function PropertiesLister() {
   const { currentType } = useConfig();

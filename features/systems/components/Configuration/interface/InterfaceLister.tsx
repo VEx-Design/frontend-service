@@ -14,15 +14,17 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import InterfaceBox from "./InterfaceBox";
 import { Position } from "@xyflow/react";
-import { useConfig } from "@/features/systems/contexts/ConfigContext";
+import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
+import { useConfigInterface } from "@/features/systems/contexts/Configuration/ConfigInterfaceContext";
 
 export default function InterfaceLister() {
-  const { currentType, typeAction } = useConfig();
+  const { currentType } = useConfig();
+  const { interfaceAction } = useConfigInterface();
 
   const onClick = useCallback(() => {
-    typeAction.addInterface();
+    interfaceAction.addInterface();
     toast.success("Interface Created!", { id: "create-interface" });
-  }, [typeAction]);
+  }, [interfaceAction]);
 
   const display: ListerDisplay = {};
 
@@ -45,9 +47,11 @@ export default function InterfaceLister() {
       </ListerHeader>
       <ListerContent>
         <ListerContentEmpty>
-          <p className="p-3 text-sm text-gray-500 text-center">
-            Your type interface is empty. Start by creating a new interface.
-          </p>
+          <div className="flex flex-1 flex-col ">
+            <p className="p-3 text-sm text-gray-500 text-center">
+              Your type interface is empty. Start by creating a new interface.
+            </p>
+          </div>
         </ListerContentEmpty>
         <ListerContentLoading>
           <Loading />

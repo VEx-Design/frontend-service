@@ -1,5 +1,5 @@
 import { FormulaId, FormulaStatus } from "../types/Formula";
-import getFormular from "./getFormular";
+import getFormular from "./getFormula";
 
 export default function setStream(
   formulars: FormulaStatus[],
@@ -53,6 +53,9 @@ export default function setStream(
           paramId: currentIdFormula.paramId,
           formulaTokens: [],
           lastStream: stream,
+          completeStream: "",
+          variables: [],
+          triggers: [],
         },
         isEdited: true,
       });

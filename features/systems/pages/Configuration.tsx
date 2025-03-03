@@ -5,13 +5,19 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import TypeLister from "../components/configuration/type/TypeLister";
-import ParamLister from "../components/configuration/parameter/ParamLister";
-import ConfigTerminal from "../components/configuration/ConfigConsole";
+
 import React from "react";
-import { ConfigInterfaceProvider } from "../contexts/ConfigInterfaceContext";
+import TypeLister from "../components/Configuration/type/TypeLister";
+import ParamLister from "../components/Configuration/parameter/ParamLister";
+import ConfigTerminal from "../components/Configuration/ConfigConsole";
+import ConfigFreeS from "../components/Configuration/ConfigFreeS";
+import { useConfig } from "../contexts/Configuration/ConfigContext";
+import { ConfigFreeSProvider } from "../contexts/Configuration/ConfigFreeSContext";
+import { ConfigInterfaceProvider } from "../contexts/Configuration/ConfigInterfaceContext";
 
 export default function Configuration() {
+  const { currentConfigFreeS } = useConfig();
+
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={20} minSize={15} maxSize={25}>
@@ -31,9 +37,15 @@ export default function Configuration() {
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel defaultSize={80} minSize={15}>
-        <ConfigInterfaceProvider>
-          <ConfigTerminal />
-        </ConfigInterfaceProvider>
+        {currentConfigFreeS ? (
+          <ConfigFreeSProvider>
+            <ConfigFreeS />
+          </ConfigFreeSProvider>
+        ) : (
+          <ConfigInterfaceProvider>
+            <ConfigTerminal />
+          </ConfigInterfaceProvider>
+        )}
       </ResizablePanel>
     </ResizablePanelGroup>
   );

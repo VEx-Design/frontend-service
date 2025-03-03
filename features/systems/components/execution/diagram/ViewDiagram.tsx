@@ -3,7 +3,7 @@ import Diagram from "./Diagram";
 
 export default function ViewDiagram() {
   return (
-    <div className="h-full">
+    <div className="flex flex-1 h-full w-full">
       <Diagram />
     </div>
   );

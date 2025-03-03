@@ -1,5 +1,6 @@
 import { Node } from "@xyflow/react";
-import { Object } from "../../ClassObject/types/Object";
+import { OpticalObject } from "../../ClassObject/types/Object";
+import { Light } from "../../ClassLight/types/Light";
 
 export interface AppNode extends Node {
   data: AppNodeData;
@@ -11,11 +12,6 @@ export interface AppNodeData {
 }
 
 export interface NodeData {
-  object?: Object;
-  initials?: Initial[];
-}
-
-export interface Initial {
-  paramId: string;
-  value: number;
+  object?: OpticalObject;
+  initials?: Light[];
 }
