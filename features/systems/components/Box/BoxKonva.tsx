@@ -118,7 +118,6 @@ const KonvaSquare = () => {
           });
           return newMapBounding;
         });
-        alert(focusPoint + " at" + ` (${x}, ${y})`);
       } else {
         setMapBounding((prev) => {
           const newMapBounding = new Map(prev);
@@ -137,10 +136,40 @@ const KonvaSquare = () => {
     } 
   };
 
+  const handleCircleClick = (e: Konva.KonvaEventObject<MouseEvent>, position: [number,number]) => {
+    if (focusPoint !== "") {
+      if (focusPoint === "Reference Point") {
+        setMapBounding((prev) => {
+          const newMapBounding = new Map(prev);
+          newMapBounding.set(focusNode!.id, {
+            ...newMapBounding.get(focusNode!.id)!,
+            referencePosition: position,
+          });
+          return newMapBounding;
+        });
+      } else {
+        setMapBounding((prev) => {
+          const newMapBounding = new Map(prev);
+          const nodeInfo = newMapBounding.get(focusNode!.id);
+          if (nodeInfo) {
+            const newInterfacePositions = new Map(nodeInfo.interfacePositions);
+            newInterfacePositions.set(focusPoint, position);
+            newMapBounding.set(focusNode!.id, {
+              ...nodeInfo,
+              interfacePositions: newInterfacePositions,
+            });
+          }
+          return newMapBounding;
+        });
+      }
+    } 
+  }
+
+
   return (
     <div ref={ref} style={{ width: "100%", height: "100%" }}>
       <button onClick={() => setShowPoints((prev) => !prev)}>
-        {showPoints ? "Hide" : "Show"} Points
+        {showPoints ? "Hide" : "Show"} Labels
       </button>
       <Stage
         ref={stageRef}
@@ -211,7 +240,7 @@ const KonvaSquare = () => {
               }
 
               const [intX, intY] = pos;
-              const pointKey = `${intX},intY}`;
+              const pointKey = `${intX},${intY}`;
               if (combinedPoints.has(pointKey)) {
                 combinedPoints.get(pointKey)!.labels.push(name);
               } else {
@@ -232,6 +261,7 @@ const KonvaSquare = () => {
                   y={offset.y + y * squareSize.height * zoom}
                   radius={5}
                   fill="green"
+                  onClick={(e)=> handleCircleClick(e,[x,y])}
                 />
                 <Text
                   text={`(${Math.floor(x*squareSize.width)}, ${Math.floor(y*squareSize.height)})\n${labels.join(', ')}`}

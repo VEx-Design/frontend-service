@@ -119,6 +119,36 @@ export default function BoxSizing() {
     });
   };
 
+  const setAllInterfaceMiddleCenter = () => {
+    if (!focusNode) return;
+    const [w , h] = mapBounding.get(focusNode.id)?.width ? [mapBounding.get(focusNode.id)?.width, mapBounding.get(focusNode.id)?.height] : [0, 0];
+    if(w === 0 || h === 0) return;
+    setMapBounding((prev) => {
+      const newMapBounding = new Map(prev);
+      const nodeInfo = newMapBounding.get(focusNode.id) as BoundingConfiguration;
+      if (nodeInfo) {
+        const newInterfacePositions = new Map(nodeInfo.interfacePositions);
+        interfaces.forEach((inft,_) => {
+          newInterfacePositions.set(inft[0], [0.5, 0.5]);
+        });
+        newMapBounding.set(focusNode.id, {
+          ...nodeInfo,
+          referencePosition: [0.5, 0.5],
+          interfacePositions: newInterfacePositions,
+        });
+      } else {
+        const newInterfacePositions = new Map<string, [number, number]>();
+        interfaces.forEach((inft) => {
+          newInterfacePositions.set(inft[0], [0.5, 0.5]);
+        });
+        newMapBounding.set(focusNode.id, new BoundingConfiguration("", 0, 0, [0.5, 0.5], newInterfacePositions));
+      }
+      return newMapBounding;
+    });
+  };
+
+  
+
   const ReferencePointActions = [
     { name: "Top Left", onClick: () => setReferencePoint([0, 0]) },
     { name: "Top Center", onClick: () => setReferencePoint([0.5, 0]) },
@@ -129,6 +159,7 @@ export default function BoxSizing() {
     { name: "Bottom Left", onClick: () => setReferencePoint([0, 1]) },
     { name: "Bottom Center", onClick: () => setReferencePoint([0.5, 1]) },
     { name: "Bottom Right", onClick: () => setReferencePoint([1, 1]) },
+    { name: "Manual" , onClick: () => setFocusPoint("Reference Point") }
   ];
 
   const InterfacePointActions = ([intfId, intfName]: [string, string]) => ([
@@ -141,6 +172,7 @@ export default function BoxSizing() {
     { name: `Bottom Left`, onClick: () => setInterfacePoint(intfId, [0, 1]) },
     { name: `Bottom Center`, onClick: () => setInterfacePoint(intfId, [0.5, 1]) },
     { name: `Bottom Right`, onClick: () => setInterfacePoint(intfId, [1, 1]) },
+    { name: `Manual`, onClick: () => setFocusPoint(intfId)}
   ])
 
   const DropdownMenuComponent = ({ label, actions }: { label: string; actions: { name: string; onClick: () => void }[] }) => {
@@ -166,7 +198,7 @@ export default function BoxSizing() {
     <div onClick={() => setFocusPoint("")} style={{ position: "static" }}>
       {focusNode ? (
         <>
-          <div>{focusNode.id}</div>
+          <button onClick={setAllInterfaceMiddleCenter}> Default </button>
           <div>
             <label>
               Height:
@@ -214,11 +246,12 @@ export default function BoxSizing() {
           <div>
             <label>Reference Point</label>
             <ul>
-              <li
-                style={{ fontWeight: focusPoint === "Reference Point" ? "bold" : "normal" }}
-              >
-                Reference Point  <DropdownMenuComponent label="Position" actions={ReferencePointActions} />
-              </li>
+                <li>
+                <span style={{ fontWeight: focusPoint === "Reference Point" ? "bold" : "normal" }}>
+                  Reference Point
+                </span>
+                <DropdownMenuComponent label="Position" actions={ReferencePointActions} />
+                </li>
             </ul>
           </div>
           <div>
@@ -227,9 +260,8 @@ export default function BoxSizing() {
               {interfaces.map((intf, index) => (
                 <li
                   key={`${intf[0]}-${index}`}
-                  style={{ fontWeight: focusPoint === intf[0] ? "bold" : "normal" }}
                 >
-                  {intf[1]} <DropdownMenuComponent label="Position" actions={InterfacePointActions(intf)} />
+                  <span  style={{ fontWeight: focusPoint === intf[0] ? "bold" : "normal" }}>{intf[1]}</span> <DropdownMenuComponent label="Position" actions={InterfacePointActions(intf)} />
                 </li>
               ))}
             </ul>
