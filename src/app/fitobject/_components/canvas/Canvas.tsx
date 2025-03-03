@@ -56,7 +56,7 @@ const Object: React.FC<KonvaObjectProps> = ({
   showGrid,
   gridStyle,
 }) => {
-  const [image] = useImage(imageUrl);
+  const [image] = useImage(imageUrl, 'anonymous');
   const [isColliding, setIsColliding] = useState(false);
 
   const circleSize = Math.min(width, height) * 0.8;
@@ -304,7 +304,7 @@ function Canvas() {
   const handleExport = () => {
     setAction("Export");
     if (stageRef.current) {
-      const uri = stageRef.current.toDataURL();
+      const uri = stageRef.current.toDataURL({ pixelRatio: 3 });
       const link = document.createElement("a");
       link.download = "image.png";
       link.href = uri;
