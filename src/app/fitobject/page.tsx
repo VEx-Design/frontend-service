@@ -5,9 +5,10 @@ import Canvas from "./_components/canvas/Canvas";
 import LeftSidebar from "./_components/sidebar/left-sidebar";
 import RightSidebar from "./_components/sidebar/right-sidebar";
 import { CanvasProvider } from "./_components/canvas/CanvasContext";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useProject } from "@/features/systems/contexts/ProjectContext";
 import { random } from "lodash";
+import Button from "@/components/Button";
 
 interface CanvasObject {
     id: string;
@@ -91,12 +92,12 @@ const FitObject = () => {
     for (const [id, config] of objects) {
       newCanvaObjects.push({
         id: id,
-        name: config.name,
-        x: random(0, 100),
-        y: random(0, 100),
+        name: id,
+        x: 1,
+        y: 1,
         width: config.width,
         height: config.height,
-        fill: "gray",
+        fill: "black",
         imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmCy16nhIbV3pI1qLYHMJKwbH2458oiC9EmA&s",
         connectedTo: [],
         isStartNode: false,
