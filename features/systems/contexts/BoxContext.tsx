@@ -24,8 +24,8 @@ interface BoxContextValue {
   mapBounding: Map<string, BoundingConfiguration>;
   setMapBounding: (map: Map<string, BoundingConfiguration>) => void;
   config: Config;
-  blueprint: Map<string, BoundingConfiguration>;
-  setBlueprint: (map: Map<string, BoundingConfiguration>) => void;
+  blueprint: Map<string, BoundingConfiguration[]>;
+  setBlueprint: (map: Map<string, BoundingConfiguration[]>) => void;
 }
 
 interface NodesState {

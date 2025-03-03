@@ -1,5 +1,5 @@
 export class BoundingConfiguration {
-  name: string ="";
+  name: string = "";
   height: number = 0;
   width: number = 0;
   referencePosition: [number,number] = [0.5,0.5];

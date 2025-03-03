@@ -2,9 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useBox } from "../../contexts/BoxContext";
 import { BoundingConfiguration } from "../../libs/ClassBox/types/BoundingConfiguration";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { forEach } from "lodash";
+import Button from "@/components/Button";
+import { e } from "mathjs";
+import { Config } from "tailwindcss";
 
 export default function BoxSizing() {
-  const { focusNode, mapBounding, setMapBounding, focusPoint, setFocusPoint, config, nodesState } = useBox();
+  const { focusNode, mapBounding, setMapBounding, focusPoint, setFocusPoint, config, nodesState, blueprint, setBlueprint} = useBox();
   const [height, setHeight] = useState("");
   const [width, setWidth] = useState("");
   const [interfaces, setInterfaces] = useState<[string, string][]>([]);
@@ -147,8 +151,92 @@ export default function BoxSizing() {
     });
   };
 
+  const setAllNodesDefault = () => {
+    const nodes = nodesState.nodes;
+    
+    forEach(nodes, (node) => {
+      if (node?.type === "ObjectNode") {
+        const typeID = node?.data?.data?.object?.typeId;
+        const interfaces = config.types.find((type) => type.id === typeID)?.interfaces;
   
+        if (interfaces) {
+          const nodeInfo = mapBounding.get(node.id);
+          if (nodeInfo) {
+            const newInterfacePositions = new Map(nodeInfo.interfacePositions);
+            interfaces.forEach((inft) => {
+              newInterfacePositions.set(inft.id, [0.5, 0.5]);
+            });
+  
+            setMapBounding((prev) => {
+              const newMapBounding = new Map(prev);
+              newMapBounding.set(node.id, {
+                ...nodeInfo,
+                referencePosition: [0.5, 0.5],
+                interfacePositions: newInterfacePositions,
+              });
+              return newMapBounding;
+            });
+          }
+        } else {
+          const nodeInfo = mapBounding.get(node.id);
+          if (nodeInfo) {
+            setMapBounding((prev) => {
+              const newMapBounding = new Map(prev);
+              newMapBounding.set(node.id, {
+                ...nodeInfo,
+                referencePosition: [0.5, 0.5],
+                interfacePositions: new Map<string, [number, number]>(),
+              });
+              return newMapBounding;
+            });
+          }
+        }
+      } else if (node?.type === "starter") {
+        const nodeInfo = mapBounding.get(node.id);
+        if (nodeInfo) {
+          const newInterfacePositions = new Map(nodeInfo.interfacePositions);
+          newInterfacePositions.set("starter", [0.5, 0.5]);
+  
+          setMapBounding((prev) => {
+            const newMapBounding = new Map(prev);
+            newMapBounding.set(node.id, {
+              ...nodeInfo,
+              referencePosition: [0.5, 0.5],
+              interfacePositions: newInterfacePositions,
+            });
+            return newMapBounding;
+          });
+        }
+      } else {
+        const nodeInfo = mapBounding.get(node.id);
+        if (nodeInfo) {
+          const newInterfacePositions = new Map(nodeInfo.interfacePositions);
+          newInterfacePositions.set("terminal", [0.5, 0.5]);
+  
+          setMapBounding((prev) => {
+            const newMapBounding = new Map(prev);
+            newMapBounding.set(node.id, {
+              ...nodeInfo,
+              referencePosition: [0.5, 0.5],
+              interfacePositions: newInterfacePositions,
+            });
+            return newMapBounding;
+          });
+        }
+      }
+    });
+  };
 
+const addBlueprint = (name: string) => {
+  const typeID = focusNode?.data?.data?.object?.typeId;
+  setBlueprint((prev) => {
+    const newBoundingConfiguration = mapBounding.get(focusNode?.id);
+    if (!newBoundingConfiguration) return prev;
+    prev.set(typeID, [...(prev.get(typeID) || []), new BoundingConfiguration(name, newBoundingConfiguration.height, newBoundingConfiguration.width, newBoundingConfiguration.referencePosition, newBoundingConfiguration.interfacePositions)]);
+    return prev;
+  });
+};
+  
   const ReferencePointActions = [
     { name: "Top Left", onClick: () => setReferencePoint([0, 0]) },
     { name: "Top Center", onClick: () => setReferencePoint([0.5, 0]) },
@@ -196,6 +284,7 @@ export default function BoxSizing() {
 
   return (
     <div onClick={() => setFocusPoint("")} style={{ position: "static" }}>
+      <div><button onClick={setAllNodesDefault}>Set All Default</button></div>
       {focusNode ? (
         <>
           <button onClick={setAllInterfaceMiddleCenter}> Default </button>
