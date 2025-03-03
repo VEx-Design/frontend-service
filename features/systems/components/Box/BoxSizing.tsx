@@ -3,7 +3,6 @@ import { useBox } from "../../contexts/BoxContext";
 import { BoundingConfiguration } from "../../libs/ClassBox/types/BoundingConfiguration";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
-
 export default function BoxSizing() {
   const { focusNode, mapBounding, setMapBounding, focusPoint, setFocusPoint, config, nodesState } = useBox();
   const [height, setHeight] = useState("");
@@ -70,7 +69,7 @@ export default function BoxSizing() {
 
     if (!(existingConfig?.height === newHeight && existingConfig?.width === newWidth)) {
       const updatedMap: Map<string, BoundingConfiguration> = new Map(prevMap);
-      updatedMap.set(focusNode.id, new BoundingConfiguration("",newHeight, newWidth, referencePoint, interfacePositions));
+      updatedMap.set(focusNode.id, new BoundingConfiguration("", newHeight, newWidth, referencePoint, interfacePositions));
       setMapBounding(updatedMap);
     }
 
@@ -103,7 +102,24 @@ export default function BoxSizing() {
     });
   };
 
-  const referencePointActions = [
+  const setInterfacePoint = (intf: string, point: [number, number]) => {
+    if (!focusNode) return;
+    setMapBounding((prev) => {
+      const newMapBounding = new Map(prev);
+      const nodeInfo = newMapBounding.get(focusNode.id);
+      if (nodeInfo) {
+        const newInterfacePositions = new Map(nodeInfo.interfacePositions);
+        newInterfacePositions.set(intf, point);
+        newMapBounding.set(focusNode.id, {
+          ...nodeInfo,
+          interfacePositions: newInterfacePositions,
+        });
+      }
+      return newMapBounding;
+    });
+  };
+
+  const ReferencePointActions = [
     { name: "Top Left", onClick: () => setReferencePoint([0, 0]) },
     { name: "Top Center", onClick: () => setReferencePoint([0.5, 0]) },
     { name: "Top Right", onClick: () => setReferencePoint([1, 0]) },
@@ -114,6 +130,18 @@ export default function BoxSizing() {
     { name: "Bottom Center", onClick: () => setReferencePoint([0.5, 1]) },
     { name: "Bottom Right", onClick: () => setReferencePoint([1, 1]) },
   ];
+
+  const InterfacePointActions = ([intfId, intfName]: [string, string]) => ([
+    { name: `Top Left`, onClick: () => setInterfacePoint(intfId, [0, 0]) },
+    { name: `Top Center`, onClick: () => setInterfacePoint(intfId, [0.5, 0]) },
+    { name: `Top Right`, onClick: () => setInterfacePoint(intfId, [1, 0]) },
+    { name: `Middle Left`, onClick: () => setInterfacePoint(intfId, [0, 0.5]) },
+    { name: `Middle Center`, onClick: () => setInterfacePoint(intfId, [0.5, 0.5]) },
+    { name: `Middle Right`, onClick: () => setInterfacePoint(intfId, [1, 0.5]) },
+    { name: `Bottom Left`, onClick: () => setInterfacePoint(intfId, [0, 1]) },
+    { name: `Bottom Center`, onClick: () => setInterfacePoint(intfId, [0.5, 1]) },
+    { name: `Bottom Right`, onClick: () => setInterfacePoint(intfId, [1, 1]) },
+  ])
 
   const DropdownMenuComponent = ({ label, actions }: { label: string; actions: { name: string; onClick: () => void }[] }) => {
     return (
@@ -133,7 +161,6 @@ export default function BoxSizing() {
       </DropdownMenu.Root>
     );
   };
-
 
   return (
     <div onClick={() => setFocusPoint("")} style={{ position: "static" }}>
@@ -185,32 +212,24 @@ export default function BoxSizing() {
             )}
           </div>
           <div>
-            <label>Reference Point:</label>
+            <label>Reference Point</label>
             <ul>
               <li
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setFocusPoint("Reference Point");
-                }}
                 style={{ fontWeight: focusPoint === "Reference Point" ? "bold" : "normal" }}
               >
-                Reference Point 
-              </li> 
+                Reference Point  <DropdownMenuComponent label="Position" actions={ReferencePointActions} />
+              </li>
             </ul>
           </div>
           <div>
-            <label>Interfaces:</label>
+            <label>Interfaces</label>
             <ul>
               {interfaces.map((intf, index) => (
                 <li
-                  key={index}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setFocusPoint(intf[0]);
-                  }}
+                  key={`${intf[0]}-${index}`}
                   style={{ fontWeight: focusPoint === intf[0] ? "bold" : "normal" }}
                 >
-                  {intf[1]} 
+                  {intf[1]} <DropdownMenuComponent label="Position" actions={InterfacePointActions(intf)} />
                 </li>
               ))}
             </ul>
