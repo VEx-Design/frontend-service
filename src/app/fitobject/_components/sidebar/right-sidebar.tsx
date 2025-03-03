@@ -311,13 +311,15 @@ const RightSidebar = () => {
       >
         {/* Header */}
         <div className="flex justify-between items-center">
-          <button onClick={handleClick}>
+
+          {/* <button onClick={handleClick}>
             {}
             <LuPanelTopClose size={18} />
-          </button>
-          <UserButton
+          </button> */}
+
+          {/* <UserButton
             appearance={{ elements: { userButtonAvatarBox: "w-9 h-9" } }}
-          />
+          /> */}
         </div>
         {selectObject ? renderObjectProperties() : renderCanvasProperties()}
       </div>
@@ -333,9 +335,9 @@ const RightSidebar = () => {
             {}
             <LuPanelBottomClose size={18} />
           </button>
-          <UserButton
+          {/* <UserButton
             appearance={{ elements: { userButtonAvatarBox: "w-9 h-9" } }}
-          />
+          /> */}
         </div>
       </div>
     </div>

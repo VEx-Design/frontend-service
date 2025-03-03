@@ -19,6 +19,8 @@ import { ExecutionProvider } from "../../contexts/Execution/ExecutionContext";
 import { ConfigProvider } from "../../contexts/Configuration/ConfigContext";
 import Box from "../Box";
 import { BoxProvider } from "../../contexts/BoxContext";
+import HomePage from "@/src/app/(project)/board/page";
+import FitObject from "@/src/app/fitobject/page";
 
 export default function Project() {
   const { projName, onSave, savePending } = useProject();
@@ -57,6 +59,11 @@ export default function Project() {
               <SquareDashed />
             </TabsTriggerIcon>
           </TabsTrigger>
+          <TabsTrigger name="Table">
+            <TabsTriggerIcon>
+              <SquareDashed />
+            </TabsTriggerIcon>
+          </TabsTrigger>
         </TabsList>
         <TabsContent name="Flow">
           <EditorProvider>
@@ -76,6 +83,11 @@ export default function Project() {
         <TabsContent name="Box">
           <BoxProvider>
             <Box />
+          </BoxProvider>
+        </TabsContent>
+        <TabsContent name="Table">
+          <BoxProvider>
+            <FitObject />
           </BoxProvider>
         </TabsContent>
       </Tabs>

@@ -193,13 +193,46 @@ const Object: React.FC<KonvaObjectProps> = ({
 function Canvas() {
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Stage>(null);
-
+  
   const { canvas, selectObject, updateObject } = useCanvas();
   const { gridSize, gridColor, gridOpacity, gridStyle } = canvas.grid;
 
   const [zoomScale, setZoomScale] = useState<number>(1);
 
   const [action, setAction] = useState<string>("Move");
+
+  const [stageSize, setStageSize] = useState({ width: 1, height: 1 })
+
+  // Function to update stage size based on container dimensions
+  const updateStageDimensions = useCallback(() => {
+    if (containerRef.current) {
+      const containerWidth = containerRef.current.offsetWidth
+      const containerHeight = containerRef.current.offsetHeight
+
+      setStageSize({
+        width: containerWidth,
+        height: containerHeight,
+      })
+    }
+  }, [])
+
+  useEffect(() => {
+    updateStageDimensions()
+
+    // Set up resize observer to update dimensions when container resizes
+    const resizeObserver = new ResizeObserver(() => {
+      updateStageDimensions()
+    })
+
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current)
+    }
+
+    // Clean up
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [updateStageDimensions])
 
   const RenderGrid = () => {
     if (!canvas.grid.showGrid) return null;
@@ -300,14 +333,11 @@ function Canvas() {
   };
 
   return (
-    <div
-      className="w-full h-full flex items-center justify-center bg-black"
-      ref={containerRef}
-    >
+    <div className="w-full h-full flex items-center justify-center bg-black" ref={containerRef}>
       <Stage
         ref={stageRef}
-        width={innerWidth}
-        height={innerHeight}
+        width={stageSize.width}
+        height={stageSize.height}
         scaleX={zoomScale}
         scaleY={zoomScale}
         className="bg-gray-200"
@@ -334,7 +364,7 @@ function Canvas() {
               imageUrl={obj.imageUrl}
               isSelected={obj.id === canvas.selectedObjectId}
               onSelect={() => {
-                selectObject(obj.id);
+                selectObject(obj.id)
               }}
               onChange={(newProps) => updateObject(obj.id, newProps)}
               draggable={action === "Select"}
@@ -351,30 +381,21 @@ function Canvas() {
 
       {/* Control */}
       <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 bg-white p-2 rounded-lg shadow">
-        <button
-          className={`p-2 rounded ${action === "Move" ? "bg-gray-200" : ""}`}
-          onClick={() => setAction("Move")}
-        >
-          {}
+        <button className={`p-2 rounded ${action === "Move" ? "bg-gray-200" : ""}`} onClick={() => setAction("Move")}>
           <FaRegHandPaper size={20} />
         </button>
         <button
           className={`p-2 rounded ${action === "Select" ? "bg-gray-200" : ""}`}
           onClick={() => setAction("Select")}
         >
-          {}
           <LuMousePointer2 size={20} />
         </button>
-        <button
-          className={`p-2 rounded ${action === "Export" ? "bg-gray-200" : ""}`}
-          onClick={handleExport}
-        >
-          {}
+        <button className={`p-2 rounded ${action === "Export" ? "bg-gray-200" : ""}`} onClick={handleExport}>
           <AiOutlineExport size={20} />
         </button>
       </div>
     </div>
-  );
+  )
 }
 
 export default Canvas;

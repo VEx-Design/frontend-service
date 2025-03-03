@@ -72,11 +72,11 @@ const FitObject = () => {
   } | null>(null);
 
   useEffect(() => {
-    const loaded = localStorage.getItem("CanvasDimensions");
-    if (loaded) {
-      const { width, height } = JSON.parse(loaded);
-      setCanvasSize({ width, height });
-    }
+    // const loaded = localStorage.getItem("CanvasDimensions");
+    // if (loaded) {
+    //   const { width, height } = JSON.parse(loaded);
+      setCanvasSize({ width:1000, height:1000 });
+    // }
   }, []);
 
   if (!canvasSize)
@@ -86,25 +86,30 @@ const FitObject = () => {
       </div>
     );
 
-  return (
-    <CanvasProvider initialObjects={mockData} initialCanvasSize={canvasSize}>
-      <div className="h-full w-screen flex flex-col">
-        <main className="flex-1 flex relative">
-          <div className="absolute top-0 left-0 h-full z-10">
-            <LeftSidebar />
-          </div>
-
-          <div className="flex-1">
-            <Canvas />
-          </div>
-
-          <div className="absolute top-0 right-0 h-full z-10">
-            <RightSidebar />
-          </div>
-        </main>
+    return (
+      <div className="flex flex-1 w-full h-full">
+      <CanvasProvider initialObjects={mockData} initialCanvasSize={canvasSize}>
+        <div className="flex flex-1 flex-col h-full w-full">
+          <main className="flex flex-1 w-full h-full">
+            {/* Left sidebar with fixed width */}
+            <div className="h-full shrink-0">
+              <LeftSidebar />
+            </div>
+  
+            {/* Canvas that fills available space */}
+            <div className="flex-1 h-full overflow-hidden">
+              <Canvas />
+            </div>
+  
+            {/* Right sidebar with fixed width */}
+            <div className="h-full shrink-0">
+              <RightSidebar />
+            </div>
+          </main>
+        </div>
+      </CanvasProvider>
       </div>
-    </CanvasProvider>
-  );
+    )
 };
 
 export default FitObject;
