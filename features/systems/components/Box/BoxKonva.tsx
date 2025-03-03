@@ -3,21 +3,20 @@ import React, { useState, useEffect, useRef } from "react";
 import { Stage, Layer, Rect, Text, Circle } from "react-konva";
 import { useResizeDetector } from "react-resize-detector";
 import { useBox } from "../../contexts/BoxContext";
-import { map } from "lodash";
 
 const KonvaSquare = () => {
   const { ref, width = 400, height = 400 } = useResizeDetector();
-  const { focusNode, mapBounding, setMapBounding ,focusPoint } = useBox();
+  const { focusNode, mapBounding, setMapBounding, focusPoint , config} = useBox();
+
   const [squareSize, setSquareSize] = useState({ width: 0, height: 0 });
-  const [relativePos, setRelativePos] = useState<{
-    x: number;
-    y: number | null;
-  }>({ x: 0, y: 0 });
+  const [relativePos, setRelativePos] = useState<{ x: number; y: number | null }>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [lastMouse, setLastMouse] = useState({ x: 0, y: 0 });
+  const [showPoints, setShowPoints] = useState(true);
   const stageRef = useRef<Konva.Stage>(null);
+
 
   useEffect(() => {
     if (focusNode) {
@@ -37,7 +36,12 @@ const KonvaSquare = () => {
             y: height / 2 - (newSquareSize.height * newZoom) / 2,
           });
         }
+      }else{
+        setSquareSize({ width: 0, height: 0 });
       }
+    }
+    else{
+      setSquareSize({ width: 0, height: 0 });
     }
   }, [focusNode?.id, mapBounding, width, height]);
 
@@ -49,12 +53,7 @@ const KonvaSquare = () => {
     const unscaledX = (pointer.x - offset.x) / zoom;
     const unscaledY = (pointer.y - offset.y) / zoom;
 
-    if (
-      unscaledX >= 0 &&
-      unscaledX <= squareSize.width &&
-      unscaledY >= 0 &&
-      unscaledY <= squareSize.height
-    ) {
+    if (unscaledX >= 0 && unscaledX <= squareSize.width && unscaledY >= 0 && unscaledY <= squareSize.height) {
       setRelativePos({ x: Math.floor(unscaledX), y: Math.floor(unscaledY) });
     } else {
       setRelativePos({ x: 0, y: null });
@@ -99,51 +98,54 @@ const KonvaSquare = () => {
   };
 
   const handleRectClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
-  const stage = e.target.getStage();
-  const pointer = stage?.getPointerPosition();
-  if (!pointer) return;
+    const stage = e.target.getStage();
+    const pointer = stage?.getPointerPosition();
+    if (!pointer) return;
 
-  const unscaledX = (pointer.x - offset.x) / zoom;
-  const unscaledY = (pointer.y - offset.y) / zoom;
+    const unscaledX = (pointer.x - offset.x) / zoom;
+    const unscaledY = (pointer.y - offset.y) / zoom;
 
-  const x = Math.floor(unscaledX) / squareSize.width;
-  const y = Math.floor(unscaledY) / squareSize.height;
+    const x = Math.floor(unscaledX) / squareSize.width;
+    const y = Math.floor(unscaledY) / squareSize.height;
 
-  if (focusPoint !== "") {
-    if (focusPoint === "Reference Point") {
-      setMapBounding((prev) => {
-        const newMapBounding = new Map(prev);
-        newMapBounding.set(focusNode!.id, {
-          ...newMapBounding.get(focusNode!.id)!,
-          referencePosition: [x, y]  as [number, number],
-        });
-        console.log(newMapBounding)
-        return newMapBounding;
-      });
-      alert(focusPoint + " at" + ` (${Math.floor(unscaledX)}, ${Math.floor(unscaledY)})`);
-    } else {
-      setMapBounding((prev) => {
-        const newMapBounding = new Map(prev);
-        const nodeInfo = newMapBounding.get(focusNode!.id);
-        if (nodeInfo) {
-          const newInterfacePositions = new Map(nodeInfo.interfacePositions);
-          newInterfacePositions.set(focusPoint, [ x, y ] as [number, number]);
+    if (focusPoint !== "") {
+      if (focusPoint === "Reference Point") {
+        setMapBounding((prev) => {
+          const newMapBounding = new Map(prev);
           newMapBounding.set(focusNode!.id, {
-            ...nodeInfo,
-            interfacePositions: newInterfacePositions,
+            ...newMapBounding.get(focusNode!.id)!,
+            referencePosition: [x, y] as [number, number],
           });
-        }
-        return newMapBounding;
-      });
-      alert(focusPoint + " at" + ` (${Math.floor(unscaledX)}, ${Math.floor(unscaledY)})`);
+          console.log(newMapBounding);
+          return newMapBounding;
+        });
+        alert(focusPoint + " at" + ` (${relativePos.x * squareSize.width}, ${relativePos.y * squareSize.height})`);
+      } else {
+        setMapBounding((prev) => {
+          const newMapBounding = new Map(prev);
+          const nodeInfo = newMapBounding.get(focusNode!.id);
+          if (nodeInfo) {
+            const newInterfacePositions = new Map(nodeInfo.interfacePositions);
+            newInterfacePositions.set(focusPoint, [x, y] as [number, number]);
+            newMapBounding.set(focusNode!.id, {
+              ...nodeInfo,
+              interfacePositions: newInterfacePositions,
+            });
+          }
+          return newMapBounding;
+        });
+        alert(focusPoint + " at" + ` (${relativePos.x * squareSize.width}, ${relativePos.y * squareSize.height})`);
+      }
+    } else {
+      alert("no focus point selected");
     }
-  } else {
-    alert("no focus point selected");
-  }
-};
+  };
 
   return (
     <div ref={ref} style={{ width: "100%", height: "100%" }}>
+      <button onClick={() => setShowPoints((prev) => !prev)}>
+        {showPoints ? "Hide" : "Show"} Points
+      </button>
       <Stage
         ref={stageRef}
         width={width}
@@ -163,48 +165,72 @@ const KonvaSquare = () => {
             fill="rgba(100, 200, 255, 1)"
             onClick={handleRectClick}
           />
+          
+                  <>
           {relativePos.y !== null && (
-            <>
-              <Text
-                text={`(${relativePos.x}, ${relativePos.y})`}
-                x={offset.x + relativePos.x * zoom + 10}
-                y={offset.y + relativePos.y * zoom - 10}
-                fontSize={16}
-                fill="black"
-              />
-              {/* <Circle
-                x={offset.x + relativePos.x * zoom}
-                y={offset.y + relativePos.y * zoom}
-                radius={2} // Small circle to represent the mouse pointer
-                fill="red"
-              /> */}
-              {focusNode &&
-                mapBounding.get(focusNode.id)?.referencePosition && (
-                  <Circle
-                    x={offset.x + mapBounding.get(focusNode.id)!.referencePosition[0] * squareSize.width * zoom}
-                    y={offset.y + mapBounding.get(focusNode.id)!.referencePosition[1] * squareSize.height * zoom}
-                    radius={5} // Adjust the radius as needed
-                    fill="blue"
-                  />
-                )}
-              {focusNode &&
-                mapBounding.get(focusNode.id)?.interfacePositions &&
-                Array.from(mapBounding.get(focusNode.id)?.interfacePositions.entries() || []).map(
-                  ([key, pos]) => {
-                    const [x, y] = pos;
-                    return (
-                      <Circle
-                        key={key}
-                        x={offset.x + x * squareSize.width * zoom}
-                        y={offset.y + y * squareSize.height * zoom}
-                        radius={5} // Adjust the radius as needed
-                        fill="green"
-                      />
-                    );
-                  }
-                )}
-            </>
+            <Text
+              text={`(${relativePos.x * squareSize.width}, ${relativePos.y * squareSize.height})`}
+              x={offset.x + relativePos.x * zoom + 10}
+              y={offset.y + relativePos.y * zoom - 10}
+              fontSize={16}
+              fill="black"
+            />
           )}
+
+          {showPoints && focusNode && (() => {
+            const combinedPoints = new Map<string, { x: number, y: number, labels: string[] }>();
+
+            // Add reference point
+            const referencePosition = mapBounding.get(focusNode.id)?.referencePosition;
+            if (referencePosition) {
+              const [refX, refY] = referencePosition;
+              const key = `${refX},${refY}`;
+              combinedPoints.set(key, {
+                x: refX,
+                y: refY,
+                labels: ['Reference Point']
+              });
+            }
+
+            // Add interface points
+            const interfacePositions = mapBounding.get(focusNode.id)?.interfacePositions;
+            if (interfacePositions) {
+              interfacePositions.forEach((pos, key) => {
+              const interfaceName = config.types.find((type) => type.id === focusNode.type)?.interfaces.find((intf) => intf.id === key)?.name;
+              const [intX, intY] = pos;
+              const pointKey = `${intX},${intY}`;
+              if (combinedPoints.has(pointKey)) {
+                combinedPoints.get(pointKey)!.labels.push(interfaceName || key);
+              } else {
+                combinedPoints.set(pointKey, {
+                x: intX,
+                y: intY,
+                labels: [interfaceName || key]
+                });
+              }
+              });
+            }
+
+            // Render combined points
+            return Array.from(combinedPoints.values()).map(({ x, y, labels }) => (
+              <React.Fragment key={`${x},${y}`}>
+                <Circle
+                  x={offset.x + x * squareSize.width * zoom}
+                  y={offset.y + y * squareSize.height * zoom}
+                  radius={5}
+                  fill="green"
+                />
+                <Text
+                  text={`(${x}, ${y})\n${labels.join(', ')}`}
+                  x={offset.x + x * squareSize.width * zoom + 10}
+                  y={offset.y + y * squareSize.height * zoom - 10}
+                  fontSize={16}
+                  fill="black"
+                />
+              </React.Fragment>
+            ));
+          })()}
+        </>
         </Layer>
       </Stage>
     </div>

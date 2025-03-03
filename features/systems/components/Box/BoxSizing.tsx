@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useBox } from "../../contexts/BoxContext";
 import { BoundingConfiguration } from "../../libs/ClassBox/types/BoundingConfiguration";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+
 
 export default function BoxSizing() {
   const { focusNode, mapBounding, setMapBounding, focusPoint, setFocusPoint, config, nodesState } = useBox();
   const [height, setHeight] = useState("");
   const [width, setWidth] = useState("");
-  const [interfaces, setInterfaces] = useState<[string,string][]>([]);
+  const [interfaces, setInterfaces] = useState<[string, string][]>([]);
   const [showSaveHeight, setShowSaveHeight] = useState(false);
   const [showSaveWidth, setShowSaveWidth] = useState(false);
 
@@ -33,7 +35,7 @@ export default function BoxSizing() {
 
     const nodeId = focusNode.id;
     const node = nodesState.nodes.find((node) => node.id === nodeId);
-    if(node?.type === "ObjectNode"){
+    if (node?.type === "ObjectNode") {
       const typeID = node?.data.data.object?.typeId;
       const interfaces = config.types.find((type) => type.id === typeID)?.interfaces;
       if (interfaces) {
@@ -41,17 +43,14 @@ export default function BoxSizing() {
       } else {
         setInterfaces([]);
       }
-    }
-    else if (node?.type === "starter"){
+    } else if (node?.type === "starter") {
       setInterfaces([["starter", "Output"]]);
-    }
-    else{
+    } else {
       setInterfaces([["terminal", "Input"]]);
     }
 
     setShowSaveHeight(false);
     setShowSaveWidth(false);
-
   }, [focusNode, mapBounding, config.types]);
 
   const handleSave = () => {
@@ -71,7 +70,7 @@ export default function BoxSizing() {
 
     if (!(existingConfig?.height === newHeight && existingConfig?.width === newWidth)) {
       const updatedMap: Map<string, BoundingConfiguration> = new Map(prevMap);
-      updatedMap.set(focusNode.id, new BoundingConfiguration(newHeight, newWidth, referencePoint, interfacePositions));
+      updatedMap.set(focusNode.id, new BoundingConfiguration("",newHeight, newWidth, referencePoint, interfacePositions));
       setMapBounding(updatedMap);
     }
 
@@ -88,6 +87,38 @@ export default function BoxSizing() {
     setWidth(e.target.value);
     setShowSaveWidth(true);
   };
+
+  const referencePointActions = [
+    { name: "Top Left", onClick: () => alert("Top Left") },
+    { name: "Top Center", onClick: () => alert("Top Center") },
+    { name: "Top Right", onClick: () => alert("Top Right") },
+    { name: "Middle Left", onClick: () => alert("Middle Left") },
+    { name: "Middle Center", onClick: () => alert("Middle Center") },
+    { name: "Middle Right", onClick: () => alert("Middle Right") },
+    { name: "Bottom Left", onClick: () => alert("Bottom Left") },
+    { name: "Bottom Center", onClick: () => alert("Bottom Center") },
+    { name: "Bottom Right", onClick: () => alert("Bottom Right") },
+  ];
+
+  const DropdownMenuComponent = ({ label, actions }: { label: string; actions: { name: string; onClick: () => void }[] }) => {
+    return (
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger asChild>
+          <button onClick={(e) => e.stopPropagation()}>{label}</button>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content side="bottom" align="start" style={{ maxHeight: "100px", overflowY: "auto" }}>
+            {actions.map((action, index) => (
+              <DropdownMenu.Item key={index} onClick={action.onClick}>
+                {action.name}
+              </DropdownMenu.Item>
+            ))}
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+    );
+  };
+
 
   return (
     <div onClick={() => setFocusPoint("")} style={{ position: "static" }}>
@@ -148,8 +179,8 @@ export default function BoxSizing() {
                 }}
                 style={{ fontWeight: focusPoint === "Reference Point" ? "bold" : "normal" }}
               >
-                Reference Point
-              </li>
+                Reference Point 
+              </li> 
             </ul>
           </div>
           <div>
@@ -164,7 +195,7 @@ export default function BoxSizing() {
                   }}
                   style={{ fontWeight: focusPoint === intf[0] ? "bold" : "normal" }}
                 >
-                  {intf[1]}
+                  {intf[1]} 
                 </li>
               ))}
             </ul>
