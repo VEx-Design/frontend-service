@@ -42,6 +42,9 @@ export default function CreateProjectDialog(props: CreateProjectDialogProps) {
     mutationFn: createProject,
     onSuccess: () => {
       toast.success("Project created", { id: "create-project" });
+      if (onCreated) {
+        onCreated();
+      }
     },
     onError: () => {
       toast.error("Failed to create project", { id: "create-project" });
@@ -54,11 +57,8 @@ export default function CreateProjectDialog(props: CreateProjectDialogProps) {
       mutate(values);
       form.reset();
       closeDialog();
-      if (onCreated) {
-        onCreated();
-      }
     },
-    [mutate, form, onCreated]
+    [mutate, form]
   );
 
   return (
