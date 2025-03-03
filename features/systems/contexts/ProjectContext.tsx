@@ -36,6 +36,7 @@ import editFreeSpace from "../libs/ClassConfig/editFreeSpace";
 import addParameterGroup from "../libs/ClassConfig/addParameterGroup";
 import getParameter from "../libs/ClassConfig/getParameter";
 import { debounce } from "lodash"; // Debounce function to optimize saves
+import saveBounding from "../actions/saveBounding";
 
 interface ProjectContextValue {
   projId: string;
@@ -163,6 +164,7 @@ export const ProjectProvider = ({
     mutationFn: async () => {
       await saveFlow(project.id, { nodes, edges });
       await saveConfig(project.id, config);
+      await saveBounding(project.id, mapBounding);
     },
     onSuccess: () => {
       toast.success("Project saved", { id: "save-project" });
@@ -215,7 +217,11 @@ export const ProjectProvider = ({
       setEdges,
       onEdgesChange,
       configAction,
-      executedFlow, 
+      executedFlow,
+      mapBounding,
+      setMapBounding,
+      blueprint,
+      setBlueprint,
     ]
   );
 

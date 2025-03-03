@@ -1,7 +1,7 @@
 'use client'; // Ensures this runs only on the client side
 
 import React, { useEffect, useRef } from 'react';
-import { type CellStyle, Graph, InternalEvent, ConnectionConstraint, Point } from '@maxgraph/core';
+import { Graph, InternalEvent } from '@maxgraph/core';
 
 const GraphPage: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);

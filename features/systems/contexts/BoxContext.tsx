@@ -39,7 +39,7 @@ interface EdgesState {
 const BoxContext = createContext<BoxContextValue | undefined>(undefined);
 
 export function BoxProvider(props: { children: React.ReactNode }) {
-  const flow = useProject();
+  const {nodesState, edgesState} = useProject();
   const { config } = useProject();
   const [focusPoint, setFocusPoint] = useState("");
   const [focusNode, setFocusNode] = useState<AppNode | undefined>(undefined);
@@ -48,12 +48,12 @@ export function BoxProvider(props: { children: React.ReactNode }) {
  
 
   useEffect(() => {
-    if (flow) {
-      setNodes(flow.nodesState.nodes);
-      setEdges(flow.edgesState.edges);
+    if (nodesState.nodes && edgesState.edges) {
+      setNodes(nodesState.nodes);
+      setEdges(edgesState.edges);
     }
     setFocusNode(undefined);
-  }, [flow, setNodes, setEdges]);
+  }, [nodesState.nodes, edgesState.edges]);
 
   return (
     <BoxContext.Provider

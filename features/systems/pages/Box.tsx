@@ -5,24 +5,27 @@ import ViewDiagram from "../components/Box/ViewDiagram";
 import BoxKonva from "../components/Box/BoxKonva";
 
 export default function Box() {
-
   return (
-    <ResizablePanelGroup direction="vertical">
-      <ResizablePanel defaultSize={50} minSize={50} maxSize={50}>
-        <ViewDiagram />
-      </ResizablePanel>
-      <ResizableHandle />
-      <ResizablePanel>
-        <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel defaultSize={50} minSize={50} maxSize={50}>
-            <BoxSizing />
-          </ResizablePanel>
-          <ResizableHandle />
-          <ResizablePanel defaultSize={50} minSize={50} maxSize={50} >
-            <BoxKonva />
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      </ResizablePanel>
-    </ResizablePanelGroup>
-  );
+    <div className="h-full w-full bg-background">
+      <ResizablePanelGroup direction="vertical" className="min-h-[600px] rounded-lg border">
+        <ResizablePanel defaultSize={40} minSize={30} maxSize={60} className="p-0">
+          <div className="h-full overflow-hidden">
+            <ViewDiagram />
+          </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={60} minSize={40}>
+          <ResizablePanelGroup direction="horizontal">
+            <ResizablePanel defaultSize={40} minSize={30} maxSize={60} className="p-4">
+              <BoxSizing />
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={60} minSize={40} className="p-0">
+              <BoxKonva />
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </div>
+  )
 }
