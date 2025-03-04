@@ -1,5 +1,5 @@
 import type Konva from "konva";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Stage, Layer, Rect, Text, Circle } from "react-konva";
 import { useResizeDetector } from "react-resize-detector";
 import { useBox } from "../../contexts/BoxContext";
@@ -11,8 +11,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ZoomIn, ZoomOut, Eye, EyeOff, Maximize } from "lucide-react";
+import { Eye, EyeOff, Maximize } from "lucide-react";
 import { useConfig } from "../../contexts/ProjectWrapper/ConfigContext";
+import { FaRegHandPaper } from "react-icons/fa";
 
 export default function BoxKonva() {
   const { ref, width = 400, height = 400 } = useResizeDetector();
