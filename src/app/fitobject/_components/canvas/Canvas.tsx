@@ -8,6 +8,7 @@ import useImage from "use-image"
 import type Konva from "konva"
 import { FaRegHandPaper } from "react-icons/fa"
 import { AiOutlineExport } from "react-icons/ai"
+import { RxBox } from "react-icons/rx";
 import { LuMousePointer2 } from "react-icons/lu"
 import { MdRotate90DegreesCcw } from "react-icons/md"
 import { calculateOrthogonalPath } from "./edgeRouting"
@@ -48,6 +49,7 @@ interface KonvaObjectProps {
   showGrid: boolean
   gridStyle: "dot" | "line"
   interfacePositions?: Map<string, [number, number]>
+  showBoundingBox: boolean
 }
 
 const Object: React.FC<KonvaObjectProps> = ({
@@ -57,7 +59,6 @@ const Object: React.FC<KonvaObjectProps> = ({
   width,
   height,
   imageUrl,
-  name,
   isSelected,
   onSelect,
   onChange,
@@ -69,6 +70,7 @@ const Object: React.FC<KonvaObjectProps> = ({
   showGrid,
   gridStyle,
   interfacePositions,
+  showBoundingBox,
 }) => {
   const [image] = useImage(imageUrl, "anonymous")
   const [isColliding, setIsColliding] = useState(false)
@@ -191,7 +193,7 @@ const Object: React.FC<KonvaObjectProps> = ({
           width={width}
           height={height}
           fill={isColliding ? "rgba(255, 0, 0, 0.5)" : "white"}
-          stroke={isSelected ? "#00ff00" : "#ddd"}
+          stroke={(isSelected || showBoundingBox)? "#ddd" : "transparent"}
           strokeWidth={isSelected ? 2 : 1}
           cornerRadius={5}
         />
@@ -438,6 +440,8 @@ function Canvas({ edges: externalEdges }: CanvasProps = {}) {
   const [edges, setEdges] = useState<EdgeData[]>([])
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null)
 
+  const [showBoundingBox, setShowBoundingBox] = useState(false)
+
   // Function to update stage size based on container dimensions
   const updateStageDimensions = useCallback(() => {
     if (containerRef.current) {
@@ -637,6 +641,7 @@ function Canvas({ edges: externalEdges }: CanvasProps = {}) {
               showGrid={showGrid}
               gridStyle={gridStyle}
               interfacePositions={obj.interfacePositions}
+              showBoundingBox={showBoundingBox}
             />
           ))}
 
@@ -657,6 +662,9 @@ function Canvas({ edges: externalEdges }: CanvasProps = {}) {
         </button>
         <button className={`p-2 rounded`} onClick={handleRotateSelected} title="Rotate 90° (Selected Object)">
           <MdRotate90DegreesCcw size={20} />
+        </button>
+        <button className={`p-2 rounded ${showBoundingBox ? "bg-gray-200" : ""}`} onClick={() => setShowBoundingBox(!showBoundingBox)}>
+          <RxBox size={20} />
         </button>
         <button className={`p-2 rounded ${action === "Export" ? "bg-gray-200" : ""}`} onClick={handleExport}>
           <AiOutlineExport size={20} />
