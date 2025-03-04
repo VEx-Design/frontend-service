@@ -83,6 +83,9 @@ export default function BoxSizing() {
     if (newHeight > 1000) newHeight = 1000
     if (newWidth > 1000) newWidth = 1000
 
+    // Ensure height and width are not negative
+    if (newHeight < 0 || newWidth < 0) return
+
     const referencePoint = existingConfig?.referencePosition || [0.5, 0.5]
     const interfacePositions = existingConfig?.interfacePositions || new Map()
 
@@ -281,7 +284,7 @@ export default function BoxSizing() {
                         onClick={(e) => e.stopPropagation()}
                         className="w-full"
                       />
-                      {showSaveWidth && (
+                      {showSaveWidth && Number(width) >= 0 && (
                         <Button
                           size="icon"
                           variant="ghost"
@@ -311,7 +314,7 @@ export default function BoxSizing() {
                         onClick={(e) => e.stopPropagation()}
                         className="w-full"
                       />
-                      {showSaveHeight && (
+                      {showSaveHeight && Number(height) >= 0 && (
                         <Button
                           size="icon"
                           variant="ghost"
