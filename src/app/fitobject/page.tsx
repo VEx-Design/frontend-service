@@ -16,8 +16,6 @@ interface CanvasObject {
   height: number
   fill: string
   imageUrl: string
-  connectedTo: string[]
-  isStartNode: boolean
   referencePosition: [number, number]
   interfacePositions: Map<string, [number, number]>
 }
@@ -32,25 +30,26 @@ const FitObject = () => {
   const { mapBounding } = useConfig()
   const nodesState = useNodes()
   const edgesState = useEdges()
+  const { config } = useConfig()
 
   useEffect(() => {
     const objects = mapBounding.entries()
     const newCanvaObjects: CanvasObject[] = []
-    for (const [id, config] of objects) {
-      const name = nodesState.nodes.find((node) => node.id === id)?.data.data.object?.name || "Unknown"
+    for (const [id, bounding] of objects) {
+      const node = nodesState.nodes.find((node) => node.id === id);
+      const name = node?.data.data.object?.name || (node?.type === "starter" ? "Starter" : "Terminal");
+      const image = config.types.find((type) => type.id === node?.data.data.object?.typeId)?.picture || "";
       newCanvaObjects.push({
         id: id,
         name: name,
         x: 1,
         y: 1,
-        width: config.width,
-        height: config.height,
+        width: bounding.width,
+        height: bounding.height,
         fill: "black",
-        imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmCy16nhIbV3pI1qLYHMJKwbH2458oiC9EmA&s",
-        connectedTo: [],
-        isStartNode: false,
-        referencePosition: config.referencePosition,
-        interfacePositions: config.interfacePositions,
+        imageUrl: image,
+        referencePosition: bounding.referencePosition,
+        interfacePositions: bounding.interfacePositions,
       })
     }
     setCanvaObjects(newCanvaObjects)
@@ -66,7 +65,7 @@ const FitObject = () => {
         distance: +(edge?.data?.data?.distance ?? 0),
       })
     }
-    console.log(newCanvaObjects)
+    console.log(nodesState.nodes)
     console.log(newEdges)
     setEdges(newEdges)
   }, [mapBounding, nodesState.nodes, edgesState.edges])

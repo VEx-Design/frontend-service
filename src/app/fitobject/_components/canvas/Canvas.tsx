@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Stage, Layer, Line, Circle, Image as KonvaImage, Group, Rect, Text } from "react-konva"
@@ -86,8 +84,8 @@ const Object: React.FC<KonvaObjectProps> = ({
 
         // Simple rectangular collision detection
         const isOverlapping =
-          currentX < obj.x + obj.width &&
-          currentX + width > obj.x &&
+          currentX < Number(obj.x) + obj.width &&
+          currentX + width > Number(obj.x) &&
           currentY < obj.y + obj.height &&
           currentY + height > obj.y
 
@@ -260,7 +258,6 @@ interface EdgeProps {
 }
 
 const Edge: React.FC<EdgeProps> = ({
-  id,
   source,
   sourceHandle,
   target,
@@ -370,10 +367,9 @@ const Edge: React.FC<EdgeProps> = ({
       <Line
         points={flattenedPath}
         stroke={edgeColor}
-        strokeWidth={isSelected ? 2 : 1.5}
+        strokeWidth={isSelected ? 5 : 2.5} // Increased stroke width for bold line
         lineCap="round"
         lineJoin="round"
-        dash={isDistanceTooLong ? [6, 3] : undefined} // Dashed line for too long distances
       />
 
       {/* Source interface point */}
@@ -382,46 +378,41 @@ const Edge: React.FC<EdgeProps> = ({
       {/* Target interface point */}
       <Circle x={targetPos.x} y={targetPos.y} radius={3} fill={edgeColor} />
 
-      {/* Distance label - always show if distance is violated, otherwise only when selected */}
-      {(isSelected || isDistanceViolated) && (
-        <Group x={midpoint.x} y={midpoint.y}>
-          <Rect
-            x={-35}
-            y={-12}
-            width={70}
-            height={24}
-            fill="white"
-            opacity={0.9}
-            cornerRadius={3}
-            stroke={isDistanceTooLong ? "#ff0000" : isDistanceViolated ? "#ff8800" : "#666666"}
-            strokeWidth={1}
-          />
-          <Text
-            text={`${Math.round(actualDistance)}/${distance}mm`}
-            fontSize={12}
-            fill={isDistanceTooLong ? "#ff0000" : isDistanceViolated ? "#ff8800" : "#333"}
-            align="center"
-            verticalAlign="middle"
-            width={70}
-            height={24}
-            x={-35}
-            y={-12}
-          />
-          {isDistanceTooLong && (
-            <Text
-              text="Ignore?"
-              fontSize={10}
-              fill="#ff0000"
-              align="center"
-              verticalAlign="middle"
-              width={70}
-              height={12}
-              x={-35}
-              y={8}
+      {/* Distance label - always show without frame */}
+      <Text
+        text={`${Math.round(actualDistance)}mm`}
+        fontSize={12}
+        fontStyle="bold"
+        fill={isDistanceTooLong ? "#ff0000" : isDistanceViolated ? "#ff8800" : "#333"}
+        align="center"
+        verticalAlign="middle"
+        x={midpoint.x - 35}
+        y={midpoint.y - 6}
+        width={70}
+      />
+
+      {/* Add clickable points at perpendicular corners */}
+      {pathPoints.length > 2 &&
+        pathPoints.slice(1, -1).map((point, index) => (
+          <Group key={`corner-${index}`}>
+            <Circle
+              x={point.x}
+              y={point.y}
+              radius={4}
+              fill={edgeColor}
+              stroke="#ffffff"
+              strokeWidth={1}
+              onClick={(e) => {
+                e.cancelBubble = true
+                onSelect()
+                // Add your corner point click handler here
+              }}
             />
-          )}
-        </Group>
-      )}
+            {isSelected && index === 0 && (
+              <Text text="add Mirror" fontSize={11} fill="#333" x={point.x + 5} y={point.y - 15} />
+            )}
+          </Group>
+        ))}
     </Group>
   )
 }

@@ -10,8 +10,6 @@ interface ObjectProps {
   height: number
   fill: string
   imageUrl: string
-  connectedTo: string[]
-  isStartNode: boolean
   referencePosition: [number, number]
   rotation?: number
   interfacePositions?: Map<string, [number, number]>
