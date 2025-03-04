@@ -12,12 +12,12 @@ import {
 } from "@/components/lists/Lister";
 import { Loading } from "@/src/components/loading";
 import CreateParameterDialog from "./CreateParameterDialog";
-import { useProject } from "@/features/systems/contexts/ProjectContext";
 import ParamItem from "./ParamItem";
 import { Parameter } from "@/features/systems/libs/ClassParameter/types/Parameter";
+import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext";
 
 export default function ParamLister() {
-  const { config, configAction } = useProject();
+  const { config, configAction } = useConfig();
 
   const display: ListerDisplay = {};
 

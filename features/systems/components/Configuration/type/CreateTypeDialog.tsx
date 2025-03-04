@@ -21,7 +21,7 @@ import {
 import { toast } from "sonner";
 
 import createType from "@/features/systems/libs/ClassType/createType";
-import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
+import { useConfigType } from "@/features/systems/contexts/Configuration/ConfigTypeContext";
 
 interface CreateTypeDialogProps {
   onCreated?: () => void;
@@ -40,7 +40,7 @@ export default function CreateTypeDialog({}: CreateTypeDialogProps) {
     defaultValues: {},
   });
 
-  const { typeAction } = useConfig();
+  const { typeAction } = useConfigType();
 
   const onSubmit = useCallback(
     (values: createTypeData) => {

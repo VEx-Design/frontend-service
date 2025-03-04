@@ -1,18 +1,17 @@
 import {
   EdgeChange,
-  FitView,
   NodeChange,
   useEdgesState,
   useNodesState,
-  useReactFlow,
 } from "@xyflow/react";
-import { AppNode, NodeData } from "../libs/ClassNode/types/AppNode";
-import { AppEdge, EdgeData } from "../libs/ClassEdge/types/AppEdge";
-import { useProject } from "./ProjectContext";
-import { createContext, use, useEffect, useState } from "react";
+import { AppNode } from "../libs/ClassNode/types/AppNode";
+import { AppEdge } from "../libs/ClassEdge/types/AppEdge";
+import { createContext, useEffect, useState } from "react";
 import React from "react";
-import { BoundingConfiguration } from "../libs/ClassBox/types/BoundingConfiguration";
 import { Config } from "../libs/ClassConfig/types/Config";
+import { useConfig } from "./ProjectWrapper/ConfigContext";
+import { useNodes } from "./ProjectWrapper/NodesContext";
+import { useEdges } from "./ProjectWrapper/EdgesContext";
 
 interface BoxContextValue {
   focusNode: AppNode | undefined;
@@ -39,13 +38,13 @@ interface EdgesState {
 const BoxContext = createContext<BoxContextValue | undefined>(undefined);
 
 export function BoxProvider(props: { children: React.ReactNode }) {
-  const {nodesState, edgesState} = useProject();
-  const { config } = useProject();
+  const nodesState = useNodes();
+  const edgesState = useEdges();
+  const { config } = useConfig();
   const [focusPoint, setFocusPoint] = useState("");
   const [focusNode, setFocusNode] = useState<AppNode | undefined>(undefined);
   const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<AppEdge>([]);
- 
 
   useEffect(() => {
     if (nodesState.nodes && edgesState.edges) {
@@ -53,7 +52,7 @@ export function BoxProvider(props: { children: React.ReactNode }) {
       setEdges(edgesState.edges);
     }
     setFocusNode(undefined);
-  }, [nodesState.nodes, edgesState.edges]);
+  }, [nodesState.nodes, edgesState.edges, setNodes, setEdges]);
 
   return (
     <BoxContext.Provider

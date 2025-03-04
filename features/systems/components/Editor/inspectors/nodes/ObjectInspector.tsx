@@ -3,16 +3,16 @@ import { PyramidIcon } from "lucide-react";
 import Input from "../InspectorInput";
 
 import { useEditor } from "@/features/systems/contexts/EditorContext";
-import { useProject } from "@/features/systems/contexts/ProjectContext";
 import { Property } from "@/features/systems/libs/ClassType/types/Type";
 import getValue from "@/features/systems/libs/ClassObject/getValue";
 import { getVarPrefixId } from "@/features/systems/libs/ClassObject/getPrefixId";
+import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext";
 
 export default function ObjectInspector() {
   const { focusNode, nodeAction } = useEditor();
   const object = focusNode?.data?.object;
 
-  const { configAction } = useProject();
+  const { configAction } = useConfig();
   const objectType = configAction.getType(object?.typeId || "");
 
   return (

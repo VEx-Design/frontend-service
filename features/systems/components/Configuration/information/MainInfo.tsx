@@ -12,7 +12,7 @@ import UploadImageDialog from "./UploadImageDialog";
 
 // type
 import { AppNode } from "@/features/systems/libs/ClassNode/types/AppNode";
-import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
+import { useConfigType } from "@/features/systems/contexts/Configuration/ConfigTypeContext";
 
 const rfStyle = {
   backgroundColor: "#FAFAFA",
@@ -25,7 +25,7 @@ const nodeTypes = {
 export default function MainInfo() {
   const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
   const { fitView } = useReactFlow();
-  const { currentType, typeAction } = useConfig();
+  const { currentType, typeAction } = useConfigType();
 
   useEffect(() => {
     if (!currentType) return;

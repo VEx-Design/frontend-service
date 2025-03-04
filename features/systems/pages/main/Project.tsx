@@ -9,22 +9,26 @@ import {
   TabsTrigger,
   TabsTriggerIcon,
 } from "@/components/Tabs";
-import { Airplay, FileSliders, GitGraph, Grid2X2Plus , SquareDashed, SquareMousePointer} from "lucide-react";
+import {
+  Airplay,
+  FileSliders,
+  GitGraph,
+  SquareMousePointer,
+} from "lucide-react";
 import { useProject } from "../../contexts/ProjectContext";
 import Editor from "../Editor";
 import Configuration from "../Configuration";
 import { EditorProvider } from "../../contexts/EditorContext";
 import Execution from "../Execution";
 import { ExecutionProvider } from "../../contexts/Execution/ExecutionContext";
-import { ConfigProvider } from "../../contexts/Configuration/ConfigContext";
 import Box from "../Box";
 import { BoxProvider } from "../../contexts/BoxContext";
 import FitObject from "@/src/app/fitobject/page";
 import { GiTable } from "react-icons/gi";
-
+import { ConfigTypeProvider } from "../../contexts/Configuration/ConfigTypeContext";
 
 export default function Project() {
-  const { projName, onSave, savePending } = useProject();
+  const { projName, onSave, savePending, setIsTriggered } = useProject();
 
   return (
     <>
@@ -33,7 +37,7 @@ export default function Project() {
         onSave={onSave}
         savePending={savePending}
       />
-      <Tabs type="side">
+      <Tabs type="side" onTabChange={() => setIsTriggered(true)}>
         <TabsList>
           <TabsTrigger name="Flow">
             <TabsTriggerIcon>
@@ -67,9 +71,9 @@ export default function Project() {
           </EditorProvider>
         </TabsContent>
         <TabsContent name="Configuration">
-          <ConfigProvider>
+          <ConfigTypeProvider>
             <Configuration />
-          </ConfigProvider>
+          </ConfigTypeProvider>
         </TabsContent>
         <TabsContent name="Execution">
           <ExecutionProvider>

@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import { useProject } from "@/features/systems/contexts/ProjectContext";
 import FormularBox from "./FormularBox";
 import { FormulaCondition } from "@/features/systems/libs/ClassInterface/types/Formula";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
+import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext";
+import { useConfigType } from "@/features/systems/contexts/Configuration/ConfigTypeContext";
 
 interface Props {
   condition: FormulaCondition;
 }
 
 export default function FormulaConditionBox({ condition }: Props) {
-  const { config } = useProject();
-  const { typeAction } = useConfig();
+  const { config } = useConfig();
+  const { typeAction } = useConfigType();
   const [isOpen, setIsOpen] = useState(false);
 
   let conditionName;

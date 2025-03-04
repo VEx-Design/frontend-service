@@ -20,8 +20,8 @@ import {
   createConditionSchema,
 } from "@/features/systems/schema/condition";
 import createCondition from "@/features/systems/libs/ClassInterface/FeatureFomula/createCondition";
-import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
 import { useConfigInterface } from "@/features/systems/contexts/Configuration/ConfigInterfaceContext";
+import { useConfigType } from "@/features/systems/contexts/Configuration/ConfigTypeContext";
 
 interface AddActionDialogProps {
   onCreated?: () => void;
@@ -44,7 +44,7 @@ export default function AddActionDialog(props: AddActionDialogProps) {
     setOpen(false);
   }, [form]);
 
-  const { currentType } = useConfig();
+  const { currentType } = useConfigType();
   const { currentInterface, formulaAction } = useConfigInterface();
 
   const onSubmit = useCallback(

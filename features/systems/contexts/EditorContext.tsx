@@ -4,22 +4,33 @@ import React, {
   useCallback,
   useMemo,
   useContext,
+  useEffect,
 } from "react";
-import { EdgeData } from "../libs/ClassEdge/types/AppEdge";
-import { NodeData } from "../libs/ClassNode/types/AppNode";
+import { AppEdge, EdgeData } from "../libs/ClassEdge/types/AppEdge";
+import { AppNode, NodeData } from "../libs/ClassNode/types/AppNode";
 import {
   CreateObjectNode,
   CreateStarterNode,
   CreateTerminalNode,
 } from "../libs/ClassNode/createFlowNode";
 import { useProject } from "./ProjectContext";
-import { Connection, ReactFlowProvider } from "@xyflow/react";
+import {
+  Connection,
+  EdgeChange,
+  NodeChange,
+  ReactFlowProvider,
+  useEdgesState,
+  useNodesState,
+} from "@xyflow/react";
 import { Type } from "../libs/ClassType/types/Type";
 import { CreateEdgeLight } from "../libs/ClassEdge/createFlowEdge";
 import setInitial from "../libs/ClassNode/setInitial";
 import setValue from "../libs/ClassObject/setValue";
 import addInitialLight from "../libs/ClassNode/addInitialLight";
 import { toast } from "sonner";
+import { useNodes } from "./ProjectWrapper/NodesContext";
+import { useEdges } from "./ProjectWrapper/EdgesContext";
+import { isEqual } from "lodash";
 
 interface Coordinate {
   x: number;
@@ -39,6 +50,8 @@ interface FocusEdge {
 }
 
 interface EditorContextValue {
+  nodesState: NodesState;
+  edgesState: EdgesState;
   focusNode?: FocusNode;
   setFocusNode: (node?: FocusNode) => void;
   focusEdge?: FocusEdge;
@@ -47,6 +60,18 @@ interface EditorContextValue {
   setContextMenuPosition: (position: Coordinate | null) => void;
   nodeAction: NodeAction;
   edgeAction: EdgeAction;
+}
+
+interface NodesState {
+  nodes: AppNode[];
+  setNodes: React.Dispatch<React.SetStateAction<AppNode[]>>;
+  onNodesChange: (changes: NodeChange<AppNode>[]) => void;
+}
+
+interface EdgesState {
+  edges: AppEdge[];
+  setEdges: React.Dispatch<React.SetStateAction<AppEdge[]>>;
+  onEdgesChange: (changes: EdgeChange<AppEdge>[]) => void;
 }
 
 interface NodeAction {
@@ -63,16 +88,47 @@ interface EdgeAction {
 const EditorContext = createContext<EditorContextValue | undefined>(undefined);
 
 export function EditorProvider({ children }: { children: React.ReactNode }) {
+  const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<AppEdge>([]);
+
   const [focusNode, setFocusNode] = useState<FocusNode | undefined>();
   const [focusEdge, setFocusEdge] = useState<FocusEdge | undefined>();
   const [contextMenuPosition, setContextMenuPosition] =
     useState<Coordinate | null>(null);
 
-  const { configAction, nodesState, edgesState } = useProject();
+  const { isTriggered, setIsTriggered } = useProject();
+  const nodesState = useNodes();
+  const edgesState = useEdges();
+
+  useEffect(() => {
+    if (isTriggered) {
+      nodesState.setNodes(nodes);
+      edgesState.setEdges(edges);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTriggered]);
+
+  useEffect(() => {
+    if (isEqual(nodesState.nodes, nodes) && isEqual(edgesState.edges, edges)) {
+      setIsTriggered(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nodesState.nodes, edgesState.edges, isTriggered]);
 
   const updateFocusNodeData = useCallback((newData: NodeData) => {
     setFocusNode((prev) => (prev ? { ...prev, data: newData } : prev));
   }, []);
+
+  const editNode = useCallback(
+    (nodeId: string, data: NodeData) => {
+      setNodes((prevNodes) =>
+        prevNodes.map((node) =>
+          node.id === nodeId ? { ...node, data: { ...node.data, data } } : node
+        )
+      );
+    },
+    [setNodes]
+  );
 
   const nodeAction = useMemo(
     () => ({
@@ -86,7 +142,7 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
             ? CreateObjectNode(objectType, position)
             : null;
 
-        if (newNode) nodesState.setNodes([...nodesState.nodes, newNode]);
+        if (newNode) setNodes([...nodes, newNode]);
       },
       setInitial: (lightId: string, paramId: string, value: number) => {
         if (focusNode?.data) {
@@ -97,30 +153,31 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
             value
           );
           updateFocusNodeData(updatedData);
-          configAction.editNode(focusNode.id, updatedData);
+          editNode(focusNode.id, updatedData);
         }
       },
       setValue: (propId: string, value: number) => {
         if (focusNode?.data) {
           const updatedData = setValue(focusNode.data, propId, value);
           updateFocusNodeData(updatedData);
-          configAction.editNode(focusNode.id, updatedData);
+          editNode(focusNode.id, updatedData);
         }
       },
       addInitialLight: () => {
         if (focusNode?.data) {
           const updatedData = addInitialLight(focusNode.data);
           updateFocusNodeData(updatedData);
-          configAction.editNode(focusNode.id, updatedData);
+          editNode(focusNode.id, updatedData);
         }
       },
     }),
     [
-      nodesState,
+      setNodes,
+      nodes,
       focusNode?.data,
       focusNode?.id,
       updateFocusNodeData,
-      configAction,
+      editNode,
     ]
   );
 
@@ -130,7 +187,7 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
         const edge = CreateEdgeLight(connection);
         if (!edge) return console.error("Edge creation failed!");
 
-        const isDuplicate = edgesState.edges.some(
+        const isDuplicate = edges.some(
           (e) =>
             (e.sourceHandle === connection.sourceHandle ||
               e.targetHandle === connection.targetHandle) &&
@@ -151,14 +208,16 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
           });
         }
 
-        edgesState.setEdges([...edgesState.edges, edge]);
+        setEdges([...edges, edge]);
       },
     }),
-    [edgesState]
+    [edges, setEdges]
   );
 
   const contextValue = useMemo(
     () => ({
+      nodesState: { nodes, setNodes, onNodesChange },
+      edgesState: { edges, setEdges, onEdgesChange },
       focusNode,
       setFocusNode,
       focusEdge,
@@ -168,7 +227,19 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
       nodeAction,
       edgeAction,
     }),
-    [focusNode, focusEdge, contextMenuPosition, nodeAction, edgeAction]
+    [
+      nodes,
+      setNodes,
+      onNodesChange,
+      edges,
+      setEdges,
+      onEdgesChange,
+      focusNode,
+      focusEdge,
+      contextMenuPosition,
+      nodeAction,
+      edgeAction,
+    ]
   );
 
   return (

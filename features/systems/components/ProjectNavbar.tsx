@@ -3,6 +3,9 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { useProject } from "../contexts/ProjectContext";
 import calculate from "../libs/ClassFlow/calculation/calculate";
+import { useNodes } from "../contexts/ProjectWrapper/NodesContext";
+import { useEdges } from "../contexts/ProjectWrapper/EdgesContext";
+import { useConfig } from "../contexts/ProjectWrapper/ConfigContext";
 
 interface EditorNavbarProps {
   title?: string;
@@ -12,7 +15,10 @@ interface EditorNavbarProps {
 
 export default function EditorNavbar(props: EditorNavbarProps) {
   const router = useRouter();
-  const { config, nodesState, edgesState, setExecutedFlow } = useProject();
+  const { setExecutedFlow } = useProject();
+  const nodesState = useNodes();
+  const edgesState = useEdges();
+  const { config } = useConfig();
 
   const handleExecute = () => {
     alert("Execute");

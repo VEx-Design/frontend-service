@@ -60,8 +60,8 @@ const Object: React.FC<KonvaObjectProps> = ({
   gridStyle,
   interfacePositions,
 }) => {
-  const [image] = useImage(imageUrl, "anonymous")
-  const [isColliding, setIsColliding] = useState(false)
+  const [image] = useImage(imageUrl, "anonymous");
+  const [isColliding, setIsColliding] = useState(false);
 
   const circleSize = Math.min(width, height) * 0.8
   const circleX = width / 2
@@ -357,10 +357,10 @@ const Edge: React.FC<EdgeProps> = ({
 }
 
 function Canvas() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const stageRef = useRef<Konva.Stage>(null)
+  const containerRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<Konva.Stage>(null);
 
-  const { canvas, selectObject, updateObject, updateCanvas } = useCanvas()
+  const { canvas, selectObject, updateObject } = useCanvas();
   const { gridSize, gridColor, gridOpacity, gridStyle, showGrid } = canvas.grid
 
   const [zoomScale, setZoomScale] = useState<number>(1)
@@ -372,33 +372,33 @@ function Canvas() {
   // Function to update stage size based on container dimensions
   const updateStageDimensions = useCallback(() => {
     if (containerRef.current) {
-      const containerWidth = containerRef.current.offsetWidth
-      const containerHeight = containerRef.current.offsetHeight
+      const containerWidth = containerRef.current.offsetWidth;
+      const containerHeight = containerRef.current.offsetHeight;
 
       setStageSize({
         width: containerWidth,
         height: containerHeight,
-      })
+      });
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    updateStageDimensions()
+    updateStageDimensions();
 
     // Set up resize observer to update dimensions when container resizes
     const resizeObserver = new ResizeObserver(() => {
-      updateStageDimensions()
-    })
+      updateStageDimensions();
+    });
 
     if (containerRef.current) {
-      resizeObserver.observe(containerRef.current)
+      resizeObserver.observe(containerRef.current);
     }
 
     // Clean up
     return () => {
-      resizeObserver.disconnect()
-    }
-  }, [updateStageDimensions])
+      resizeObserver.disconnect();
+    };
+  }, [updateStageDimensions]);
 
   // Mock edges for demonstration
   useEffect(() => {
@@ -491,6 +491,7 @@ function Canvas() {
       if (e.target === e.target.getStage()) {
         selectObject(null)
         setSelectedEdgeId(null)
+        setAction("Move");
       }
     },
     [selectObject],
@@ -536,7 +537,10 @@ function Canvas() {
   }
 
   return (
-    <div className="w-full h-full flex items-center justify-center bg-black" ref={containerRef}>
+    <div
+      className="w-full h-full flex items-center justify-center bg-black"
+      ref={containerRef}
+    >
       <Stage
         ref={stageRef}
         width={stageSize.width}
@@ -547,6 +551,12 @@ function Canvas() {
         draggable={action === "Move"}
         onClick={handleStageClick}
         onWheel={handleWheel}
+        // onDragStart={(e) => {
+        //   if (e.target === e.target.getStage()) {
+        //     selectObject(null);
+        //     setAction("Move");
+        //   }
+        // }}
       >
         {/* Object Layer */}
         <Layer width={canvas.canvasWidth} height={canvas.canvasHeight}>
@@ -556,6 +566,7 @@ function Canvas() {
             onClick={() => {
               selectObject(null)
               setSelectedEdgeId(null)
+              setAction("Move");
             }}
             fill="white"
           />
@@ -594,6 +605,7 @@ function Canvas() {
               onSelect={() => {
                 selectObject(obj.id)
                 setSelectedEdgeId(null)
+                setAction("Select");
               }}
               onChange={(newProps) => updateObject(obj.id, newProps)}
               draggable={action === "Select"}
@@ -613,7 +625,10 @@ function Canvas() {
 
       {/* Control */}
       <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 bg-white p-2 rounded-lg shadow">
-        <button className={`p-2 rounded ${action === "Move" ? "bg-gray-200" : ""}`} onClick={() => setAction("Move")}>
+        <button
+          className={`p-2 rounded ${action === "Move" ? "bg-gray-200" : ""}`}
+          onClick={() => setAction("Move")}
+        >
           <FaRegHandPaper size={20} />
         </button>
         <button
@@ -630,7 +645,7 @@ function Canvas() {
         </button>
       </div>
     </div>
-  )
+  );
 }
 
 export default Canvas

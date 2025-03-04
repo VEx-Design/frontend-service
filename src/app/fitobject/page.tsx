@@ -3,10 +3,9 @@ import Canvas from "./_components/canvas/Canvas";
 import LeftSidebar from "./_components/sidebar/left-sidebar";
 import RightSidebar from "./_components/sidebar/right-sidebar";
 import { CanvasProvider } from "./_components/canvas/CanvasContext";
-import { useEffect, useLayoutEffect, useState } from "react";
-import { useProject } from "@/features/systems/contexts/ProjectContext";
-import { random } from "lodash";
-import Button from "@/components/Button";
+import { useEffect, useState } from "react";
+import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext";
+import { useNodes } from "@/features/systems/contexts/ProjectWrapper/NodesContext";
 
 interface CanvasObject {
     id: string;
@@ -25,7 +24,8 @@ interface CanvasObject {
 const FitObject = () => {
 
   const [canvaObjects, setCanvaObjects] = useState<CanvasObject[]>([]);
-  const { mapBounding , nodesState} = useProject();
+  const { mapBounding } = useConfig();
+  const nodesState = useNodes();
 
   useEffect(() => {
     const objects = mapBounding.entries();
@@ -40,7 +40,8 @@ const FitObject = () => {
         width: config.width,
         height: config.height,
         fill: "black",
-        imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmCy16nhIbV3pI1qLYHMJKwbH2458oiC9EmA&s",
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmCy16nhIbV3pI1qLYHMJKwbH2458oiC9EmA&s",
         connectedTo: [],
         isStartNode: false,
         referencePosition: config.referencePosition,
@@ -49,14 +50,13 @@ const FitObject = () => {
     setCanvaObjects(newCanvaObjects);
   }, [mapBounding]);
 
-
   const [canvasSize, setCanvasSize] = useState<{
     width: number;
     height: number;
   } | null>(null);
 
   useEffect(() => {
-      setCanvasSize({ width:1000, height:1000 });
+    setCanvasSize({ width: 1000, height: 1000 });
   }, []);
 
   if (!canvasSize)
@@ -66,21 +66,24 @@ const FitObject = () => {
       </div>
     );
 
-    return (
-      <div className="flex flex-1 w-full h-full">
-      <CanvasProvider initialObjects={canvaObjects} initialCanvasSize={canvasSize}>
+  return (
+    <div className="flex flex-1 w-full h-full">
+      <CanvasProvider
+        initialObjects={canvaObjects}
+        initialCanvasSize={canvasSize}
+      >
         <div className="flex flex-1 flex-col h-full w-full">
           <main className="flex flex-1 w-full h-full">
             {/* Left sidebar with fixed width */}
             <div className="h-full shrink-0">
               <LeftSidebar />
             </div>
-  
+
             {/* Canvas that fills available space */}
             <div className="flex-1 h-full overflow-hidden">
               <Canvas />
             </div>
-  
+
             {/* Right sidebar with fixed width */}
             <div className="h-full shrink-0">
               <RightSidebar />
@@ -88,8 +91,8 @@ const FitObject = () => {
           </main>
         </div>
       </CanvasProvider>
-      </div>
-    )
+    </div>
+  );
 };
 
 export default FitObject;

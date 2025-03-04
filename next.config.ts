@@ -13,6 +13,7 @@ module.exports = {
       "static-00.iconduck.com",
       "i.sstatic.net",
       "localhost",
+      "raw.githubusercontent.com",
     ], // Add your external image domain here
   },
 };

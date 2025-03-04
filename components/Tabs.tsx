@@ -21,10 +21,20 @@ const TabsContext = createContext<TabsContextType | undefined>(undefined);
 interface TabsProps {
   children: React.ReactNode;
   type: TabType;
+  onTabChange?: (tabName: string) => void;
 }
 
 export function Tabs(props: TabsProps) {
   const [currentTab, setCurrentTab] = useState<string>("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      props.onTabChange?.(currentTab);
+    }, 0);
+
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTab]);
 
   // Extract tab bar and tab contents
   const tabBar = useMemo(
@@ -47,7 +57,7 @@ export function Tabs(props: TabsProps) {
 
   // Set default tab on mount
   useEffect(() => {
-    if (!currentTab && tabContents.length > 0) {
+    if (currentTab === "" && tabContents.length > 0) {
       setCurrentTab(tabContents[0].props.name);
     }
   }, [currentTab, tabContents]);

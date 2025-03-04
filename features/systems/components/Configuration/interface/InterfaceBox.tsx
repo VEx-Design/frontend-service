@@ -3,9 +3,9 @@ import { Position } from "@xyflow/react";
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Interface } from "@/features/systems/libs/ClassInterface/types/Interface";
-import { useProject } from "@/features/systems/contexts/ProjectContext";
-import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
 import { useConfigInterface } from "@/features/systems/contexts/Configuration/ConfigInterfaceContext";
+import { useConfigType } from "@/features/systems/contexts/Configuration/ConfigTypeContext";
+import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext";
 
 interface Props {
   id: string;
@@ -14,8 +14,8 @@ interface Props {
 }
 
 export default function InterfaceBox({ id, name, position }: Props) {
-  const { configAction } = useProject();
-  const { currentType, setCurrentType } = useConfig();
+  const { configAction } = useConfig();
+  const { currentType, setCurrentType } = useConfigType();
   const { currentInterface, setCurrentInterface, interfaceAction } =
     useConfigInterface();
 

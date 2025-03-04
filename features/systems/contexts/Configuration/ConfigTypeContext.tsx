@@ -3,7 +3,6 @@ import { createContext, useContext, useState } from "react";
 import { Property, Type } from "../../libs/ClassType/types/Type";
 import { FreeSpace } from "../../libs/ClassConfig/types/FreeSpace";
 import { Interface } from "../../libs/ClassInterface/types/Interface";
-import { useProject } from "../ProjectContext";
 import addProperty from "../../libs/ClassType/addProperty";
 import addInterface from "../../libs/ClassType/addInterface";
 import editInterface from "../../libs/ClassType/editInterface";
@@ -11,8 +10,9 @@ import getInterface from "../../libs/ClassType/getInterface";
 import editImage from "../../libs/ClassType/editImage";
 import editName from "../../libs/ClassType/editName";
 import editDisplayName from "../../libs/ClassType/editDisplayName";
+import { useConfig } from "../ProjectWrapper/ConfigContext";
 
-interface ConfigContextValue {
+interface ConfigTypeContextValue {
   currentType: Type | undefined;
   setCurrentType: (type: Type | undefined) => void;
   currentConfigFreeS: FreeSpace | undefined;
@@ -20,7 +20,9 @@ interface ConfigContextValue {
   typeAction: TypeAction;
 }
 
-const ConfigContext = createContext<ConfigContextValue | undefined>(undefined);
+const ConfigTypeContext = createContext<ConfigTypeContextValue | undefined>(
+  undefined
+);
 
 interface TypeAction {
   addType: (newType: Type) => void;
@@ -39,13 +41,15 @@ interface ConfigConsoleProviderProps {
   children: React.ReactNode;
 }
 
-export const ConfigProvider = ({ children }: ConfigConsoleProviderProps) => {
+export const ConfigTypeProvider = ({
+  children,
+}: ConfigConsoleProviderProps) => {
   const [currentType, setCurrentType] = useState<Type | undefined>(undefined);
   const [currentConfigFreeS, setCurrentConfigFreeS] = useState<
     FreeSpace | undefined
   >(undefined);
 
-  const { configAction } = useProject();
+  const { configAction } = useConfig();
 
   const typeAction: TypeAction = {
     addType: (newType: Type) => {
@@ -106,7 +110,7 @@ export const ConfigProvider = ({ children }: ConfigConsoleProviderProps) => {
   };
 
   return (
-    <ConfigContext.Provider
+    <ConfigTypeContext.Provider
       value={{
         currentType,
         setCurrentType,
@@ -116,12 +120,12 @@ export const ConfigProvider = ({ children }: ConfigConsoleProviderProps) => {
       }}
     >
       {children}
-    </ConfigContext.Provider>
+    </ConfigTypeContext.Provider>
   );
 };
 
-export function useConfig() {
-  const context = useContext(ConfigContext);
+export function useConfigType() {
+  const context = useContext(ConfigTypeContext);
   if (!context) {
     throw new Error("useConfig must be used within a ConfigProvider");
   }

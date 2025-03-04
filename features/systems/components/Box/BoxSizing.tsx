@@ -1,8 +1,7 @@
-import type React from "react"
-import { useEffect, useState } from "react"
-import { useBox } from "../../contexts/BoxContext"
-import { BoundingConfiguration } from "../../libs/ClassBox/types/BoundingConfiguration"
-import { useProject } from "../../contexts/ProjectContext"
+import type React from "react";
+import { useEffect, useState } from "react";
+import { useBox } from "../../contexts/BoxContext";
+import { BoundingConfiguration } from "../../libs/ClassBox/types/BoundingConfiguration";
 import { Check, ChevronDown, Focus, ArrowDownToDotIcon } from "lucide-react"
 import {
   DropdownMenu,
@@ -10,78 +9,87 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { useConfig } from "../../contexts/ProjectWrapper/ConfigContext";
 
 export default function BoxSizing() {
-  const { mapBounding, setMapBounding } = useProject() as {
-    mapBounding: Map<string, BoundingConfiguration>
-    setMapBounding: React.Dispatch<React.SetStateAction<Map<string, BoundingConfiguration>>>
-    blueprint: Map<string, BoundingConfiguration[]>
-    setBlueprint: React.Dispatch<React.SetStateAction<Map<string, BoundingConfiguration[]>>>
-  }
-  const { focusNode, focusPoint, setFocusPoint, config, nodesState } = useBox()
-  const [height, setHeight] = useState("")
-  const [width, setWidth] = useState("")
-  const [interfaces, setInterfaces] = useState<[string, string][]>([])
-  const [showSaveHeight, setShowSaveHeight] = useState(false)
-  const [showSaveWidth, setShowSaveWidth] = useState(false)
+  const { mapBounding, setMapBounding } = useConfig() as {
+    mapBounding: Map<string, BoundingConfiguration>;
+    setMapBounding: React.Dispatch<
+      React.SetStateAction<Map<string, BoundingConfiguration>>
+    >;
+    blueprint: Map<string, BoundingConfiguration[]>;
+    setBlueprint: React.Dispatch<
+      React.SetStateAction<Map<string, BoundingConfiguration[]>>
+    >;
+  };
+  const { focusNode, focusPoint, setFocusPoint, config, nodesState } = useBox();
+  const [height, setHeight] = useState("");
+  const [width, setWidth] = useState("");
+  const [interfaces, setInterfaces] = useState<[string, string][]>([]);
+  const [showSaveHeight, setShowSaveHeight] = useState(false);
+  const [showSaveWidth, setShowSaveWidth] = useState(false);
 
   useEffect(() => {
-    setFocusPoint("")
+    setFocusPoint("");
     if (!focusNode) {
-      setHeight("")
-      setWidth("")
-      setInterfaces([])
-      setShowSaveHeight(false)
-      setShowSaveWidth(false)
-      return
+      setHeight("");
+      setWidth("");
+      setInterfaces([]);
+      setShowSaveHeight(false);
+      setShowSaveWidth(false);
+      return;
     }
 
-    const nodeInfo = mapBounding.get(focusNode.id)
+    const nodeInfo = mapBounding.get(focusNode.id);
     if (nodeInfo) {
-      setHeight(nodeInfo.height.toString())
-      setWidth(nodeInfo.width.toString())
+      setHeight(nodeInfo.height.toString());
+      setWidth(nodeInfo.width.toString());
     } else {
-      setHeight("")
-      setWidth("")
+      setHeight("");
+      setWidth("");
     }
 
-    const nodeId = focusNode.id
-    const node = nodesState.nodes.find((node) => node.id === nodeId)
+    const nodeId = focusNode.id;
+    const node = nodesState.nodes.find((node) => node.id === nodeId);
     if (node?.type === "ObjectNode") {
-      const typeID = node?.data.data.object?.typeId
-      const interfaces = config.types.find((type) => type.id === typeID)?.interfaces
+      const typeID = node?.data.data.object?.typeId;
+      const interfaces = config.types.find(
+        (type) => type.id === typeID
+      )?.interfaces;
       if (interfaces) {
-        setInterfaces(interfaces.map((intf) => [intf.id, intf.name]))
+        setInterfaces(interfaces.map((intf) => [intf.id, intf.name]));
       } else {
-        setInterfaces([])
+        setInterfaces([]);
       }
     } else if (node?.type === "starter") {
-      setInterfaces([["starter", "Output"]])
+      setInterfaces([["starter", "Output"]]);
     } else {
-      setInterfaces([["terminal", "Input"]])
+      setInterfaces([["terminal", "Input"]]);
     }
 
-    setShowSaveHeight(false)
-    setShowSaveWidth(false)
-  }, [focusNode, mapBounding, config.types, nodesState.nodes, setFocusPoint])
+    setShowSaveHeight(false);
+    setShowSaveWidth(false);
+  }, [focusNode, mapBounding, config.types, nodesState.nodes, setFocusPoint]);
 
   const handleSave = () => {
-    if (!focusNode) return
+    if (!focusNode) return;
 
-    const prevMap = mapBounding
-    const existingConfig: BoundingConfiguration | undefined = prevMap.get(focusNode.id)
-    let newHeight: number = Number(height) || 0
-    let newWidth: number = Number(width) || 0
+    const prevMap = mapBounding;
+    const existingConfig: BoundingConfiguration | undefined = prevMap.get(
+      focusNode.id
+    );
+    let newHeight: number = Number(height) || 0;
+    let newWidth: number = Number(width) || 0;
 
     // Ensure height and width do not exceed 1000
-    if (newHeight > 1000) newHeight = 1000
-    if (newWidth > 1000) newWidth = 1000
+    if (newHeight > 1000) newHeight = 1000;
+    if (newWidth > 1000) newWidth = 1000;
 
     // Ensure height and width are not negative
     if (newHeight < 0 || newWidth < 0) return
@@ -89,34 +97,49 @@ export default function BoxSizing() {
     const referencePoint = existingConfig?.referencePosition || [0.5, 0.5]
     const interfacePositions = existingConfig?.interfacePositions || new Map()
 
-    if (!(existingConfig?.height === newHeight && existingConfig?.width === newWidth)) {
-      const updatedMap: Map<string, BoundingConfiguration> = new Map(prevMap)
+    if (
+      !(
+        existingConfig?.height === newHeight &&
+        existingConfig?.width === newWidth
+      )
+    ) {
+      const updatedMap: Map<string, BoundingConfiguration> = new Map(prevMap);
       updatedMap.set(
         focusNode.id,
-        new BoundingConfiguration("", newHeight, newWidth, referencePoint, interfacePositions),
-      )
-      setMapBounding(updatedMap)
+        new BoundingConfiguration(
+          "",
+          newHeight,
+          newWidth,
+          referencePoint,
+          interfacePositions
+        )
+      );
+      setMapBounding(updatedMap);
     }
 
-    setShowSaveHeight(false)
-    setShowSaveWidth(false)
-  }
+    setShowSaveHeight(false);
+    setShowSaveWidth(false);
+  };
 
   const handleHeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setHeight(e.target.value)
-    setShowSaveHeight(true)
-  }
+    setHeight(e.target.value);
+    setShowSaveHeight(true);
+  };
 
   const handleWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setWidth(e.target.value)
-    setShowSaveWidth(true)
-  }
+    setWidth(e.target.value);
+    setShowSaveWidth(true);
+  };
 
-  const setPoint = (type: "reference" | "interface", id: string, point: [number, number]) => {
-    if (!focusNode) return
+  const setPoint = (
+    type: "reference" | "interface",
+    id: string,
+    point: [number, number]
+  ) => {
+    if (!focusNode) return;
     setMapBounding((prev) => {
-      const newMapBounding = new Map(prev)
-      const nodeInfo = newMapBounding.get(focusNode.id)
+      const newMapBounding = new Map(prev);
+      const nodeInfo = newMapBounding.get(focusNode.id);
       if (nodeInfo) {
         if (type === "reference") {
           newMapBounding.set(
@@ -126,12 +149,12 @@ export default function BoxSizing() {
               nodeInfo.height,
               nodeInfo.width,
               point,
-              nodeInfo.interfacePositions,
-            ),
-          )
+              nodeInfo.interfacePositions
+            )
+          );
         } else if (type === "interface") {
-          const newInterfacePositions = new Map(nodeInfo.interfacePositions)
-          newInterfacePositions.set(id, point)
+          const newInterfacePositions = new Map(nodeInfo.interfacePositions);
+          newInterfacePositions.set(id, point);
           newMapBounding.set(
             focusNode.id,
             new BoundingConfiguration(
@@ -139,81 +162,95 @@ export default function BoxSizing() {
               nodeInfo.height,
               nodeInfo.width,
               nodeInfo.referencePosition,
-              newInterfacePositions,
-            ),
-          )
+              newInterfacePositions
+            )
+          );
         }
       }
-      return newMapBounding
-    })
-  }
+      return newMapBounding;
+    });
+  };
 
   const setReferencePoint = (point: [number, number]) => {
-    setPoint("reference", "", point)
-  }
+    setPoint("reference", "", point);
+  };
 
   const setInterfacePoint = (intf: string, point: [number, number]) => {
-    setPoint("interface", intf, point)
-  }
+    setPoint("interface", intf, point);
+  };
 
   const setAllInterfaceMiddleCenter = () => {
-    if (!focusNode) return
-    const nodeInfo = mapBounding.get(focusNode.id)
-    if (!nodeInfo) return
+    if (!focusNode) return;
+    const nodeInfo = mapBounding.get(focusNode.id);
+    if (!nodeInfo) return;
 
     setMapBounding((prev) => {
-      const newMapBounding = new Map(prev)
-      const newInterfacePositions = new Map<string, [number, number]>()
+      const newMapBounding = new Map(prev);
+      const newInterfacePositions = new Map<string, [number, number]>();
 
       interfaces.forEach((intf) => {
-        newInterfacePositions.set(intf[0], [0.5, 0.5])
-      })
+        newInterfacePositions.set(intf[0], [0.5, 0.5]);
+      });
 
       newMapBounding.set(
         focusNode.id,
-        new BoundingConfiguration(nodeInfo.name, nodeInfo.height, nodeInfo.width, [0.5, 0.5], newInterfacePositions),
-      )
+        new BoundingConfiguration(
+          nodeInfo.name,
+          nodeInfo.height,
+          nodeInfo.width,
+          [0.5, 0.5],
+          newInterfacePositions
+        )
+      );
 
-      return newMapBounding
-    })
-  }
+      return newMapBounding;
+    });
+  };
 
   const setAllNodesDefault = () => {
-    const nodes = nodesState.nodes
+    const nodes = nodesState.nodes;
 
     nodes.forEach((node) => {
-      if (!node) return
+      if (!node) return;
 
-      const nodeInfo = mapBounding.get(node.id)
-      if (!nodeInfo) return
+      const nodeInfo = mapBounding.get(node.id);
+      if (!nodeInfo) return;
 
-      const newInterfacePositions = new Map<string, [number, number]>()
+      const newInterfacePositions = new Map<string, [number, number]>();
 
       if (node.type === "ObjectNode") {
-        const typeID = node?.data?.data?.object?.typeId
-        const interfaces = config.types.find((type) => type.id === typeID)?.interfaces
+        const typeID = node?.data?.data?.object?.typeId;
+        const interfaces = config.types.find(
+          (type) => type.id === typeID
+        )?.interfaces;
 
         if (interfaces) {
           interfaces.forEach((intf) => {
-            newInterfacePositions.set(intf.id, [0.5, 0.5])
-          })
+            newInterfacePositions.set(intf.id, [0.5, 0.5]);
+          });
         }
       } else if (node.type === "starter") {
-        newInterfacePositions.set("starter", [0.5, 0.5])
+        newInterfacePositions.set("starter", [0.5, 0.5]);
       } else {
-        newInterfacePositions.set("terminal", [0.5, 0.5])
+        newInterfacePositions.set("terminal", [0.5, 0.5]);
       }
 
       setMapBounding((prev) => {
-        const newMapBounding = new Map(prev)
+        const newMapBounding = new Map(prev);
         newMapBounding.set(
           node.id,
-          new BoundingConfiguration(nodeInfo.name, nodeInfo.height, nodeInfo.width, [0.5, 0.5], newInterfacePositions),
-        )
-        return newMapBounding
-      })
-    })
-  }
+          new BoundingConfiguration(
+            nodeInfo.name,
+            nodeInfo.height,
+            nodeInfo.width,
+            [0.5, 0.5],
+            newInterfacePositions
+          )
+        );
+        return newMapBounding;
+      });
+    });
+  };
 
   const ReferencePointActions = [
     { label: "Top Left", action: () => setReferencePoint([0, 0]) },
@@ -226,20 +263,29 @@ export default function BoxSizing() {
     { label: "Bottom Center", action: () => setReferencePoint([0.5, 1]) },
     { label: "Bottom Right", action: () => setReferencePoint([1, 1]) },
     { label: "Manual", action: () => setFocusPoint("Reference Point") },
-  ]
+  ];
 
   const InterfacePointActions = (intfId: string) => [
     { label: "Top Left", action: () => setInterfacePoint(intfId, [0, 0]) },
     { label: "Top Center", action: () => setInterfacePoint(intfId, [0.5, 0]) },
     { label: "Top Right", action: () => setInterfacePoint(intfId, [1, 0]) },
     { label: "Middle Left", action: () => setInterfacePoint(intfId, [0, 0.5]) },
-    { label: "Middle Center", action: () => setInterfacePoint(intfId, [0.5, 0.5]) },
-    { label: "Middle Right", action: () => setInterfacePoint(intfId, [1, 0.5]) },
+    {
+      label: "Middle Center",
+      action: () => setInterfacePoint(intfId, [0.5, 0.5]),
+    },
+    {
+      label: "Middle Right",
+      action: () => setInterfacePoint(intfId, [1, 0.5]),
+    },
     { label: "Bottom Left", action: () => setInterfacePoint(intfId, [0, 1]) },
-    { label: "Bottom Center", action: () => setInterfacePoint(intfId, [0.5, 1]) },
+    {
+      label: "Bottom Center",
+      action: () => setInterfacePoint(intfId, [0.5, 1]),
+    },
     { label: "Bottom Right", action: () => setInterfacePoint(intfId, [1, 1]) },
     { label: "Manual", action: () => setFocusPoint(intfId) },
-  ]
+  ];
 
   return (
     <div className="h-full overflow-auto" onClick={() => setFocusPoint("")}>
@@ -290,8 +336,8 @@ export default function BoxSizing() {
                           variant="ghost"
                           className="h-8 w-8 text-green-500"
                           onClick={(e) => {
-                            e.stopPropagation()
-                            handleSave()
+                            e.stopPropagation();
+                            handleSave();
                           }}
                         >
                           <Check className="h-4 w-4" />
@@ -320,8 +366,8 @@ export default function BoxSizing() {
                           variant="ghost"
                           className="h-8 w-8 text-green-500"
                           onClick={(e) => {
-                            e.stopPropagation()
-                            handleSave()
+                            e.stopPropagation();
+                            handleSave();
                           }}
                         >
                           <Check className="h-4 w-4" />
@@ -379,22 +425,28 @@ export default function BoxSizing() {
             </div>
           ) : (
             <div className="p-8 text-center text-muted-foreground bg-muted/30 rounded-md">
-              <p>Select a node to configure its dimensions and connection points</p>
+              <p>
+                Select a node to configure its dimensions and connection points
+              </p>
             </div>
           )}
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
 interface DropdownMenuComponentProps {
-  label: string
-  actions: { label: string; action: () => void }[]
-  dropdownId: string
+  label: string;
+  actions: { label: string; action: () => void }[];
+  dropdownId: string;
 }
 
-function DropdownMenuComponent({ label, actions, dropdownId }: DropdownMenuComponentProps) {
+function DropdownMenuComponent({
+  label,
+  actions,
+  dropdownId,
+}: DropdownMenuComponentProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -408,8 +460,8 @@ function DropdownMenuComponent({ label, actions, dropdownId }: DropdownMenuCompo
           <DropdownMenuItem
             key={`${dropdownId}-${index}`}
             onClick={(e) => {
-              e.stopPropagation()
-              action.action()
+              e.stopPropagation();
+              action.action();
             }}
           >
             {action.label}
@@ -430,6 +482,5 @@ function DropdownMenuComponent({ label, actions, dropdownId }: DropdownMenuCompo
         )}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }
-

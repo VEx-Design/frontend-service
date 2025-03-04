@@ -1,12 +1,12 @@
 import React from "react";
 import VariableBadge from "./VariableBadge";
-import { useProject } from "@/features/systems/contexts/ProjectContext";
-import { useConfig } from "@/features/systems/contexts/Configuration/ConfigContext";
 import { useConfigInterface } from "@/features/systems/contexts/Configuration/ConfigInterfaceContext";
+import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext";
+import { useConfigType } from "@/features/systems/contexts/Configuration/ConfigTypeContext";
 
 export default function VariableLister() {
-  const { config } = useProject();
-  const { currentType } = useConfig();
+  const { config } = useConfig();
+  const { currentType } = useConfigType();
   const { currentInterface } = useConfigInterface();
 
   return (

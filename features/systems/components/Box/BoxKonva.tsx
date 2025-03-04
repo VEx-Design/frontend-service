@@ -1,38 +1,47 @@
-"use client"
-
-import type Konva from "konva"
-import React, { useState, useEffect, useRef, useCallback } from "react"
-import { Stage, Layer, Rect, Text, Circle } from "react-konva"
-import { useResizeDetector } from "react-resize-detector"
-import { useBox } from "../../contexts/BoxContext"
-import { useProject } from "../../contexts/ProjectContext"
-import type { BoundingConfiguration } from "../../libs/ClassBox/types/BoundingConfiguration"
-import { Button } from "@/components/ui/button"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Eye, EyeOff, Maximize, Move } from "lucide-react"
-import { FaRegHandPaper } from "react-icons/fa";
+import type Konva from "konva";
+import React, { useState, useEffect, useRef } from "react";
+import { Stage, Layer, Rect, Text, Circle } from "react-konva";
+import { useResizeDetector } from "react-resize-detector";
+import { useBox } from "../../contexts/BoxContext";
+import type { BoundingConfiguration } from "../../libs/ClassBox/types/BoundingConfiguration";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { ZoomIn, ZoomOut, Eye, EyeOff, Maximize } from "lucide-react";
+import { useConfig } from "../../contexts/ProjectWrapper/ConfigContext";
 
 export default function BoxKonva() {
-  const { ref, width = 400, height = 400 } = useResizeDetector()
-  const { focusNode, focusPoint, config, nodesState } = useBox()
-  const { mapBounding, setMapBounding } = useProject() as {
-    mapBounding: Map<string, BoundingConfiguration>
-    setMapBounding: React.Dispatch<React.SetStateAction<Map<string, BoundingConfiguration>>>
-    blueprint: Map<string, BoundingConfiguration[]>
-    setBlueprint: React.Dispatch<React.SetStateAction<Map<string, BoundingConfiguration[]>>>
-  }
+  const { ref, width = 400, height = 400 } = useResizeDetector();
+  const { focusNode, focusPoint, config, nodesState } = useBox();
+  const { mapBounding, setMapBounding } = useConfig() as {
+    mapBounding: Map<string, BoundingConfiguration>;
+    setMapBounding: React.Dispatch<
+      React.SetStateAction<Map<string, BoundingConfiguration>>
+    >;
+    blueprint: Map<string, BoundingConfiguration[]>;
+    setBlueprint: React.Dispatch<
+      React.SetStateAction<Map<string, BoundingConfiguration[]>>
+    >;
+  };
 
   // Scaling factor: 1mm = 10px
-  const scalingFactor = 10
+  const scalingFactor = 10;
 
-  const [squareSize, setSquareSize] = useState({ width: 0, height: 0 })
-  const [relativePos, setRelativePos] = useState<{ x: number; y: number | null }>({ x: 0, y: 0 })
-  const [zoom, setZoom] = useState(1)
-  const [offset, setOffset] = useState({ x: 0, y: 0 })
-  const [isDragging, setIsDragging] = useState(false)
-  const [lastMouse, setLastMouse] = useState({ x: 0, y: 0 })
-  const [showPoints, setShowPoints] = useState(true)
-  const stageRef = useRef<Konva.Stage>(null)
+  const [squareSize, setSquareSize] = useState({ width: 0, height: 0 });
+  const [relativePos, setRelativePos] = useState<{
+    x: number;
+    y: number | null;
+  }>({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [lastMouse, setLastMouse] = useState({ x: 0, y: 0 });
+  const [showPoints, setShowPoints] = useState(true);
+  const stageRef = useRef<Konva.Stage>(null);
 
   // Add new state variables and functions
   const [action, setAction] = useState<"move" | "select">("select")
@@ -40,25 +49,31 @@ export default function BoxKonva() {
 
   useEffect(() => {
     if (focusNode) {
-      const nodeInfo = mapBounding.get(focusNode.id)
+      const nodeInfo = mapBounding.get(focusNode.id);
       if (nodeInfo) {
         // Ensure width and height are valid numbers
-        const nodeWidth = typeof nodeInfo.width === "number" && !isNaN(nodeInfo.width) ? nodeInfo.width : 0
-        const nodeHeight = typeof nodeInfo.height === "number" && !isNaN(nodeInfo.height) ? nodeInfo.height : 0
+        const nodeWidth =
+          typeof nodeInfo.width === "number" && !isNaN(nodeInfo.width)
+            ? nodeInfo.width
+            : 0;
+        const nodeHeight =
+          typeof nodeInfo.height === "number" && !isNaN(nodeInfo.height)
+            ? nodeInfo.height
+            : 0;
 
         // Apply scaling factor to convert mm to pixels
-        const scaledWidth = nodeWidth * scalingFactor
-        const scaledHeight = nodeHeight * scalingFactor
+        const scaledWidth = nodeWidth * scalingFactor;
+        const scaledHeight = nodeHeight * scalingFactor;
 
-        const newSquareSize = { width: scaledWidth, height: scaledHeight }
-        setSquareSize(newSquareSize)
+        const newSquareSize = { width: scaledWidth, height: scaledHeight };
+        setSquareSize(newSquareSize);
 
         // Center the square and set initial zoom
         if (width > 0 && height > 0 && scaledWidth > 0 && scaledHeight > 0) {
-          const padding = 0.1
-          const maxWidthZoom = (width * (1 - padding)) / scaledWidth
-          const maxHeightZoom = (height * (1 - padding)) / scaledHeight
-          const newZoom = Math.min(maxWidthZoom, maxHeightZoom, 1)
+          const padding = 0.1;
+          const maxWidthZoom = (width * (1 - padding)) / scaledWidth;
+          const maxHeightZoom = (height * (1 - padding)) / scaledHeight;
+          const newZoom = Math.min(maxWidthZoom, maxHeightZoom, 1);
 
           setZoom(newZoom)
           setStagePos({
@@ -67,12 +82,12 @@ export default function BoxKonva() {
           })
         }
       } else {
-        setSquareSize({ width: 0, height: 0 })
+        setSquareSize({ width: 0, height: 0 });
       }
     } else {
-      setSquareSize({ width: 0, height: 0 })
+      setSquareSize({ width: 0, height: 0 });
     }
-  }, [focusNode, mapBounding, width, height])
+  }, [focusNode, mapBounding, width, height]);
 
   const handleStageMouseDown = (e: Konva.KonvaEventObject<MouseEvent>) => {
     // Only start dragging if in move mode and not clicking on a point
@@ -104,22 +119,27 @@ export default function BoxKonva() {
   }
 
   const handleMouseMove = (e: Konva.KonvaEventObject<MouseEvent>) => {
-    const stage = e.target.getStage()
-    const pointer = stage?.getPointerPosition()
-    if (!pointer) return
+    const stage = e.target.getStage();
+    const pointer = stage?.getPointerPosition();
+    if (!pointer) return;
 
     const unscaledX = (pointer.x - stagePos.x) / zoom
     const unscaledY = (pointer.y - stagePos.y) / zoom
 
-    if (unscaledX >= 0 && unscaledX <= squareSize.width && unscaledY >= 0 && unscaledY <= squareSize.height) {
+    if (
+      unscaledX >= 0 &&
+      unscaledX <= squareSize.width &&
+      unscaledY >= 0 &&
+      unscaledY <= squareSize.height
+    ) {
       setRelativePos({
         x: Math.round(unscaledX / scalingFactor),
         y: Math.round(unscaledY / scalingFactor),
-      })
+      });
     } else {
-      setRelativePos({ x: 0, y: null })
+      setRelativePos({ x: 0, y: null });
     }
-  }
+  };
 
   const handleMouseDown = (e: Konva.KonvaEventObject<MouseEvent>) => {
     // Only start dragging if not clicking on a point (circle)
@@ -147,7 +167,7 @@ export default function BoxKonva() {
         e.evt.preventDefault() // Prevent default browser behavior
       }
     }
-  }
+  };
 
   const handleMouseUp = () => {
     if (isDragging) {
@@ -157,12 +177,12 @@ export default function BoxKonva() {
 
   const handleMouseMoveDrag = (e: Konva.KonvaEventObject<MouseEvent>) => {
     if (isDragging) {
-      const dx = e.evt.clientX - lastMouse.x
-      const dy = e.evt.clientY - lastMouse.y
-      setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }))
-      setLastMouse({ x: e.evt.clientX, y: e.evt.clientY })
+      const dx = e.evt.clientX - lastMouse.x;
+      const dy = e.evt.clientY - lastMouse.y;
+      setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+      setLastMouse({ x: e.evt.clientX, y: e.evt.clientY });
     }
-  }
+  };
 
   const handleWheel = useCallback(
     (e: Konva.KonvaEventObject<WheelEvent>) => {
@@ -193,22 +213,34 @@ export default function BoxKonva() {
 
     e.cancelBubble = true
 
-    const stage = e.target.getStage()
-    const pointer = stage?.getPointerPosition()
-    if (!pointer || !focusNode || squareSize.width === 0 || squareSize.height === 0) return
+    const stage = e.target.getStage();
+    const pointer = stage?.getPointerPosition();
+    if (
+      !pointer ||
+      !focusNode ||
+      squareSize.width === 0 ||
+      squareSize.height === 0
+    )
+      return;
 
     const unscaledX = (pointer.x - stagePos.x) / zoom
     const unscaledY = (pointer.y - stagePos.y) / zoom
 
     // Ensure we're within bounds
-    if (unscaledX < 0 || unscaledX > squareSize.width || unscaledY < 0 || unscaledY > squareSize.height) return
+    if (
+      unscaledX < 0 ||
+      unscaledX > squareSize.width ||
+      unscaledY < 0 ||
+      unscaledY > squareSize.height
+    )
+      return;
 
     // Only proceed with point placement if we have a focusPoint
     if (focusPoint === "") return
 
     // Convert to normalized coordinates (0-1)
-    const x = unscaledX / squareSize.width
-    const y = unscaledY / squareSize.height
+    const x = unscaledX / squareSize.width;
+    const y = unscaledY / squareSize.height;
 
     if (focusPoint === "Reference Point") {
       setMapBounding((prev) => {
@@ -237,66 +269,74 @@ export default function BoxKonva() {
         return newMapBounding
       })
     }
-  }
+  };
 
-  const handleCircleClick = (e: Konva.KonvaEventObject<MouseEvent>, position: [number, number]) => {
+  const handleCircleClick = (
+    e: Konva.KonvaEventObject<MouseEvent>,
+    position: [number, number]
+  ) => {
     // Prevent the stage from starting drag
-    e.cancelBubble = true
+    e.cancelBubble = true;
 
     if (focusPoint !== "") {
       if (focusPoint === "Reference Point") {
         setMapBounding((prev) => {
-          const newMapBounding = new Map(prev)
+          const newMapBounding = new Map(prev);
           newMapBounding.set(focusNode!.id, {
             ...newMapBounding.get(focusNode!.id)!,
             referencePosition: position,
-          })
-          return newMapBounding
-        })
+          });
+          return newMapBounding;
+        });
       } else {
         setMapBounding((prev) => {
-          const newMapBounding = new Map(prev)
-          const nodeInfo = newMapBounding.get(focusNode!.id)
+          const newMapBounding = new Map(prev);
+          const nodeInfo = newMapBounding.get(focusNode!.id);
           if (nodeInfo) {
-            const newInterfacePositions = new Map(nodeInfo.interfacePositions)
-            newInterfacePositions.set(focusPoint, position)
+            const newInterfacePositions = new Map(nodeInfo.interfacePositions);
+            newInterfacePositions.set(focusPoint, position);
             newMapBounding.set(focusNode!.id, {
               ...nodeInfo,
               interfacePositions: newInterfacePositions,
-            })
+            });
           }
-          return newMapBounding
-        })
+          return newMapBounding;
+        });
       }
     }
-  }
+  };
 
   const handleZoomIn = () => {
-    const newZoom = Math.min(zoom * 1.2, 2)
-    setZoom(newZoom)
+    const newZoom = Math.min(zoom * 1.2, 2);
+    setZoom(newZoom);
     // Adjust offset to keep center point
     setOffset({
       x: width / 2 - (squareSize.width * newZoom) / 2,
       y: height / 2 - (squareSize.height * newZoom) / 2,
-    })
-  }
+    });
+  };
 
   const handleZoomOut = () => {
-    const newZoom = Math.max(zoom / 1.2, 0.3)
-    setZoom(newZoom)
+    const newZoom = Math.max(zoom / 1.2, 0.3);
+    setZoom(newZoom);
     // Adjust offset to keep center point
     setOffset({
       x: width / 2 - (squareSize.width * newZoom) / 2,
       y: height / 2 - (squareSize.height * newZoom) / 2,
-    })
-  }
+    });
+  };
 
   const handleReset = () => {
-    if (width > 0 && height > 0 && squareSize.width > 0 && squareSize.height > 0) {
-      const padding = 0.1
-      const maxWidthZoom = (width * (1 - padding)) / squareSize.width
-      const maxHeightZoom = (height * (1 - padding)) / squareSize.height
-      const newZoom = Math.min(maxWidthZoom, maxHeightZoom, 1)
+    if (
+      width > 0 &&
+      height > 0 &&
+      squareSize.width > 0 &&
+      squareSize.height > 0
+    ) {
+      const padding = 0.1;
+      const maxWidthZoom = (width * (1 - padding)) / squareSize.width;
+      const maxHeightZoom = (height * (1 - padding)) / squareSize.height;
+      const newZoom = Math.min(maxWidthZoom, maxHeightZoom, 1);
 
       setZoom(newZoom)
       setStagePos({
@@ -304,7 +344,7 @@ export default function BoxKonva() {
         y: (height - squareSize.height * newZoom) / 2,
       })
     }
-  }
+  };
 
   return (
     <div className="flex flex-col h-full w-full border rounded-lg overflow-hidden bg-background">
@@ -314,7 +354,12 @@ export default function BoxKonva() {
           
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="icon" className="h-8 w-8" onClick={handleReset}>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={handleReset}
+                >
                   <Maximize className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
@@ -329,10 +374,16 @@ export default function BoxKonva() {
                   className="h-8 w-8"
                   onClick={() => setShowPoints((prev) => !prev)}
                 >
-                  {showPoints ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPoints ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{showPoints ? "Hide Points" : "Show Points"}</TooltipContent>
+              <TooltipContent>
+                {showPoints ? "Hide Points" : "Show Points"}
+              </TooltipContent>
             </Tooltip>
 
             <Tooltip>
@@ -431,54 +482,67 @@ export default function BoxKonva() {
             {showPoints &&
               focusNode &&
               (() => {
-                const combinedPoints = new Map<string, { x: number; y: number; labels: string[] }>()
+                const combinedPoints = new Map<
+                  string,
+                  { x: number; y: number; labels: string[] }
+                >();
 
                 // Add reference point
-                const referencePosition = mapBounding.get(focusNode.id)?.referencePosition
+                const referencePosition = mapBounding.get(
+                  focusNode.id
+                )?.referencePosition;
                 if (referencePosition) {
-                  const [refX, refY] = referencePosition
-                  const key = `${refX},${refY}`
+                  const [refX, refY] = referencePosition;
+                  const key = `${refX},${refY}`;
                   combinedPoints.set(key, {
                     x: refX,
                     y: refY,
                     labels: ["Reference Point"],
-                  })
+                  });
                 }
 
                 // Add interface points
-                const interfacePositions = mapBounding.get(focusNode.id)?.interfacePositions
+                const interfacePositions = mapBounding.get(
+                  focusNode.id
+                )?.interfacePositions;
                 if (interfacePositions) {
                   interfacePositions.forEach((pos, key) => {
-                    const nodeId = focusNode.id
-                    const node = nodesState.nodes.find((node) => node.id === nodeId)
-                    let name = ""
+                    const nodeId = focusNode.id;
+                    const node = nodesState.nodes.find(
+                      (node) => node.id === nodeId
+                    );
+                    let name = "";
 
                     if (node?.type === "ObjectNode") {
-                      const typeID = node?.data.data.object?.typeId
-                      const interfaces = config.types.find((type) => type.id === typeID)?.interfaces
+                      const typeID = node?.data.data.object?.typeId;
+                      const interfaces = config.types.find(
+                        (type) => type.id === typeID
+                      )?.interfaces;
                       if (interfaces) {
-                        name = interfaces.find((intf) => intf.id === key)?.name || ""
+                        name =
+                          interfaces.find((intf) => intf.id === key)?.name ||
+                          "";
                       } else {
-                        name = ""
+                        name = "";
                       }
                     } else if (node?.type === "starter") {
-                      name = "Output"
+                      name = "Output";
                     } else {
-                      name = "Input"
+                      name = "Input";
                     }
 
-                    const [intX, intY] = pos
-                    const pointKey = `${intX},${intY}`
+                    const [intX, intY] = pos;
+                    const pointKey = `${intX},${intY}`;
                     if (combinedPoints.has(pointKey)) {
-                      combinedPoints.get(pointKey)!.labels.push(name)
+                      combinedPoints.get(pointKey)!.labels.push(name);
                     } else {
                       combinedPoints.set(pointKey, {
                         x: intX,
                         y: intY,
                         labels: [name],
-                      })
+                      });
                     }
-                  })
+                  });
                 }
 
                 // Render combined points
@@ -521,6 +585,5 @@ export default function BoxKonva() {
         </Stage>
       </div>
     </div>
-  )
+  );
 }
-
