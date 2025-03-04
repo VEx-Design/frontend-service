@@ -426,37 +426,6 @@ function Canvas({ edges: externalEdges }: CanvasProps = {}) {
     }
   }, [updateStageDimensions])
 
- 
-
-  // Add mock interface positions to objects
-  useEffect(() => {
-    canvas.objects.forEach((obj) => {
-      if (!obj.interfacePositions) {
-        const interfaces = new Map<string, [number, number]>()
-
-        // Standard interfaces (8 positions)
-        interfaces.set("in1", [0, 0.5]) // Left middle
-        interfaces.set("out1", [1, 0.5]) // Right middle
-        interfaces.set("top1", [0.5, 0]) // Top middle
-        interfaces.set("bottom1", [0.5, 1]) // Bottom middle
-
-        // Corner interfaces
-        interfaces.set("starter", [0.25, 0.25]) // Top left
-        interfaces.set("terminal", [0.75, 0.75]) // Bottom right
-        interfaces.set("1", [0.25, 0.75]) // Bottom left
-        interfaces.set("2", [0.75, 0.25]) // Top right
-
-        // Additional numbered interfaces
-        interfaces.set("3", [0.5, 0.25]) // Top center
-        interfaces.set("4", [0.75, 0.5]) // Right center
-        interfaces.set("5", [0.5, 0.75]) // Bottom center
-        interfaces.set("6", [0.25, 0.5]) // Left center
-
-        updateObject(obj.id, { interfacePositions: interfaces })
-      }
-    })
-  }, [canvas.objects, updateObject])
-
   const RenderGrid = () => {
     if (!showGrid) return null
 
