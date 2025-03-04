@@ -1,3 +1,5 @@
+"use client"
+
 import type React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Stage, Layer, Line, Circle, Image as KonvaImage, Group, Rect, Text } from "react-konva"
@@ -137,8 +139,8 @@ const Object: React.FC<KonvaObjectProps> = ({
           x={interfaceX}
           y={interfaceY}
           radius={4}
-          fill="#666666"
-          stroke="#333333"
+          fill="#10b981"
+          stroke="#fff"
           strokeWidth={1}
         />
       )
@@ -213,9 +215,6 @@ const Object: React.FC<KonvaObjectProps> = ({
 
         {/* Circle border */}
         <Circle x={circleX} y={circleY} radius={circleSize / 2} stroke="#ddd" strokeWidth={1} />
-
-        {/* Component name */}
-        <Text text={name} x={0} y={height + 5} width={width} align="center" fontSize={12} fill="#333" />
 
         {/* Reference Point Indicator (visible when selected) */}
         {isSelected && (
@@ -318,6 +317,9 @@ const Edge: React.FC<EdgeProps> = ({
   // Check if distance constraint is violated (1mm tolerance)
   const isDistanceViolated = Math.abs(actualDistance - distance) > 1
 
+  // Determine if the distance is significantly longer than specified
+  const isDistanceTooLong = actualDistance > distance + 10 // 10mm threshold for "too long"
+
   // Don't render edge if there's no connection (distance is 0 or negative)
   if (distance <= 0) {
     return null
@@ -339,37 +341,78 @@ const Edge: React.FC<EdgeProps> = ({
   // Convert the array of points to a flat array of numbers for Konva Line
   const flattenedPath = pathPoints.flatMap((point) => [point.x, point.y])
 
+  // Determine edge color based on conditions
+  let edgeColor = "#666666" // Default color
+  if (isSelected) {
+    edgeColor = "#00ff00" // Selected color
+  } else if (isDistanceTooLong) {
+    edgeColor = "#ff0000" // Red for significantly longer distances
+  } else if (isDistanceViolated) {
+    edgeColor = "#ff8800" // Orange for minor violations
+  }
+
+  // Calculate midpoint for label positioning
+  const midpointIndex = Math.floor(pathPoints.length / 2)
+  const midpoint = pathPoints[midpointIndex] || {
+    x: (sourcePos.x + targetPos.x) / 2,
+    y: (sourcePos.y + targetPos.y) / 2,
+  }
+
   return (
     <Group onClick={onSelect}>
       <Line
         points={flattenedPath}
-        stroke={isDistanceViolated ? "#ff0000" : isSelected ? "#00ff00" : "#666666"}
+        stroke={edgeColor}
         strokeWidth={isSelected ? 2 : 1.5}
         lineCap="round"
         lineJoin="round"
+        dash={isDistanceTooLong ? [6, 3] : undefined} // Dashed line for too long distances
       />
 
       {/* Source interface point */}
-      <Circle x={sourcePos.x} y={sourcePos.y} radius={3} fill={isDistanceViolated ? "#ff0000" : "#666666"} />
+      <Circle x={sourcePos.x} y={sourcePos.y} radius={3} fill={edgeColor} />
 
       {/* Target interface point */}
-      <Circle x={targetPos.x} y={targetPos.y} radius={3} fill={isDistanceViolated ? "#ff0000" : "#666666"} />
+      <Circle x={targetPos.x} y={targetPos.y} radius={3} fill={edgeColor} />
 
-      {/* Distance label */}
-      {isSelected && (
-        <Group x={(sourcePos.x + targetPos.x) / 2} y={(sourcePos.y + targetPos.y) / 2}>
-          <Rect x={-30} y={-10} width={60} height={20} fill="white" opacity={0.8} cornerRadius={3} />
+      {/* Distance label - always show if distance is violated, otherwise only when selected */}
+      {(isSelected || isDistanceViolated) && (
+        <Group x={midpoint.x} y={midpoint.y}>
+          <Rect
+            x={-35}
+            y={-12}
+            width={70}
+            height={24}
+            fill="white"
+            opacity={0.9}
+            cornerRadius={3}
+            stroke={isDistanceTooLong ? "#ff0000" : isDistanceViolated ? "#ff8800" : "#666666"}
+            strokeWidth={1}
+          />
           <Text
-            text={`${Math.round(actualDistance)}mm${isDistanceViolated ? " ⚠️" : ""}`}
+            text={`${Math.round(actualDistance)}/${distance}mm`}
             fontSize={12}
-            fill={isDistanceViolated ? "#ff0000" : "#333"}
+            fill={isDistanceTooLong ? "#ff0000" : isDistanceViolated ? "#ff8800" : "#333"}
             align="center"
             verticalAlign="middle"
-            width={60}
-            height={20}
-            x={-30}
-            y={-10}
+            width={70}
+            height={24}
+            x={-35}
+            y={-12}
           />
+          {isDistanceTooLong && (
+            <Text
+              text="Ignore?"
+              fontSize={10}
+              fill="#ff0000"
+              align="center"
+              verticalAlign="middle"
+              width={70}
+              height={12}
+              x={-35}
+              y={8}
+            />
+          )}
         </Group>
       )}
     </Group>
@@ -425,6 +468,13 @@ function Canvas({ edges: externalEdges }: CanvasProps = {}) {
       resizeObserver.disconnect()
     }
   }, [updateStageDimensions])
+
+  // Add this useEffect after the other useEffect in the Canvas component
+  useEffect(() => {
+    if (externalEdges && externalEdges.length > 0) {
+      setEdges(externalEdges)
+    }
+  }, [externalEdges])
 
   const RenderGrid = () => {
     if (!showGrid) return null
@@ -617,3 +667,4 @@ function Canvas({ edges: externalEdges }: CanvasProps = {}) {
 }
 
 export default Canvas
+
