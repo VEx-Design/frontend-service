@@ -8,7 +8,7 @@ import useImage from "use-image"
 import type Konva from "konva"
 import { FaRegHandPaper } from "react-icons/fa"
 import { AiOutlineExport } from "react-icons/ai"
-import { RxBox } from "react-icons/rx";
+import { RxBox } from "react-icons/rx"
 import { LuMousePointer2 } from "react-icons/lu"
 import { MdRotate90DegreesCcw } from "react-icons/md"
 import { calculateOrthogonalPath } from "./edgeRouting"
@@ -193,7 +193,7 @@ const Object: React.FC<KonvaObjectProps> = ({
           width={width}
           height={height}
           fill={isColliding ? "rgba(255, 0, 0, 0.5)" : "white"}
-          stroke={(isSelected || showBoundingBox)? "#ddd" : "transparent"}
+          stroke={isSelected || showBoundingBox ? "#ddd" : "transparent"}
           strokeWidth={isSelected ? 2 : 1}
           cornerRadius={5}
         />
@@ -360,8 +360,13 @@ const Edge: React.FC<EdgeProps> = ({
     y: (sourcePos.y + targetPos.y) / 2,
   }
 
+  const handleEdgeClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    e.cancelBubble = true // Prevent event from bubbling up to stage
+    onSelect()
+  }
+
   return (
-    <Group onClick={onSelect}>
+    <Group onClick={handleEdgeClick}>
       <Line
         points={flattenedPath}
         stroke={edgeColor}
@@ -475,7 +480,7 @@ function Canvas({ edges: externalEdges }: CanvasProps = {}) {
 
   // Add this useEffect after the other useEffect in the Canvas component
   useEffect(() => {
-    if (externalEdges && externalEdges.length > 0) {
+    if (externalEdges) {
       setEdges(externalEdges)
     }
   }, [externalEdges])
@@ -663,7 +668,10 @@ function Canvas({ edges: externalEdges }: CanvasProps = {}) {
         <button className={`p-2 rounded`} onClick={handleRotateSelected} title="Rotate 90° (Selected Object)">
           <MdRotate90DegreesCcw size={20} />
         </button>
-        <button className={`p-2 rounded ${showBoundingBox ? "bg-gray-200" : ""}`} onClick={() => setShowBoundingBox(!showBoundingBox)}>
+        <button
+          className={`p-2 rounded ${showBoundingBox ? "bg-gray-200" : ""}`}
+          onClick={() => setShowBoundingBox(!showBoundingBox)}
+        >
           <RxBox size={20} />
         </button>
         <button className={`p-2 rounded ${action === "Export" ? "bg-gray-200" : ""}`} onClick={handleExport}>

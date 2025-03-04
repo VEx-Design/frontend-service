@@ -22,6 +22,10 @@ interface CanvasObject {
   interfacePositions: Map<string, [number, number]>
 }
 
+function extractUUID(input: string): string {
+  return input.replace(/^(source-handle-|target-handle-)/, '');
+}
+
 const FitObject = () => {
   const [canvaObjects, setCanvaObjects] = useState<CanvasObject[]>([])
   const [edges, setEdges] = useState<EdgeData[]>([])
@@ -56,13 +60,14 @@ const FitObject = () => {
       newEdges.push({
         id: edge.id,
         source: edge.source,
-        sourceHandle: edge.sourceHandle ?? "",
+        sourceHandle: edge.sourceHandle ? extractUUID(edge.sourceHandle) : "",
         target: edge.target,
-        targetHandle: edge.targetHandle ?? "",
+        targetHandle: edge.targetHandle ? extractUUID(edge.targetHandle) : "",
         distance: +(edge?.data?.data?.distance ?? 0),
       })
     }
-
+    console.log(newCanvaObjects)
+    console.log(newEdges)
     setEdges(newEdges)
   }, [mapBounding, nodesState.nodes, edgesState.edges])
 
