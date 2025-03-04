@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { useBox } from "../../contexts/BoxContext"
 import { BoundingConfiguration } from "../../libs/ClassBox/types/BoundingConfiguration"
 import { useProject } from "../../contexts/ProjectContext"
-import { Check, ChevronDown, Save, RefreshCw } from "lucide-react"
+import { Check, ChevronDown, Focus, ArrowDownToDotIcon } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -243,10 +243,10 @@ export default function BoxSizing() {
       <Card className="border-0 shadow-none">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">Box Configuration</CardTitle>
+            <CardTitle className="text-lg">Boundnig Configuration</CardTitle>
             <Button variant="outline" size="sm" onClick={setAllNodesDefault} className="flex items-center gap-1">
-              <RefreshCw className="h-4 w-4" />
-              Reset All Nodes
+              <ArrowDownToDotIcon className="h-4 w-4" />
+             Apply  <strong>Center Interfaces </strong> to <strong>All Nodes</strong>
             </Button>
           </div>
         </CardHeader>
@@ -262,8 +262,8 @@ export default function BoxSizing() {
                     onClick={setAllInterfaceMiddleCenter}
                     className="flex items-center gap-1"
                   >
-                    <Save className="h-3 w-3" />
-                    Set Default
+                    <Focus className="h-3 w-3" />
+                    <strong>Center Interfaces</strong>
                   </Button>
                 </div>
 
@@ -334,10 +334,10 @@ export default function BoxSizing() {
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium">Reference Point</h3>
+                <h2 className="text-medium font-bold">Reference Point</h2>
                   {focusPoint === "Reference Point" && (
                     <Badge variant="outline" className="bg-red-50">
-                      Placing
+                      Selecting
                     </Badge>
                   )}
                 </div>
@@ -352,26 +352,26 @@ export default function BoxSizing() {
               <Separator />
 
               <div className="space-y-4">
-                <h3 className="text-sm font-medium">Interfaces</h3>
+                <h2 className="text-medium font-bold">Interfaces</h2>
                 <div className="grid gap-3">
-                  {interfaces.map((intf, index) => (
-                    <div key={`${intf[0]}-${index}`} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className={`${focusPoint === intf[0] ? "font-bold text-primary" : ""}`}>{intf[1]}</span>
-                        {focusPoint === intf[0] && (
-                          <Badge variant="outline" className="bg-green-50">
-                            Placing
-                          </Badge>
-                        )}
-                      </div>
-                      <DropdownMenuComponent
-                        label="Set Position"
-                        actions={InterfacePointActions(intf[0])}
-                        dropdownId={`interface-${intf[0]}`}
-                      />
-                    </div>
-                  ))}
-                </div>
+      {interfaces.map((intf, index) => (
+        <div key={`${intf[0]}-${index}`} className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className={`${focusPoint === intf[0] ? "font-bold text-primary text-sm" : "text-sm"}`}>{intf[1]}</span>
+            {focusPoint === intf[0] && (
+              <Badge variant="outline" className="bg-green-50">
+                Selecting
+              </Badge>
+            )}
+          </div>
+          <DropdownMenuComponent
+            label="Set Position"
+            actions={InterfacePointActions(intf[0])}
+            dropdownId={`interface-${intf[0]}`}
+          />
+        </div>
+      ))}
+    </div>
               </div>
             </div>
           ) : (
@@ -395,9 +395,9 @@ function DropdownMenuComponent({ label, actions, dropdownId }: DropdownMenuCompo
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="w-full flex items-center justify-between">
+        <Button variant="outline" size="sm" className="flex items-center justify-between">
           {label}
-          <ChevronDown className="h-4 w-4 opacity-50" />
+          <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
@@ -412,17 +412,19 @@ function DropdownMenuComponent({ label, actions, dropdownId }: DropdownMenuCompo
             {action.label}
           </DropdownMenuItem>
         ))}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          key={`${dropdownId}-manual`}
-          onClick={(e) => {
-            e.stopPropagation()
-            actions[actions.length - 1].action()
-          }}
-          className="text-primary font-medium"
-        >
-          {actions[actions.length - 1].label}
-        </DropdownMenuItem>
+        {actions.length > 1 && <DropdownMenuSeparator />}
+        {actions.length > 0 && (
+          <DropdownMenuItem
+            key={`${dropdownId}-manual`}
+            onClick={(e) => {
+              e.stopPropagation()
+              actions[actions.length - 1].action()
+            }}
+            className="text-primary font-medium"
+          >
+            {actions[actions.length - 1].label}
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )
