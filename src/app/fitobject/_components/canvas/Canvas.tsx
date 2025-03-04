@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Stage, Layer, Line, Circle, Image as KonvaImage, Group, Rect, Text } from "react-konva"
@@ -11,6 +9,16 @@ import { AiOutlineExport } from "react-icons/ai"
 import { LuMousePointer2 } from "react-icons/lu"
 import { MdRotate90DegreesCcw } from "react-icons/md"
 import { calculateOrthogonalPath } from "./edgeRouting"
+
+// At the top of the file, add this interface definition and export it
+export interface EdgeData {
+  id: string
+  source: string
+  sourceHandle: string
+  target: string
+  targetHandle: string
+  distance: number
+}
 
 interface KonvaObjectProps {
   id: string
@@ -60,8 +68,8 @@ const Object: React.FC<KonvaObjectProps> = ({
   gridStyle,
   interfacePositions,
 }) => {
-  const [image] = useImage(imageUrl, "anonymous");
-  const [isColliding, setIsColliding] = useState(false);
+  const [image] = useImage(imageUrl, "anonymous")
+  const [isColliding, setIsColliding] = useState(false)
 
   const circleSize = Math.min(width, height) * 0.8
   const circleX = width / 2
@@ -129,8 +137,8 @@ const Object: React.FC<KonvaObjectProps> = ({
           x={interfaceX}
           y={interfaceY}
           radius={4}
-          fill="#0066ff"
-          stroke="#003399"
+          fill="#666666"
+          stroke="#333333"
           strokeWidth={1}
         />
       )
@@ -141,10 +149,8 @@ const Object: React.FC<KonvaObjectProps> = ({
     <Group
       x={x}
       y={y}
-      rotation={rotation}
-      offsetX={-width * referencePosition[0]}
-      offsetY={-height * referencePosition[1]}
       draggable={draggable}
+      onClick={onSelect}
       onDragMove={(e) => {
         const newX = e.target.x()
         const newY = e.target.y()
@@ -170,56 +176,63 @@ const Object: React.FC<KonvaObjectProps> = ({
           rotation,
         })
       }}
-      onClick={onSelect}
     >
-      {/* Background Rectangle */}
-      <Rect
-        width={width}
-        height={height}
-        fill={isColliding ? "rgba(255, 0, 0, 0.5)" : "white"}
-        stroke={isSelected ? "#00ff00" : "#ddd"}
-        strokeWidth={isSelected ? 2 : 1}
-        cornerRadius={5}
-      />
-
-      {/* Circular Clipping Area */}
       <Group
-        clipFunc={(ctx) => {
-          ctx.beginPath()
-          ctx.arc(circleX, circleY, circleSize / 2, 0, Math.PI * 2, false)
-          ctx.closePath()
-        }}
+        rotation={rotation}
+        offsetX={width * referencePosition[0]}
+        offsetY={height * referencePosition[1]}
+        x={width * referencePosition[0]}
+        y={height * referencePosition[1]}
       >
-        <KonvaImage
-          image={image}
-          x={circleX - circleSize / 2}
-          y={circleY - circleSize / 2}
-          width={circleSize}
-          height={circleSize}
+        {/* Background Rectangle */}
+        <Rect
+          width={width}
+          height={height}
+          fill={isColliding ? "rgba(255, 0, 0, 0.5)" : "white"}
+          stroke={isSelected ? "#00ff00" : "#ddd"}
+          strokeWidth={isSelected ? 2 : 1}
+          cornerRadius={5}
         />
+
+        {/* Circular Clipping Area */}
+        <Group
+          clipFunc={(ctx) => {
+            ctx.beginPath()
+            ctx.arc(circleX, circleY, circleSize / 2, 0, Math.PI * 2, false)
+            ctx.closePath()
+          }}
+        >
+          <KonvaImage
+            image={image}
+            x={circleX - circleSize / 2}
+            y={circleY - circleSize / 2}
+            width={circleSize}
+            height={circleSize}
+          />
+        </Group>
+
+        {/* Circle border */}
+        <Circle x={circleX} y={circleY} radius={circleSize / 2} stroke="#ddd" strokeWidth={1} />
+
+        {/* Component name */}
+        <Text text={name} x={0} y={height + 5} width={width} align="center" fontSize={12} fill="#333" />
+
+        {/* Reference Point Indicator (visible when selected) */}
+        {isSelected && (
+          <Circle
+            x={width * referencePosition[0]}
+            y={height * referencePosition[1]}
+            radius={5}
+            fill="#ff0000"
+            stroke="#ffffff"
+            strokeWidth={1}
+            opacity={1}
+          />
+        )}
+
+        {/* Interface Points */}
+        {renderInterfacePoints()}
       </Group>
-
-      {/* Circle border */}
-      <Circle x={circleX} y={circleY} radius={circleSize / 2} stroke="#ddd" strokeWidth={1} />
-
-      {/* Component name */}
-      <Text text={name} x={0} y={height + 5} width={width} align="center" fontSize={12} fill="#333" />
-
-      {/* Reference Point Indicator (visible when selected) */}
-      {isSelected && (
-        <Circle
-          x={width * referencePosition[0]}
-          y={height * referencePosition[1]}
-          radius={5}
-          fill="#ff0000"
-          stroke="#ffffff"
-          strokeWidth={1}
-          opacity={1}
-        />
-      )}
-
-      {/* Interface Points */}
-      {renderInterfacePoints()}
     </Group>
   )
 }
@@ -299,11 +312,16 @@ const Edge: React.FC<EdgeProps> = ({
   const sourcePos = getAbsoluteInterfacePosition(sourceObj, sourceInterfacePos)
   const targetPos = getAbsoluteInterfacePosition(targetObj, targetInterfacePos)
 
-  // Calculate actual distance
+  // Calculate actual distance (1 pixel = 1 mm)
   const actualDistance = Math.sqrt(Math.pow(targetPos.x - sourcePos.x, 2) + Math.pow(targetPos.y - sourcePos.y, 2))
 
-  // Check if distance constraint is violated
-  const isDistanceViolated = Math.abs(actualDistance - distance) > 5 // 5mm tolerance
+  // Check if distance constraint is violated (1mm tolerance)
+  const isDistanceViolated = Math.abs(actualDistance - distance) > 1
+
+  // Don't render edge if there's no connection (distance is 0 or negative)
+  if (distance <= 0) {
+    return null
+  }
 
   // Calculate orthogonal path
   const obstacles = objects
@@ -317,23 +335,25 @@ const Edge: React.FC<EdgeProps> = ({
     }))
     .filter((obj) => obj.id !== source && obj.id !== target)
 
-  const path = calculateOrthogonalPath(sourcePos, targetPos, obstacles)
+  const pathPoints = calculateOrthogonalPath(sourcePos, targetPos, obstacles)
+  // Convert the array of points to a flat array of numbers for Konva Line
+  const flattenedPath = pathPoints.flatMap((point) => [point.x, point.y])
 
   return (
     <Group onClick={onSelect}>
       <Line
-        points={path.flat()}
-        stroke={isDistanceViolated ? "#ff0000" : isSelected ? "#00ff00" : "#0066ff"}
+        points={flattenedPath}
+        stroke={isDistanceViolated ? "#ff0000" : isSelected ? "#00ff00" : "#666666"}
         strokeWidth={isSelected ? 2 : 1.5}
         lineCap="round"
         lineJoin="round"
       />
 
       {/* Source interface point */}
-      <Circle x={sourcePos.x} y={sourcePos.y} radius={3} fill={isDistanceViolated ? "#ff0000" : "#0066ff"} />
+      <Circle x={sourcePos.x} y={sourcePos.y} radius={3} fill={isDistanceViolated ? "#ff0000" : "#666666"} />
 
       {/* Target interface point */}
-      <Circle x={targetPos.x} y={targetPos.y} radius={3} fill={isDistanceViolated ? "#ff0000" : "#0066ff"} />
+      <Circle x={targetPos.x} y={targetPos.y} radius={3} fill={isDistanceViolated ? "#ff0000" : "#666666"} />
 
       {/* Distance label */}
       {isSelected && (
@@ -356,92 +376,83 @@ const Edge: React.FC<EdgeProps> = ({
   )
 }
 
-function Canvas() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const stageRef = useRef<Konva.Stage>(null);
+// Then update the Canvas component props to use this interface
+interface CanvasProps {
+  edges?: EdgeData[]
+}
 
-  const { canvas, selectObject, updateObject } = useCanvas();
+// And update the function signature
+function Canvas({ edges: externalEdges }: CanvasProps = {}) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const stageRef = useRef<Konva.Stage>(null)
+
+  const { canvas, selectObject, updateObject } = useCanvas()
   const { gridSize, gridColor, gridOpacity, gridStyle, showGrid } = canvas.grid
 
   const [zoomScale, setZoomScale] = useState<number>(1)
   const [action, setAction] = useState<string>("Move")
   const [stageSize, setStageSize] = useState({ width: 1, height: 1 })
-  const [edges, setEdges] = useState<any[]>([])
+  const [edges, setEdges] = useState<EdgeData[]>([])
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null)
 
   // Function to update stage size based on container dimensions
   const updateStageDimensions = useCallback(() => {
     if (containerRef.current) {
-      const containerWidth = containerRef.current.offsetWidth;
-      const containerHeight = containerRef.current.offsetHeight;
+      const containerWidth = containerRef.current.offsetWidth
+      const containerHeight = containerRef.current.offsetHeight
 
       setStageSize({
         width: containerWidth,
         height: containerHeight,
-      });
+      })
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
-    updateStageDimensions();
+    updateStageDimensions()
 
     // Set up resize observer to update dimensions when container resizes
     const resizeObserver = new ResizeObserver(() => {
-      updateStageDimensions();
-    });
+      updateStageDimensions()
+    })
 
     if (containerRef.current) {
-      resizeObserver.observe(containerRef.current);
+      resizeObserver.observe(containerRef.current)
     }
 
     // Clean up
     return () => {
-      resizeObserver.disconnect();
-    };
-  }, [updateStageDimensions]);
-
-  // Mock edges for demonstration
-  useEffect(() => {
-    // Only create edges if we have at least 2 objects
-    if (canvas.objects.length >= 2) {
-      const mockEdges = [
-        {
-          id: "edge1",
-          source: canvas.objects[0].id,
-          sourceHandle: "out1",
-          target: canvas.objects[1].id,
-          targetHandle: "in1",
-          distance: 50,
-        },
-      ]
-
-      // Add more edges if we have more objects
-      if (canvas.objects.length >= 3) {
-        mockEdges.push({
-          id: "edge2",
-          source: canvas.objects[1].id,
-          sourceHandle: "out1",
-          target: canvas.objects[2].id,
-          targetHandle: "in1",
-          distance: 75,
-        })
-      }
-
-      setEdges(mockEdges)
+      resizeObserver.disconnect()
     }
-  }, [canvas.objects])
+  }, [updateStageDimensions])
+
+ 
 
   // Add mock interface positions to objects
   useEffect(() => {
     canvas.objects.forEach((obj) => {
       if (!obj.interfacePositions) {
-        const mockInterfaces = new Map<string, [number, number]>()
-        mockInterfaces.set("in1", [0, 0.5]) // Left middle
-        mockInterfaces.set("out1", [1, 0.5]) // Right middle
-        mockInterfaces.set("top1", [0.5, 0]) // Top middle
-        mockInterfaces.set("bottom1", [0.5, 1]) // Bottom middle
+        const interfaces = new Map<string, [number, number]>()
 
-        updateObject(obj.id, { interfacePositions: mockInterfaces })
+        // Standard interfaces (8 positions)
+        interfaces.set("in1", [0, 0.5]) // Left middle
+        interfaces.set("out1", [1, 0.5]) // Right middle
+        interfaces.set("top1", [0.5, 0]) // Top middle
+        interfaces.set("bottom1", [0.5, 1]) // Bottom middle
+
+        // Corner interfaces
+        interfaces.set("starter", [0.25, 0.25]) // Top left
+        interfaces.set("terminal", [0.75, 0.75]) // Bottom right
+        interfaces.set("1", [0.25, 0.75]) // Bottom left
+        interfaces.set("2", [0.75, 0.25]) // Top right
+
+        // Additional numbered interfaces
+        interfaces.set("3", [0.5, 0.25]) // Top center
+        interfaces.set("4", [0.75, 0.5]) // Right center
+        interfaces.set("5", [0.5, 0.75]) // Bottom center
+        interfaces.set("6", [0.25, 0.5]) // Left center
+
+        updateObject(obj.id, { interfacePositions: interfaces })
       }
     })
   }, [canvas.objects, updateObject])
@@ -491,7 +502,7 @@ function Canvas() {
       if (e.target === e.target.getStage()) {
         selectObject(null)
         setSelectedEdgeId(null)
-        setAction("Move");
+        setAction("Move")
       }
     },
     [selectObject],
@@ -537,10 +548,7 @@ function Canvas() {
   }
 
   return (
-    <div
-      className="w-full h-full flex items-center justify-center bg-black"
-      ref={containerRef}
-    >
+    <div className="w-full h-full flex items-center justify-center bg-black" ref={containerRef}>
       <Stage
         ref={stageRef}
         width={stageSize.width}
@@ -551,12 +559,6 @@ function Canvas() {
         draggable={action === "Move"}
         onClick={handleStageClick}
         onWheel={handleWheel}
-        // onDragStart={(e) => {
-        //   if (e.target === e.target.getStage()) {
-        //     selectObject(null);
-        //     setAction("Move");
-        //   }
-        // }}
       >
         {/* Object Layer */}
         <Layer width={canvas.canvasWidth} height={canvas.canvasHeight}>
@@ -566,7 +568,7 @@ function Canvas() {
             onClick={() => {
               selectObject(null)
               setSelectedEdgeId(null)
-              setAction("Move");
+              setAction("Move")
             }}
             fill="white"
           />
@@ -605,7 +607,7 @@ function Canvas() {
               onSelect={() => {
                 selectObject(obj.id)
                 setSelectedEdgeId(null)
-                setAction("Select");
+                setAction("Select")
               }}
               onChange={(newProps) => updateObject(obj.id, newProps)}
               draggable={action === "Select"}
@@ -625,10 +627,7 @@ function Canvas() {
 
       {/* Control */}
       <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 bg-white p-2 rounded-lg shadow">
-        <button
-          className={`p-2 rounded ${action === "Move" ? "bg-gray-200" : ""}`}
-          onClick={() => setAction("Move")}
-        >
+        <button className={`p-2 rounded ${action === "Move" ? "bg-gray-200" : ""}`} onClick={() => setAction("Move")}>
           <FaRegHandPaper size={20} />
         </button>
         <button
@@ -645,8 +644,7 @@ function Canvas() {
         </button>
       </div>
     </div>
-  );
+  )
 }
 
 export default Canvas
-
