@@ -33,7 +33,7 @@ interface KonvaObjectProps {
     width: number;
     height: number;
   }>;
-  referencePosition: number[]; // Added reference position
+  referencePosition: [number,number]; // Added reference position
   gridSize: number; // Added grid size for snapping
   showGrid: boolean; // Added to check if grid is enabled
   gridStyle: "dot" | "line"; // Added to check if grid style is dot

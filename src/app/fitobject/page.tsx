@@ -1,5 +1,3 @@
-"use client";
-
 //import { v4 as uuidv4 } from "uuid";
 import Canvas from "./_components/canvas/Canvas";
 import LeftSidebar from "./_components/sidebar/left-sidebar";
@@ -21,21 +19,22 @@ interface CanvasObject {
     imageUrl: string;
     connectedTo: string[];
     isStartNode: boolean;
-    referencePosition: number[];
+    referencePosition: [number,number]
 }
 
 const FitObject = () => {
 
   const [canvaObjects, setCanvaObjects] = useState<CanvasObject[]>([]);
-  const { mapBounding } = useProject();
+  const { mapBounding , nodesState} = useProject();
 
   useEffect(() => {
     const objects = mapBounding.entries();
     const newCanvaObjects: CanvasObject[] = [];
     for (const [id, config] of objects) {
+      const name = nodesState.nodes.find((node) => node.id === id)?.data.data.object?.name || "Unknown";
       newCanvaObjects.push({
         id: id,
-        name: id,
+        name: name,
         x: 1,
         y: 1,
         width: config.width,

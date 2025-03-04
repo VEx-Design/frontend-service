@@ -21,7 +21,7 @@ interface ObjectProps {
   imageUrl: string;
   connectedTo: string[];
   isStartNode: boolean;
-  referencePosition: number[];
+  referencePosition: [number,number];
 }
 
 interface GridProps {
