@@ -10,6 +10,8 @@ import { RxBox } from "react-icons/rx"
 import { LuMousePointer2 } from "react-icons/lu"
 import { MdRotate90DegreesCcw } from "react-icons/md"
 import { calculateOrthogonalPath } from "./edgeRouting"
+import { Select } from "@radix-ui/react-select"
+import { square } from "mathjs"
 
 // At the top of the file, add this interface definition and export it
 export interface EdgeData {
@@ -646,28 +648,30 @@ function Canvas({ edges: externalEdges }: CanvasProps = {}) {
       </Stage>
 
       {/* Control */}
-      <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 bg-white p-2 rounded-lg shadow">
-        <button className={`p-2 rounded ${action === "Move" ? "bg-gray-200" : ""}`} onClick={() => setAction("Move")}>
-          <FaRegHandPaper size={20} />
-        </button>
-        <button
-          className={`p-2 rounded ${action === "Select" ? "bg-gray-200" : ""}`}
-          onClick={() => setAction("Select")}
-        >
-          <LuMousePointer2 size={20} />
-        </button>
-        <button className={`p-2 rounded`} onClick={handleRotateSelected} title="Rotate 90° (Selected Object)">
-          <MdRotate90DegreesCcw size={20} />
-        </button>
-        <button
-          className={`p-2 rounded ${showBoundingBox ? "bg-gray-200" : ""}`}
-          onClick={() => setShowBoundingBox(!showBoundingBox)}
-        >
-          <RxBox size={20} />
-        </button>
-        <button className={`p-2 rounded ${action === "Export" ? "bg-gray-200" : ""}`} onClick={handleExport}>
-          <AiOutlineExport size={20} />
-        </button>
+        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col gap-2 bg-white p-2 rounded-lg shadow">
+        <div className="flex gap-2">
+          <button className={`p-2 rounded ${action === "Move" ? "bg-gray-200" : ""}`} onClick={() => setAction("Move")}>
+            <FaRegHandPaper size={20} />
+          </button>
+          <button
+            className={`p-2 rounded ${action === "Select" ? "bg-gray-200" : ""}`}
+            onClick={() => setAction("Select")}
+          >
+            <LuMousePointer2 size={20} />
+          </button>
+          <button className={`p-2 rounded`} onClick={handleRotateSelected} title="Rotate 90° (Selected Object)">
+            <MdRotate90DegreesCcw size={20} />
+          </button>
+          <button
+            className={`p-2 rounded ${showBoundingBox ? "bg-gray-200" : ""}`}
+            onClick={() => setShowBoundingBox(!showBoundingBox)}
+          >
+            <RxBox size={20} />
+          </button>
+          <button className={`p-2 rounded ${action === "Export" ? "bg-gray-200" : ""}`} onClick={handleExport}>
+            <AiOutlineExport size={20} />
+          </button>
+        </div>
       </div>
     </div>
   )

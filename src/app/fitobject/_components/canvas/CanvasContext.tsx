@@ -12,6 +12,8 @@ interface ObjectProps {
   imageUrl: string
   referencePosition: [number, number]
   rotation?: number
+  connectTo: string[]
+  isStarter: boolean
   interfacePositions?: Map<string, [number, number]>
 }
 

@@ -16,6 +16,8 @@ interface CanvasObject {
   height: number
   fill: string
   imageUrl: string
+  connectTo: string[]
+  isStarter: boolean
   referencePosition: [number, number]
   interfacePositions: Map<string, [number, number]>
 }
@@ -48,6 +50,8 @@ const FitObject = () => {
         height: bounding.height,
         fill: "black",
         imageUrl: image,
+        connectTo: [],
+        isStarter: false,
         referencePosition: bounding.referencePosition,
         interfacePositions: bounding.interfacePositions,
       })
@@ -65,8 +69,6 @@ const FitObject = () => {
         distance: +(edge?.data?.data?.distance ?? 0),
       })
     }
-    console.log(nodesState.nodes)
-    console.log(newEdges)
     setEdges(newEdges)
   }, [mapBounding, nodesState.nodes, edgesState.edges])
 

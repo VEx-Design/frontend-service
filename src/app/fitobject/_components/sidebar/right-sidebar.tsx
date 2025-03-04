@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { LuPanelBottomClose, LuPanelTopClose } from "react-icons/lu";
+import { LuPanelBottomClose } from "react-icons/lu";
 import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
-import { UserButton } from "@clerk/nextjs";
 import { useCanvas } from "../canvas/CanvasContext";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
