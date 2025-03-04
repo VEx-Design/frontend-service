@@ -1,4 +1,3 @@
-"use client"
 import { useEffect, useState } from "react"
 import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext"
 import { useNodes } from "@/features/systems/contexts/ProjectWrapper/NodesContext"
@@ -7,7 +6,6 @@ import { CanvasProvider } from "./_components/canvas/CanvasContext"
 import LeftSidebar from "./_components/sidebar/left-sidebar"
 import RightSidebar from "./_components/sidebar/right-sidebar"
 import Canvas , {EdgeData} from "./_components/canvas/Canvas"
-import { e } from "mathjs"
 
 interface CanvasObject {
   id: string
@@ -21,6 +19,7 @@ interface CanvasObject {
   connectedTo: string[]
   isStartNode: boolean
   referencePosition: [number, number]
+  interfacePositions: Map<string, [number, number]>
 }
 
 const FitObject = () => {
@@ -47,6 +46,7 @@ const FitObject = () => {
         connectedTo: [],
         isStartNode: false,
         referencePosition: config.referencePosition,
+        interfacePositions: config.interfacePositions,
       })
     }
     setCanvaObjects(newCanvaObjects)
