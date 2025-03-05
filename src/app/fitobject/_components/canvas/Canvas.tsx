@@ -1,3 +1,5 @@
+"use client"
+
 import type React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Stage, Layer, Line, Circle, Image as KonvaImage, Group, Rect, Text } from "react-konva"
@@ -10,8 +12,6 @@ import { RxBox } from "react-icons/rx"
 import { LuMousePointer2 } from "react-icons/lu"
 import { MdRotate90DegreesCcw } from "react-icons/md"
 import { calculateOrthogonalPath } from "./edgeRouting"
-import { Select } from "@radix-ui/react-select"
-import { square } from "mathjs"
 
 // At the top of the file, add this interface definition and export it
 export interface EdgeData {
@@ -37,8 +37,8 @@ interface KonvaObjectProps {
   draggable: boolean
   allObjects: Array<{
     id: string
-    x: number
-    y: number
+    x: string | number
+    y: string | number
     width: number
     height: number
     rotation?: number
@@ -86,10 +86,10 @@ const Object: React.FC<KonvaObjectProps> = ({
 
         // Simple rectangular collision detection
         const isOverlapping =
-          currentX < Number(obj.x) + obj.width &&
-          currentX + width > Number(obj.x) &&
-          currentY < obj.y + obj.height &&
-          currentY + height > obj.y
+          Number(currentX) < Number(obj.x) + obj.width &&
+          Number(currentX) + width > Number(obj.x) &&
+          Number(currentY) < Number(obj.y) + obj.height &&
+          Number(currentY) + height > Number(obj.y)
 
         return isOverlapping
       })
@@ -98,7 +98,7 @@ const Object: React.FC<KonvaObjectProps> = ({
   )
 
   useEffect(() => {
-    setIsColliding(checkCollision(x, y))
+    setIsColliding(checkCollision(Number(x), Number(y)))
   }, [x, y, checkCollision])
 
   // Calculate reference point coordinates
@@ -247,8 +247,8 @@ interface EdgeProps {
   distance: number
   objects: Array<{
     id: string
-    x: number
-    y: number
+    x: string | number
+    y: string | number
     width: number
     height: number
     rotation?: number
@@ -269,6 +269,9 @@ const Edge: React.FC<EdgeProps> = ({
   isSelected,
   onSelect,
 }) => {
+  // Call useCanvas at the top level of the component
+  const { canvas, mirror, updateCanvas } = useCanvas()
+
   // Find source and target objects
   const sourceObj = objects.find((obj) => obj.id === source)
   const targetObj = objects.find((obj) => obj.id === target)
@@ -304,8 +307,8 @@ const Edge: React.FC<EdgeProps> = ({
 
     // Calculate absolute position
     return {
-      x: obj.x + refX + rotatedX,
-      y: obj.y + refY + rotatedY,
+      x: Number(obj.x) + refX + rotatedX,
+      y: Number(obj.y) + refY + rotatedY,
     }
   }
 
@@ -330,8 +333,8 @@ const Edge: React.FC<EdgeProps> = ({
   const obstacles = objects
     .map((obj) => ({
       id: obj.id,
-      x: obj.x,
-      y: obj.y,
+      x: Number(obj.x),
+      y: Number(obj.y),
       width: obj.width,
       height: obj.height,
       rotation: obj.rotation || 0,
@@ -362,6 +365,48 @@ const Edge: React.FC<EdgeProps> = ({
   const handleEdgeClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
     e.cancelBubble = true // Prevent event from bubbling up to stage
     onSelect()
+  }
+
+  // Function to add a mirror at a corner point
+  const addMirrorAtCorner = (point: { x: number; y: number }, index: number) => {
+    if (mirror && mirror.length > 0) {
+      // Get the first mirror from the mirrors array
+      const mirrorTemplate = mirror[0]
+
+      // Calculate rotation angle (45 degrees for perpendicular corners)
+      // Determine the rotation based on the adjacent points
+      const prevPoint = pathPoints[index] || pathPoints[0]
+      const nextPoint = pathPoints[index + 2] || pathPoints[pathPoints.length - 1]
+
+      // Calculate the angle of the incoming and outgoing segments
+      const incomingAngle = Math.atan2(point.y - prevPoint.y, point.x - prevPoint.x) * (180 / Math.PI)
+      const outgoingAngle = Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * (180 / Math.PI)
+
+      // Calculate the bisector angle (45 degrees from both segments)
+      const bisectorAngle = (incomingAngle + outgoingAngle) / 2
+
+      // Create a new mirror object
+      const newMirror = {
+        id: `mirror-${Date.now()}`,
+        name: mirrorTemplate.name,
+        x: point.x - mirrorTemplate.width * mirrorTemplate.referencePosition[0],
+        y: point.y - mirrorTemplate.height * mirrorTemplate.referencePosition[1],
+        width: mirrorTemplate.width,
+        height: mirrorTemplate.height,
+        fill: "white",
+        imageUrl: mirrorTemplate.imageUrl || "/placeholder.svg?height=50&width=50",
+        referencePosition: mirrorTemplate.referencePosition,
+        rotation: bisectorAngle,
+        connectTo: [],
+        isStarter: false,
+        interfacePositions: mirrorTemplate.interfacePositions,
+      }
+
+      // Add the new mirror to the canvas objects
+      updateCanvas({
+        objects: [...canvas.objects, newMirror],
+      })
+    }
   }
 
   return (
@@ -407,7 +452,9 @@ const Edge: React.FC<EdgeProps> = ({
               onClick={(e) => {
                 e.cancelBubble = true
                 onSelect()
-                // Add your corner point click handler here
+
+                // Add Mirror at perpendicular corner
+                addMirrorAtCorner(point, index)
               }}
             />
             {isSelected && index === 0 && (
@@ -648,7 +695,7 @@ function Canvas({ edges: externalEdges }: CanvasProps = {}) {
       </Stage>
 
       {/* Control */}
-        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col gap-2 bg-white p-2 rounded-lg shadow">
+      <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col gap-2 bg-white p-2 rounded-lg shadow">
         <div className="flex gap-2">
           <button className={`p-2 rounded ${action === "Move" ? "bg-gray-200" : ""}`} onClick={() => setAction("Move")}>
             <FaRegHandPaper size={20} />

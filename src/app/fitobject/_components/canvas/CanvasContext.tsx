@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, type ReactNode, useCallback, useEffect } from "react"
+import { number } from "zod"
 
 // Define Types
 interface ObjectProps {
@@ -14,6 +15,16 @@ interface ObjectProps {
   rotation?: number
   connectTo: string[]
   isStarter: boolean
+  interfacePositions?: Map<string, [number, number]>
+}
+
+interface MirrorProps {
+  id: string
+  name: string
+  width:number
+  height: number
+  imageUrl: string
+  referencePosition: [number, number]
   interfacePositions?: Map<string, [number, number]>
 }
 
@@ -45,6 +56,9 @@ interface CanvasContextType {
   selectObject: (id: string | null) => void
   getSelectedObject: () => ObjectProps | null
   updateObject: (id: string, updates: Partial<ObjectProps>) => void
+
+  // Mirror 
+  mirror: MirrorProps[]
 }
 
 interface CanvasProviderProps {
@@ -122,6 +136,19 @@ export const CanvasProvider = ({ children, initialObjects, initialCanvasSize }: 
     }))
   }, [])
 
+  const mirror: MirrorProps[] = [
+    {
+      id: "1",
+      name: "flat",
+      width: 50,
+      height: 50,
+      imageUrl: "",
+      referencePosition: [0.5, 0.5],
+      interfacePositions: new Map<string,[number,number]>([
+        ["surface", [0, 0.5]]
+      ])
+    }]
+
   const contextValue: CanvasContextType = {
     canvas,
     setCanvasSize,
@@ -130,6 +157,7 @@ export const CanvasProvider = ({ children, initialObjects, initialCanvasSize }: 
     getSelectedObject,
     updateObject,
     updateCanvas,
+    mirror
   }
 
   return <CanvasContext.Provider value={contextValue}>{children}</CanvasContext.Provider>
