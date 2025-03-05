@@ -11,6 +11,8 @@ import { Config } from "@/features/systems/libs/ClassConfig/types/Config";
 // type of optical
 import typePBS from "@/features/systems/libs/standard/type/PBS.json";
 import typeLP from "@/features/systems/libs/standard/type/LP.json";
+import typeHWP from "@/features/systems/libs/standard/type/HWP.json";
+import typeQWP from "@/features/systems/libs/standard/type/QWP.json";
 
 export default async function createProject(form: createProjectData) {
   const { success, data } = createProjectSchema.safeParse(form);
@@ -24,6 +26,8 @@ export default async function createProject(form: createProjectData) {
     types: [
       JSON.parse(JSON.stringify(typePBS)),
       JSON.parse(JSON.stringify(typeLP)),
+      JSON.parse(JSON.stringify(typeHWP)),
+      JSON.parse(JSON.stringify(typeQWP)),
     ],
     // types: [],
     ...parameterConfig,
