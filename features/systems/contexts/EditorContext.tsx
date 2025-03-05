@@ -96,9 +96,21 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
   const [contextMenuPosition, setContextMenuPosition] =
     useState<Coordinate | null>(null);
 
-  const { isTriggered, setIsTriggered } = useProject();
+  const { isTriggered, setIsTriggered, projectFlow } = useProject();
   const nodesState = useNodes();
   const edgesState = useEdges();
+
+  useEffect(() => {
+    try {
+      const flow = JSON.parse(projectFlow);
+      if (flow) {
+        setNodes(flow.nodes || []);
+        setEdges(flow.edges || []);
+      }
+    } catch (error) {
+      console.error("Error parsing flow:", error);
+    }
+  }, [projectFlow, setEdges, setNodes]);
 
   useEffect(() => {
     if (isTriggered) {

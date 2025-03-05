@@ -27,6 +27,7 @@ interface ProjectProviderProps {
 interface ProjectContextValue {
   projId: string;
   projName: string;
+  projectFlow: string;
   onSave: () => void;
   savePending: boolean;
   executedFlow: Flow | undefined;
@@ -86,6 +87,7 @@ export const ProjectProvider = ({
     () => ({
       projId: project.id,
       projName: project.name,
+      projectFlow: project.flow,
       onSave,
       savePending,
       executedFlow,
@@ -96,11 +98,11 @@ export const ProjectProvider = ({
     [
       project.id,
       project.name,
+      project.flow,
       onSave,
       savePending,
       executedFlow,
       isTriggered,
-      setIsTriggered,
     ]
   );
 
