@@ -9,6 +9,8 @@ import { AppEdge } from "@/features/systems/libs/ClassEdge/types/AppEdge";
 import { Config } from "@/features/systems/libs/ClassConfig/types/Config";
 
 // type of optical
+import typePCL from "@/features/systems/libs/standard/type/PCL.json";
+import typePXL from "@/features/systems/libs/standard/type/PXL.json";
 import typePBS from "@/features/systems/libs/standard/type/PBS.json";
 import typeLP from "@/features/systems/libs/standard/type/LP.json";
 import typeHWP from "@/features/systems/libs/standard/type/HWP.json";
@@ -24,6 +26,8 @@ export default async function createProject(form: createProjectData) {
 
   const config: Config = {
     types: [
+      JSON.parse(JSON.stringify(typePCL)),
+      JSON.parse(JSON.stringify(typePXL)),
       JSON.parse(JSON.stringify(typePBS)),
       JSON.parse(JSON.stringify(typeLP)),
       JSON.parse(JSON.stringify(typeHWP)),
