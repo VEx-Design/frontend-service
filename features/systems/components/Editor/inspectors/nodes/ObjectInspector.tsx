@@ -35,7 +35,7 @@ export default function ObjectInspector() {
             </div>
           </div>
           <div className="flex flex-col pt-5 gap-2 px-6">
-            {objectType.properties.map((prop: Property, index: number) => (
+            {objectType?.properties.map((prop: Property, index: number) => (
               <Input
                 type="number"
                 key={index}

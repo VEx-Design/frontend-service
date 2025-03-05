@@ -83,6 +83,7 @@ interface NodeAction {
 
 interface EdgeAction {
   createEdge: (connection: Connection) => void;
+  setDistance: (distance: number) => void;
 }
 
 const EditorContext = createContext<EditorContextValue | undefined>(undefined);
@@ -221,6 +222,20 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
         }
 
         setEdges([...edges, edge]);
+      },
+      setDistance: (distance: number) => {
+        if (focusEdge && focusEdge.data) {
+          focusEdge.data.distance = distance.toString();
+        }
+        if (focusEdge?.data) {
+          setEdges((prevEdges) =>
+            prevEdges.map((edge) =>
+              edge.id === focusEdge.id
+                ? { ...edge, data: { ...edge.data, distance } }
+                : edge
+            )
+          );
+        }
       },
     }),
     [edges, setEdges]
