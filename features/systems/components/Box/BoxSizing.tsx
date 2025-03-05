@@ -68,9 +68,9 @@ export default function BoxSizing() {
         setInterfaces([]);
       }
     } else if (node?.type === "starter") {
-      setInterfaces([["starter", "Output"]]);
+      setInterfaces([["1", "Output"]]);
     } else {
-      setInterfaces([["terminal", "Input"]]);
+      setInterfaces([["1", "Input"]]);
     }
 
     setShowSaveHeight(false);

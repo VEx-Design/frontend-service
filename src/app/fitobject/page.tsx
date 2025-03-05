@@ -57,6 +57,7 @@ const FitObject = () => {
       })
     }
     setCanvaObjects(newCanvaObjects)
+    console.log(newCanvaObjects)
 
     const newEdges: EdgeData[] = []
     for (const edge of edgesState.edges) {
@@ -68,6 +69,7 @@ const FitObject = () => {
         targetHandle: edge.targetHandle ? extractUUID(edge.targetHandle) : "",
         distance: +(edge?.data?.data?.distance ?? 0),
       })
+      console.log(newEdges)
     }
     setEdges(newEdges)
   }, [mapBounding, nodesState.nodes, edgesState.edges])
