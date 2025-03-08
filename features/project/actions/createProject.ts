@@ -18,7 +18,7 @@ import typeQWP from "@/features/systems/libs/standard/type/QWP.json";
 
 export default async function createProject(form: createProjectData) {
   const { success, data } = createProjectSchema.safeParse(form);
-
+  // Update the initial flow with some errror
   const initialFlow: { nodes: AppNode[]; edges: AppEdge[] } = {
     nodes: [],
     edges: [],
