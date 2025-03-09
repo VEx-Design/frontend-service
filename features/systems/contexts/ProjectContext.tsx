@@ -18,6 +18,7 @@ import { debounce } from "lodash";
 import { useNodes } from "./ProjectWrapper/NodesContext";
 import { useEdges } from "./ProjectWrapper/EdgesContext";
 import { useConfig } from "./ProjectWrapper/ConfigContext";
+import calculate from "../libs/ClassFlow/calculation/calculate";
 
 interface ProjectProviderProps {
   children: React.ReactNode;
@@ -31,7 +32,7 @@ interface ProjectContextValue {
   onSave: () => void;
   savePending: boolean;
   executedFlow: Flow | undefined;
-  setExecutedFlow: (flow: Flow | undefined) => void;
+  executeProject: () => void;
   isTriggered: boolean;
   setIsTriggered: (isTriggered: boolean) => void;
 }
@@ -83,6 +84,14 @@ export const ProjectProvider = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSave]);
 
+  const executeProject = useCallback(() => {
+    toast.loading("Executing project...", { id: "execute-project" });
+    setIsTriggered(true);
+    while (isTriggered);
+    setExecutedFlow(calculate({ nodes: nodes, edges: edges }, config));
+    toast.success("Project executed", { id: "execute-project" });
+  }, [isTriggered, nodes, edges, config]);
+
   const contextValue = useMemo(
     () => ({
       projId: project.id,
@@ -91,7 +100,7 @@ export const ProjectProvider = ({
       onSave,
       savePending,
       executedFlow,
-      setExecutedFlow,
+      executeProject,
       isTriggered,
       setIsTriggered,
     }),
@@ -101,6 +110,7 @@ export const ProjectProvider = ({
       project.flow,
       onSave,
       savePending,
+      executeProject,
       executedFlow,
       isTriggered,
     ]

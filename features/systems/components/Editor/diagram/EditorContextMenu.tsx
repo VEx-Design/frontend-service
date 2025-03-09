@@ -17,7 +17,7 @@ export default function EditorContextMenu() {
   };
 
   return (
-    <div className="w-64">
+    <div className="w-64 bg-white shadow-md rounded-md p-2">
       <ContextMenuItem onClick={() => handleAddNode("starter")} inset>
         Add Starter node
       </ContextMenuItem>

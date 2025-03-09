@@ -1,11 +1,12 @@
 import React from "react";
-import Input, { InputLabel } from "../InspectorInput";
+import InputInspect, { InputLabel } from "../InspectorInput";
 import { useEditor } from "@/features/systems/contexts/EditorContext";
 import getInitial from "@/features/systems/libs/ClassNode/getInitial";
 import { CircleFadingPlus } from "lucide-react";
 import SymbolDisplay from "@/components/SymbolDisplay";
 import { getParamPrefixId } from "@/features/systems/libs/ClassObject/getPrefixId";
 import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext";
+import { Input } from "@/components/ui/input";
 
 export default function StarterInspector() {
   const { config } = useConfig();
@@ -17,12 +18,21 @@ export default function StarterInspector() {
     <div className="flex flex-col pt-5 gap-4 px-6">
       {(focusNode.data?.initials ?? []).map((light, index) => (
         <div key={light.id}>
-          <div className="flex flex-1 items-center">
+          <div className="flex flex-1 items-center gap-1">
             <p className="text-sm font-semibold">{`Light ${index + 1}`}</p>
+            <Input
+              type="color"
+              className="w-[20px] h-[20px] p-0"
+              value={light.path.color}
+              onChange={(e) => {
+                e.preventDefault();
+                nodeAction.updatePathColor(light.id, e.target.value);
+              }}
+            />
           </div>
           <div className="flex flex-col gap-2">
             {config.parameters.map((param, index) => (
-              <Input
+              <InputInspect
                 type="number"
                 key={`${light.id} + ${index}`}
                 title={`${param.name} [${param.symbol}]`}
@@ -47,7 +57,7 @@ export default function StarterInspector() {
                     <p className="text-sm ms-1">{` : ${param.name}`}</p>
                   </div>
                 </InputLabel>
-              </Input>
+              </InputInspect>
             ))}
           </div>
         </div>

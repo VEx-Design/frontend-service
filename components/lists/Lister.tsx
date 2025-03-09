@@ -276,7 +276,7 @@ export function ListerContentView(props: ListerContentViewProps) {
 
   return (
     <div ref={ref} className="flex flex-1">
-      <ScrollArea className="w-full" style={{ height: parentHeight - 15 }}>
+      <ScrollArea className="w-full" style={{ height: parentHeight }}>
         {contextValue.currentView === "card" && (
           <div className={props.listDisplay.card || ""}>
             {props.render({

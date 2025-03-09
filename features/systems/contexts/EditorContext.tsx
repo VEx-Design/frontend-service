@@ -31,6 +31,7 @@ import { toast } from "sonner";
 import { useNodes } from "./ProjectWrapper/NodesContext";
 import { useEdges } from "./ProjectWrapper/EdgesContext";
 import { isEqual } from "lodash";
+import updatePathColor from "../libs/ClassNode/updatePathColor";
 
 interface Coordinate {
   x: number;
@@ -79,6 +80,7 @@ interface NodeAction {
   setInitial: (lightId: string, paramId: string, value: number) => void;
   setValue: (propId: string, value: number) => void;
   addInitialLight: () => void;
+  updatePathColor: (lightId: string, color: string) => void;
 }
 
 interface EdgeAction {
@@ -183,6 +185,13 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
           editNode(focusNode.id, updatedData);
         }
       },
+      updatePathColor: (lightId: string, color: string) => {
+        if (focusNode?.data) {
+          const updatedData = updatePathColor(focusNode.data, lightId, color);
+          updateFocusNodeData(updatedData);
+          editNode(focusNode.id, updatedData);
+        }
+      },
     }),
     [
       setNodes,
@@ -237,7 +246,7 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
         }
       },
     }),
-    [edges, setEdges]
+    [edges, focusEdge, setEdges]
   );
 
   const contextValue = useMemo(

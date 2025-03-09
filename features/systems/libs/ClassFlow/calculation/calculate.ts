@@ -39,6 +39,7 @@ export default function calculate(flow: Flow, config: Config): Flow {
           id: light.id,
           formInterfaceId: light.formInterfaceId,
           params: [],
+          path: light.path,
         };
         parameters.forEach((param) => {
           const value = light.params.find(
@@ -47,6 +48,7 @@ export default function calculate(flow: Flow, config: Config): Flow {
           input.params.push({
             paramId: param.id,
             value: value || 0,
+            unitPrefixId: "MILLI",
           });
         });
         inputs.push(input);
@@ -93,6 +95,7 @@ export default function calculate(flow: Flow, config: Config): Flow {
             id: crypto.randomUUID(),
             formInterfaceId: targetInterfaceId,
             params: [],
+            path: light.path,
           };
           parameters.map((param) => {
             const formulaParam = formula.find((f) => f.paramId === param.id);
@@ -108,6 +111,7 @@ export default function calculate(flow: Flow, config: Config): Flow {
               output.params.push({
                 paramId: param.id,
                 value: value,
+                unitPrefixId: "MILLI",
               });
             } else {
               output.params.push({
@@ -116,6 +120,7 @@ export default function calculate(flow: Flow, config: Config): Flow {
                   light.params.find(
                     (paramValue) => paramValue.paramId === param.id
                   )?.value || 0,
+                unitPrefixId: "MILLI",
               });
             }
           });

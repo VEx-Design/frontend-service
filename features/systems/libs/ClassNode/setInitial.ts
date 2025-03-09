@@ -12,12 +12,13 @@ export default function setInitial(
     if (input) {
       input.value = value;
     } else {
-      light.params.push({ paramId, value });
+      light.params.push({ paramId, value, unitPrefixId: "MILLI" });
     }
   } else {
     node.initials?.push({
       id: lightId,
-      params: [{ paramId, value }],
+      params: [{ paramId, value, unitPrefixId: "MILLI" }],
+      path: { id: crypto.randomUUID(), color: "#000" },
     });
   }
   return node;

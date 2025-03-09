@@ -26,6 +26,10 @@ export function CreateObjectNode(
 }
 
 export function CreateStarterNode(position: { x: number; y: number }): AppNode {
+  const randomColor = `#${Math.floor(Math.random() * 16777215)
+    .toString(16)
+    .padStart(6, "0")}`;
+
   return {
     id: crypto.randomUUID(),
     type: "starter",
@@ -35,6 +39,10 @@ export function CreateStarterNode(position: { x: number; y: number }): AppNode {
           {
             id: crypto.randomUUID(),
             params: [],
+            path: {
+              id: crypto.randomUUID(),
+              color: randomColor,
+            },
           },
         ],
       },

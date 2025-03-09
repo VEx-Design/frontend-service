@@ -7,6 +7,7 @@ import {
 } from "@xyflow/react";
 import { EdgeData } from "@/features/systems/libs/ClassEdge/types/AppEdge";
 import { useExecution } from "@/features/systems/contexts/Execution/ExecutionContext";
+import PathColor from "../../../_components/PathColor";
 
 export default function LightEdge(props: EdgeProps) {
   const edgeData = props.data?.data as EdgeData;
@@ -32,11 +33,16 @@ export default function LightEdge(props: EdgeProps) {
           style={{
             position: "absolute",
             transform: `translate(-50%, -50%) translate(${labelX}px, ${
-              labelY - 18
+              labelY - 20
             }px)`,
             pointerEvents: "all",
           }}
         >
+          <div className="flex justify-center items-center">
+            {edgeData.lights?.map((light, index) => (
+              <PathColor key={index} color={light.path.color} />
+            ))}
+          </div>
           <div className="text-sm font-semibold mb-1">
             {`${edgeData.distance} mm` || "Edge Label"}{" "}
           </div>
