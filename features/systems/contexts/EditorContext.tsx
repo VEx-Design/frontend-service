@@ -213,7 +213,8 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
           (e) =>
             (e.sourceHandle === connection.sourceHandle ||
               e.targetHandle === connection.targetHandle) &&
-            (e.source === connection.source || e.target === connection.target)
+            e.source === connection.source &&
+            e.target === connection.target
         );
         if (isDuplicate) {
           return toast.warning("Interface Already Connected", {

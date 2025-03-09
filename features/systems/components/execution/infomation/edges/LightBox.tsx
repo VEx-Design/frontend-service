@@ -2,6 +2,7 @@ import { useLightInfo } from "@/features/systems/contexts/Execution/LightInfoCon
 import { Light } from "@/features/systems/libs/ClassLight/types/Light";
 import { cn } from "@/lib/utils";
 import React from "react";
+import PathColor from "../../../_components/PathColor";
 
 interface Props {
   index: number;
@@ -36,6 +37,7 @@ export default function LightBox({ index, light }: Props) {
       >
         {`Light ${index + 1}`}
       </span>
+      <PathColor color={light.path.color} />
     </div>
   );
 }

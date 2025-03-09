@@ -9,6 +9,7 @@ import createScope from "./createScope";
 import { evaluate } from "mathjs";
 import setNodeOutput from "../setNodeOuput";
 import addInterface from "../addInterface";
+import isThereLight from "./isThereLight";
 
 export default function calculate(flow: Flow, config: Config): Flow {
   const { types, parameters } = config;
@@ -51,7 +52,9 @@ export default function calculate(flow: Flow, config: Config): Flow {
             unitPrefixId: "MILLI",
           });
         });
-        inputs.push(input);
+        if (isThereLight(input, config)) {
+          inputs.push(input);
+        }
       });
     } else if (sourceNode?.type === "ObjectNode") {
       const sourceInterfaceId =
@@ -59,7 +62,9 @@ export default function calculate(flow: Flow, config: Config): Flow {
       sourceData.object?.interfaces
         .find((inter) => inter.interfaceId === sourceInterfaceId)
         ?.output.forEach((light) => {
-          inputs.push(light);
+          if (isThereLight(light, config)) {
+            inputs.push(light);
+          }
         });
     }
 
