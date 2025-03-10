@@ -81,6 +81,7 @@ interface NodeAction {
   setValue: (propId: string, value: number) => void;
   addInitialLight: () => void;
   updatePathColor: (lightId: string, color: string) => void;
+  rotate: () => void;
 }
 
 interface EdgeAction {
@@ -192,6 +193,16 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
           editNode(focusNode.id, updatedData);
         }
       },
+      rotate: () => {
+        if (focusNode?.data) {
+          const updatedData = {
+            ...focusNode.data,
+            rotate: ((focusNode.data.rotate + 90) % 360) as 0 | 90 | 180 | 270,
+          };
+          updateFocusNodeData(updatedData);
+          editNode(focusNode.id, updatedData);
+        }
+      },
     }),
     [
       setNodes,
@@ -202,6 +213,28 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
       editNode,
     ]
   );
+
+  useEffect(() => {
+    if (focusNode?.data) {
+      setEdges((prevEdges) =>
+        prevEdges.map((edge) => {
+          if (edge.source === focusNode.id || edge.target === focusNode.id) {
+            const updatedEdge = {
+              ...edge,
+              animated: true,
+              data: {
+                ...edge.data,
+                key: `${edge.id}-${Date.now()}`,
+              },
+            };
+            return updatedEdge;
+          }
+          return edge;
+        })
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusNode?.data.rotate]);
 
   const edgeAction = useMemo(
     () => ({

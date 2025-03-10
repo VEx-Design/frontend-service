@@ -11,14 +11,16 @@ export function CreateObjectNode(
     data: {
       data: {
         object: {
-          name: type.name,
+          name: type.displayName,
           typeId: type.id,
           vars: type.properties.map((prop) => ({
             propId: prop.id,
             value: 0,
+            unitPrefixId: "MILLI",
           })),
           interfaces: [],
         },
+        rotate: 0,
       },
     },
     position: position ?? { x: 0, y: 0 },
@@ -45,6 +47,7 @@ export function CreateStarterNode(position: { x: number; y: number }): AppNode {
             },
           },
         ],
+        rotate: 0,
       },
     },
     position: position ?? { x: 0, y: 0 },
@@ -58,7 +61,7 @@ export function CreateTerminalNode(position?: {
   return {
     id: crypto.randomUUID(),
     type: "terminal",
-    data: { data: {} },
+    data: { data: { rotate: 0 } },
     position: position ?? { x: 0, y: 0 },
   };
 }

@@ -14,4 +14,5 @@ export interface AppNodeData {
 export interface NodeData {
   object?: OpticalObject;
   initials?: Light[];
+  rotate: 90 | 180 | 270 | 0;
 }

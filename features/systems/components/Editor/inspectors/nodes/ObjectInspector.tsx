@@ -1,5 +1,5 @@
 import React from "react";
-import { PyramidIcon } from "lucide-react";
+import { PyramidIcon, RotateCw } from "lucide-react";
 import Input from "../InspectorInput";
 
 import { useEditor } from "@/features/systems/contexts/EditorContext";
@@ -31,8 +31,19 @@ export default function ObjectInspector() {
               />
             </div>
             <div className="flex bg-slate-100 p-1 justify-center rounded-lg text-sm">
-              {focusNode?.data.object?.name}
+              {objectType?.name}
             </div>
+          </div>
+          <div className="flex flex-col justify-center pt-5 gap-2 px-6">
+            <button
+              className="bg-gray-500 p-1 rounded-lg text-sm text-white flex items-center justify-center gap-1"
+              onClick={() => {
+                nodeAction.rotate();
+              }}
+            >
+              <RotateCw className="stroke-white" size={18} />
+              <p>Rotate 90°</p>
+            </button>
           </div>
           <div className="flex flex-col pt-5 gap-2 px-6">
             {objectType?.properties.map((prop: Property, index: number) => (

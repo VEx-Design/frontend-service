@@ -1,23 +1,36 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Type } from "../../libs/ClassType/types/Type";
-import { Handle, Position } from "@xyflow/react";
+import { Handle, Position, useUpdateNodeInternals } from "@xyflow/react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import CustomHandle from "./CustomHandle";
+import mapRotation from "../../libs/ClassNode/mapRotation";
 
 interface Props {
   objectType: Type;
   isSelect?: boolean;
   currentInterfaceId?: string;
+  nodeId?: string;
+  rotate?: 90 | 180 | 270 | 0;
 }
 
 export default function ObjectNodeTemp({
   objectType,
   isSelect = false,
   currentInterfaceId,
+  nodeId,
+  rotate = 0,
 }: Props) {
-  const connection = objectType.interfaces || [];
+  const connection = mapRotation(objectType.interfaces, rotate) || [];
   const [divWidth, setDivWidth] = React.useState<number>(0);
+  const updateNodeInternals = useUpdateNodeInternals();
+
+  useEffect(() => {
+    if (nodeId) {
+      updateNodeInternals(nodeId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rotate]);
 
   const connectionLenght = {
     [Position.Top]: 0,
@@ -79,7 +92,8 @@ export default function ObjectNodeTemp({
             quality={100}
             priority
             sizes="(max-width: 768px) 30px, 30px"
-            className="object-contain"
+            className={`object-contain`}
+            style={{ transform: `rotate(${rotate}deg)` }}
           />
         </div>
         <p className="w-full font-semibold text-lg text-center truncate">
@@ -102,9 +116,9 @@ export default function ObjectNodeTemp({
               isSelect={currentInterfaceId === item.id}
               style={
                 item.position === Position.Top
-                  ? { left: `${centerHori + 12}px` }
-                  : item.position === Position.Bottom
                   ? { left: `${centerHori - 12}px` }
+                  : item.position === Position.Bottom
+                  ? { left: `${centerHori + 12}px` }
                   : item.position === Position.Left
                   ? { top: `${centerVerti + 12}px` }
                   : { top: `${centerVerti - 12}px` }
@@ -112,14 +126,15 @@ export default function ObjectNodeTemp({
             />
 
             <Handle
+              key={`handle-${item.id}-${rotate}`}
               type="source"
               id={`source-handle-${item.id}`}
               position={item.position}
               style={
                 item.position === Position.Top
-                  ? { left: `${centerHori - 12}px` }
-                  : item.position === Position.Bottom
                   ? { left: `${centerHori + 12}px` }
+                  : item.position === Position.Bottom
+                  ? { left: `${centerHori - 12}px` }
                   : item.position === Position.Left
                   ? { top: `${centerVerti - 12}px` }
                   : { top: `${centerVerti + 12}px` }
