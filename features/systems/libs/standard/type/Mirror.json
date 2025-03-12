@@ -1,0 +1,506 @@
+{
+  "id": "ec3a7aeb-794b-4491-9d2d-af1af21210eb",
+  "name": "Flat mirror",
+  "displayName": "Mirror",
+  "description": "",
+  "picture": "https://raw.githubusercontent.com/vex-design/image-store/main/b-mir.png",
+  "properties": [],
+  "interfaces": [
+    {
+      "id": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+      "name": "Interface 1",
+      "position": "left",
+      "formulaConditions": [
+        {
+          "id": "4c90ae2c-aedc-4a2d-a354-e3324403fd89",
+          "type": "TRIGGER AT",
+          "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+          "formulas": [
+            {
+              "paramId": "e82e6c79-4e2b-457f-aef7-02ab28cd19c1",
+              "formulaTokens": [
+                {
+                  "id": "84eb5df7-0237-4d58-9cbd-0d8963db1818",
+                  "stream": "",
+                  "variable": {
+                    "id": "a58d8eae-a797-4efe-9c87-fd6fcb18d5fd",
+                    "type": "interface",
+                    "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                    "paramId": "e82e6c79-4e2b-457f-aef7-02ab28cd19c1"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "a58d8eae-a797-4efe-9c87-fd6fcb18d5fd",
+                  "type": "interface",
+                  "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                  "paramId": "e82e6c79-4e2b-457f-aef7-02ab28cd19c1"
+                }
+              ],
+              "triggers": ["d493bb62-2f68-47e5-ad53-1aa170a79cb3"]
+            },
+            {
+              "paramId": "2c6b38a6-ebd5-4132-b4be-c5757e418d51",
+              "formulaTokens": [
+                {
+                  "id": "4419c6c5-4766-44ad-a251-aba6c25acd3c",
+                  "stream": "",
+                  "variable": {
+                    "id": "fb6a9144-d4b0-4778-9934-0ebbb56f8d0c",
+                    "type": "interface",
+                    "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                    "paramId": "2c6b38a6-ebd5-4132-b4be-c5757e418d51"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "fb6a9144-d4b0-4778-9934-0ebbb56f8d0c",
+                  "type": "interface",
+                  "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                  "paramId": "2c6b38a6-ebd5-4132-b4be-c5757e418d51"
+                }
+              ],
+              "triggers": ["d493bb62-2f68-47e5-ad53-1aa170a79cb3"]
+            },
+            {
+              "paramId": "c1ff5f01-8383-44e3-b5f1-b2aca399c8fd",
+              "formulaTokens": [
+                {
+                  "id": "cebaeb1a-2b2e-4757-b288-39e7c1822418",
+                  "stream": "",
+                  "variable": {
+                    "id": "db4e8be4-563d-4f64-9e2f-37de9eb25d08",
+                    "type": "interface",
+                    "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                    "paramId": "c1ff5f01-8383-44e3-b5f1-b2aca399c8fd"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "db4e8be4-563d-4f64-9e2f-37de9eb25d08",
+                  "type": "interface",
+                  "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                  "paramId": "c1ff5f01-8383-44e3-b5f1-b2aca399c8fd"
+                }
+              ],
+              "triggers": ["d493bb62-2f68-47e5-ad53-1aa170a79cb3"]
+            },
+            {
+              "paramId": "68046322-f647-4c6e-90a2-3eda1a717a3e",
+              "formulaTokens": [
+                {
+                  "id": "4b749511-cd9c-4e98-907c-37587b44b8b1",
+                  "stream": "",
+                  "variable": {
+                    "id": "d9d2e405-9bd1-44fb-b28b-55b640b352fd",
+                    "type": "interface",
+                    "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                    "paramId": "68046322-f647-4c6e-90a2-3eda1a717a3e"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "d9d2e405-9bd1-44fb-b28b-55b640b352fd",
+                  "type": "interface",
+                  "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                  "paramId": "68046322-f647-4c6e-90a2-3eda1a717a3e"
+                }
+              ],
+              "triggers": ["d493bb62-2f68-47e5-ad53-1aa170a79cb3"]
+            },
+            {
+              "paramId": "4f1cf485-92ba-4152-a731-ea0ccfae7b93",
+              "formulaTokens": [
+                {
+                  "id": "b0376107-c037-47be-bf48-2695af2963d2",
+                  "stream": "",
+                  "variable": {
+                    "id": "8beecade-37bd-40a1-a9d9-3170439c41c2",
+                    "type": "interface",
+                    "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                    "paramId": "4f1cf485-92ba-4152-a731-ea0ccfae7b93"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "8beecade-37bd-40a1-a9d9-3170439c41c2",
+                  "type": "interface",
+                  "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                  "paramId": "4f1cf485-92ba-4152-a731-ea0ccfae7b93"
+                }
+              ],
+              "triggers": ["d493bb62-2f68-47e5-ad53-1aa170a79cb3"]
+            },
+            {
+              "paramId": "678d3330-961c-442b-8a9e-12df7536ee6e",
+              "formulaTokens": [
+                {
+                  "id": "c04005bc-a979-4351-81ba-b889bb49eccb",
+                  "stream": "",
+                  "variable": {
+                    "id": "fb8d2a27-604f-4c5b-97ae-1f28c77d3edb",
+                    "type": "interface",
+                    "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                    "paramId": "678d3330-961c-442b-8a9e-12df7536ee6e"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "fb8d2a27-604f-4c5b-97ae-1f28c77d3edb",
+                  "type": "interface",
+                  "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                  "paramId": "678d3330-961c-442b-8a9e-12df7536ee6e"
+                }
+              ],
+              "triggers": ["d493bb62-2f68-47e5-ad53-1aa170a79cb3"]
+            },
+            {
+              "paramId": "c039c4d3-8e79-42b8-9c31-486e0cf36b20",
+              "formulaTokens": [
+                {
+                  "id": "eba6fc7c-bd7a-488b-acf9-e552519edc22",
+                  "stream": "-",
+                  "variable": {
+                    "id": "a0a7bbfe-d00c-4801-98da-975892f692b2",
+                    "type": "interface",
+                    "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                    "paramId": "c039c4d3-8e79-42b8-9c31-486e0cf36b20"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "-x[1]",
+              "variables": [
+                {
+                  "id": "a0a7bbfe-d00c-4801-98da-975892f692b2",
+                  "type": "interface",
+                  "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                  "paramId": "c039c4d3-8e79-42b8-9c31-486e0cf36b20"
+                }
+              ],
+              "triggers": ["d493bb62-2f68-47e5-ad53-1aa170a79cb3"]
+            },
+            {
+              "paramId": "f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5",
+              "formulaTokens": [
+                {
+                  "id": "49bd6da7-88a9-45c6-8591-dc5466688ad4",
+                  "stream": "-",
+                  "variable": {
+                    "id": "584304f4-fb40-4a0c-bfc0-727d9ce238b8",
+                    "type": "interface",
+                    "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                    "paramId": "f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "-x[1]",
+              "variables": [
+                {
+                  "id": "584304f4-fb40-4a0c-bfc0-727d9ce238b8",
+                  "type": "interface",
+                  "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                  "paramId": "f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5"
+                }
+              ],
+              "triggers": ["d493bb62-2f68-47e5-ad53-1aa170a79cb3"]
+            },
+            {
+              "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47",
+              "formulaTokens": [
+                {
+                  "id": "270e5e71-8a0c-4bf6-a557-c668e9e84833",
+                  "stream": "",
+                  "variable": {
+                    "id": "92f0a50f-4e68-4a4c-bfd4-e175bd35f48f",
+                    "type": "interface",
+                    "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                    "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "92f0a50f-4e68-4a4c-bfd4-e175bd35f48f",
+                  "type": "interface",
+                  "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+                  "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
+                }
+              ],
+              "triggers": ["d493bb62-2f68-47e5-ad53-1aa170a79cb3"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+      "name": "Interface 2",
+      "position": "left",
+      "formulaConditions": [
+        {
+          "id": "791b19f1-d54f-4243-8607-258d08935b0a",
+          "type": "TRIGGER AT",
+          "interfaceId": "d493bb62-2f68-47e5-ad53-1aa170a79cb3",
+          "formulas": [
+            {
+              "paramId": "e82e6c79-4e2b-457f-aef7-02ab28cd19c1",
+              "formulaTokens": [
+                {
+                  "id": "c9616559-4c78-43e6-9e35-ee037269ad40",
+                  "stream": "",
+                  "variable": {
+                    "id": "232d3f86-24d3-4e84-8921-c244e26723f8",
+                    "type": "interface",
+                    "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                    "paramId": "e82e6c79-4e2b-457f-aef7-02ab28cd19c1"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "232d3f86-24d3-4e84-8921-c244e26723f8",
+                  "type": "interface",
+                  "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                  "paramId": "e82e6c79-4e2b-457f-aef7-02ab28cd19c1"
+                }
+              ],
+              "triggers": ["c186fa77-741c-464f-aacb-a1ca74762b0c"]
+            },
+            {
+              "paramId": "2c6b38a6-ebd5-4132-b4be-c5757e418d51",
+              "formulaTokens": [
+                {
+                  "id": "733ad502-e521-4098-a796-d6c215a33443",
+                  "stream": "",
+                  "variable": {
+                    "id": "30fb4e34-9634-4ac4-a92b-5765d98ad458",
+                    "type": "interface",
+                    "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                    "paramId": "2c6b38a6-ebd5-4132-b4be-c5757e418d51"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "30fb4e34-9634-4ac4-a92b-5765d98ad458",
+                  "type": "interface",
+                  "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                  "paramId": "2c6b38a6-ebd5-4132-b4be-c5757e418d51"
+                }
+              ],
+              "triggers": ["c186fa77-741c-464f-aacb-a1ca74762b0c"]
+            },
+            {
+              "paramId": "c1ff5f01-8383-44e3-b5f1-b2aca399c8fd",
+              "formulaTokens": [
+                {
+                  "id": "e040bab7-1c89-493e-98ef-e5e6079ac361",
+                  "stream": "",
+                  "variable": {
+                    "id": "3057ddfe-4ebe-4313-b9e8-10e8fca39542",
+                    "type": "interface",
+                    "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                    "paramId": "c1ff5f01-8383-44e3-b5f1-b2aca399c8fd"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "3057ddfe-4ebe-4313-b9e8-10e8fca39542",
+                  "type": "interface",
+                  "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                  "paramId": "c1ff5f01-8383-44e3-b5f1-b2aca399c8fd"
+                }
+              ],
+              "triggers": ["c186fa77-741c-464f-aacb-a1ca74762b0c"]
+            },
+            {
+              "paramId": "68046322-f647-4c6e-90a2-3eda1a717a3e",
+              "formulaTokens": [
+                {
+                  "id": "de2dec83-85c0-487c-8d94-feb4b213fa46",
+                  "stream": "",
+                  "variable": {
+                    "id": "24627b8a-c79e-461d-9085-e45d784dcadd",
+                    "type": "interface",
+                    "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                    "paramId": "68046322-f647-4c6e-90a2-3eda1a717a3e"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "24627b8a-c79e-461d-9085-e45d784dcadd",
+                  "type": "interface",
+                  "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                  "paramId": "68046322-f647-4c6e-90a2-3eda1a717a3e"
+                }
+              ],
+              "triggers": ["c186fa77-741c-464f-aacb-a1ca74762b0c"]
+            },
+            {
+              "paramId": "4f1cf485-92ba-4152-a731-ea0ccfae7b93",
+              "formulaTokens": [
+                {
+                  "id": "c9828322-d35b-4348-a1c6-b4f59ea6246c",
+                  "stream": "",
+                  "variable": {
+                    "id": "1d203536-3a6c-407e-bd9a-a9cd1ac596aa",
+                    "type": "interface",
+                    "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                    "paramId": "4f1cf485-92ba-4152-a731-ea0ccfae7b93"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "1d203536-3a6c-407e-bd9a-a9cd1ac596aa",
+                  "type": "interface",
+                  "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                  "paramId": "4f1cf485-92ba-4152-a731-ea0ccfae7b93"
+                }
+              ],
+              "triggers": ["c186fa77-741c-464f-aacb-a1ca74762b0c"]
+            },
+            {
+              "paramId": "678d3330-961c-442b-8a9e-12df7536ee6e",
+              "formulaTokens": [
+                {
+                  "id": "9af0857f-5eee-4122-820b-bf1dc105295c",
+                  "stream": "",
+                  "variable": {
+                    "id": "abd529ef-47f6-4f86-b2e8-b90897af84ab",
+                    "type": "interface",
+                    "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                    "paramId": "678d3330-961c-442b-8a9e-12df7536ee6e"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "abd529ef-47f6-4f86-b2e8-b90897af84ab",
+                  "type": "interface",
+                  "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                  "paramId": "678d3330-961c-442b-8a9e-12df7536ee6e"
+                }
+              ],
+              "triggers": ["c186fa77-741c-464f-aacb-a1ca74762b0c"]
+            },
+            {
+              "paramId": "c039c4d3-8e79-42b8-9c31-486e0cf36b20",
+              "formulaTokens": [
+                {
+                  "id": "6b9486a7-8121-4e62-bedf-f4b3ccd0f0aa",
+                  "stream": "-",
+                  "variable": {
+                    "id": "7ec12e6e-bdda-4c63-896f-2c29ea669439",
+                    "type": "interface",
+                    "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                    "paramId": "c039c4d3-8e79-42b8-9c31-486e0cf36b20"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "-x[1]",
+              "variables": [
+                {
+                  "id": "7ec12e6e-bdda-4c63-896f-2c29ea669439",
+                  "type": "interface",
+                  "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                  "paramId": "c039c4d3-8e79-42b8-9c31-486e0cf36b20"
+                }
+              ],
+              "triggers": ["c186fa77-741c-464f-aacb-a1ca74762b0c"]
+            },
+            {
+              "paramId": "f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5",
+              "formulaTokens": [
+                {
+                  "id": "b6ec09bc-dda1-49cf-89cb-ef0ab357eaa4",
+                  "stream": "-",
+                  "variable": {
+                    "id": "cd520d8b-16bd-4a4c-b42f-3a5a37833ede",
+                    "type": "interface",
+                    "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                    "paramId": "f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "-x[1]",
+              "variables": [
+                {
+                  "id": "cd520d8b-16bd-4a4c-b42f-3a5a37833ede",
+                  "type": "interface",
+                  "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                  "paramId": "f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5"
+                }
+              ],
+              "triggers": ["c186fa77-741c-464f-aacb-a1ca74762b0c"]
+            },
+            {
+              "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47",
+              "formulaTokens": [
+                {
+                  "id": "497614d5-29d1-480f-93b1-e452cc5e9d28",
+                  "stream": "",
+                  "variable": {
+                    "id": "b53da354-c599-4680-a08c-efcd151a2b80",
+                    "type": "interface",
+                    "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                    "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "b53da354-c599-4680-a08c-efcd151a2b80",
+                  "type": "interface",
+                  "interfaceId": "c186fa77-741c-464f-aacb-a1ca74762b0c",
+                  "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
+                }
+              ],
+              "triggers": ["c186fa77-741c-464f-aacb-a1ca74762b0c"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -16,6 +16,7 @@ import typeLP from "@/features/systems/libs/standard/type/LP.json";
 import typeHWP from "@/features/systems/libs/standard/type/HWP.json";
 import typeQWP from "@/features/systems/libs/standard/type/QWP.json";
 import typeAOM from "@/features/systems/libs/standard/type/AOM.json";
+import typeMirror from "@/features/systems/libs/standard/type/Mirror.json";
 
 export default async function createProject(form: createProjectData) {
   const { success, data } = createProjectSchema.safeParse(form);
@@ -34,6 +35,7 @@ export default async function createProject(form: createProjectData) {
       JSON.parse(JSON.stringify(typeHWP)),
       JSON.parse(JSON.stringify(typeQWP)),
       JSON.parse(JSON.stringify(typeAOM)),
+      JSON.parse(JSON.stringify(typeMirror)),
     ],
     // types: [],
     ...parameterConfig,
