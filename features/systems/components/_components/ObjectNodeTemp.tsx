@@ -69,7 +69,7 @@ export default function ObjectNodeTemp({
     <div
       className={cn(
         "flex !p-4 flex-1 bg-white justify-center items-center flex-col rounded-lg border-2 border-gray-200",
-        isSelect && "border-sky-400"
+        isSelect && "border-sky-400 border-4"
       )}
       style={{
         height: `${nodeHeight}px`,

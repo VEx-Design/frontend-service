@@ -47,6 +47,10 @@ interface FocusNode {
 interface FocusEdge {
   id: string;
   type: string;
+  target: string;
+  source: string;
+  targetHandle: string;
+  sourceHandle: string;
   data: EdgeData;
 }
 
@@ -57,6 +61,8 @@ interface EditorContextValue {
   setFocusNode: (node?: FocusNode) => void;
   focusEdge?: FocusEdge;
   setFocusEdge: (edge?: FocusEdge) => void;
+  twinFocusEdge: FocusEdge | undefined;
+  setTwinFocusEdge: (edge?: FocusEdge) => void;
   contextMenuPosition: Coordinate | null;
   setContextMenuPosition: (position: Coordinate | null) => void;
   nodeAction: NodeAction;
@@ -97,6 +103,7 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
 
   const [focusNode, setFocusNode] = useState<FocusNode | undefined>();
   const [focusEdge, setFocusEdge] = useState<FocusEdge | undefined>();
+  const [twinFocusEdge, setTwinFocusEdge] = useState<FocusEdge | undefined>();
   const [contextMenuPosition, setContextMenuPosition] =
     useState<Coordinate | null>(null);
 
@@ -269,18 +276,25 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
         if (focusEdge && focusEdge.data) {
           focusEdge.data.distance = distance.toString();
         }
+        if (twinFocusEdge && twinFocusEdge.data) {
+          twinFocusEdge.data.distance = distance.toString();
+        }
         if (focusEdge?.data) {
           setEdges((prevEdges) =>
-            prevEdges.map((edge) =>
-              edge.id === focusEdge.id
-                ? { ...edge, data: { ...edge.data, distance } }
-                : edge
-            )
+            prevEdges.map((edge) => {
+              if (edge.id === focusEdge?.id || edge.id === twinFocusEdge?.id) {
+                return {
+                  ...edge,
+                  data: { ...edge.data, distance: distance.toString() },
+                };
+              }
+              return edge;
+            })
           );
         }
       },
     }),
-    [edges, focusEdge, setEdges]
+    [edges, focusEdge, setEdges, twinFocusEdge]
   );
 
   const contextValue = useMemo(
@@ -291,6 +305,8 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
       setFocusNode,
       focusEdge,
       setFocusEdge,
+      twinFocusEdge,
+      setTwinFocusEdge,
       contextMenuPosition,
       setContextMenuPosition,
       nodeAction,
@@ -305,6 +321,7 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
       onEdgesChange,
       focusNode,
       focusEdge,
+      twinFocusEdge,
       contextMenuPosition,
       nodeAction,
       edgeAction,
