@@ -19,6 +19,11 @@
         "c039c4d3-8e79-42b8-9c31-486e0cf36b20",
         "f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5"
       ]
+    },
+    {
+      "id": "7033f1c3-d659-4660-a95c-33a9c38937c8",
+      "name": "Frequency properties",
+      "parameterIds": ["3c897bee-24d7-4a06-8771-ed08152d0d47"]
     }
   ]
 }

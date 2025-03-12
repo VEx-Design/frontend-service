@@ -1,12 +1,13 @@
 import React from "react";
 import { PyramidIcon, RotateCw } from "lucide-react";
-import Input from "../InspectorInput";
+import Input, { InputLabel } from "../InspectorInput";
 
 import { useEditor } from "@/features/systems/contexts/EditorContext";
 import { Property } from "@/features/systems/libs/ClassType/types/Type";
 import getValue from "@/features/systems/libs/ClassObject/getValue";
 import { getVarPrefixId } from "@/features/systems/libs/ClassObject/getPrefixId";
 import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext";
+import SymbolDisplay from "@/components/SymbolDisplay";
 
 export default function ObjectInspector() {
   const { focusNode, nodeAction } = useEditor();
@@ -57,7 +58,14 @@ export default function ObjectInspector() {
                 }}
                 unitId={prop.unitId}
                 prefixId={getVarPrefixId(focusNode.data, prop.id)}
-              />
+              >
+                <InputLabel>
+                  <div className="flex items-center">
+                    <SymbolDisplay symbol={prop.symbol} />
+                    <p className="text-sm ms-1">{` : ${prop.name}`}</p>
+                  </div>
+                </InputLabel>
+              </Input>
             ))}
           </div>
         </>
