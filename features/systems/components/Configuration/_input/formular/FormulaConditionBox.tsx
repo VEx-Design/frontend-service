@@ -27,9 +27,9 @@ export default function FormulaConditionBox({ condition }: Props) {
   }
 
   return (
-    <div className="flex flex-col justify-between py-3 px-3 border border-editbar-border rounded-xl gap-2">
+    <div className="flex flex-1 flex-col justify-between py-3 px-3 border border-editbar-border rounded-xl gap-2">
       <div
-        className="flex items-center justify-between cursor-pointer"
+        className="flex w-full items-center justify-between cursor-pointer"
         onClick={(e) => {
           setIsOpen((value) => !value);
           e.stopPropagation();
@@ -43,7 +43,7 @@ export default function FormulaConditionBox({ condition }: Props) {
         </button>
       </div>
       {isOpen && (
-        <div className="flex flex-col gap-2">
+        <div className="flex w-full flex-col gap-2">
           {config.parameters.map((param) => (
             <FormularBox
               key={condition.id + param.id}
