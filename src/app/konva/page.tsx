@@ -4,6 +4,7 @@ import Konva from "konva"
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { Circle, Group, Layer, Line, Rect, Stage, Text } from "react-konva"
+import { EdgeManager } from "./edge-manager"
 
 interface Table {
   size: { width: number; height: number } // unit in mm (scene coordinates)
@@ -34,6 +35,121 @@ interface Edge {
   expectedDistance: number
   actualDistance: number
 }
+
+// Mock data for testing
+const mockObjects: Object[] = [
+  {
+    id: "1",
+    name: "Router",
+    size: { width: 100, height: 100 },
+    position: { x: 200, y: 200 },
+    rotation: 0,
+    referencePosition: [0.5, 0.5],
+    interfacePositions: new Map([
+      ["eth0", [0, 0.25]],
+      ["eth1", [0, 0.75]],
+      ["wan0", [1, 0.25]],
+      ["wan1", [1, 0.75]],
+    ]),
+    isColliding: false,
+  },
+  {
+    id: "2",
+    name: "Switch",
+    size: { width: 150, height: 80 },
+    position: { x: 400, y: 300 },
+    rotation: 0,
+    referencePosition: [0.5, 0.5],
+    interfacePositions: new Map([
+      ["port1", [0, 0.3]],
+      ["port2", [0, 0.7]],
+      ["port3", [1, 0.3]],
+      ["port4", [1, 0.7]],
+    ]),
+    isColliding: false,
+  },
+  {
+    id: "3",
+    name: "Server",
+    size: { width: 120, height: 120 },
+    position: { x: 600, y: 200 },
+    rotation: 45,
+    referencePosition: [0.5, 0.5],
+    interfacePositions: new Map([
+      ["nic1", [0, 0.5]],
+      ["nic2", [1, 0.5]],
+      ["mgmt", [0.5, 0]],
+    ]),
+    isColliding: false,
+  },
+  {
+    id: "4",
+    name: "Firewall",
+    size: { width: 100, height: 80 },
+    position: { x: 300, y: 500 },
+    rotation: 90,
+    referencePosition: [0.5, 0.5],
+    interfacePositions: new Map([
+      ["in", [0, 0.5]],
+      ["out", [1, 0.5]],
+      ["mgmt", [0.5, 0]],
+    ]),
+    isColliding: false,
+  },
+  {
+    id: "5",
+    name: "Client",
+    size: { width: 80, height: 60 },
+    position: { x: 500, y: 500 },
+    rotation: 0,
+    referencePosition: [0.5, 0.5],
+    interfacePositions: new Map([
+      ["eth", [0, 0.5]],
+      ["wifi", [0.5, 0]],
+    ]),
+    isColliding: false,
+  },
+]
+
+// Mock edges for testing
+const mockEdges: Edge[] = [
+  {
+    id: "edge1",
+    source: "1",
+    sourceInterface: "wan0",
+    target: "2",
+    targetInterface: "port1",
+    expectedDistance: 200,
+    actualDistance: 0,
+  },
+  {
+    id: "edge2",
+    source: "2",
+    sourceInterface: "port3",
+    target: "3",
+    targetInterface: "nic1",
+    expectedDistance: 250,
+    actualDistance: 0,
+  },
+  {
+    id: "edge3",
+    source: "1",
+    sourceInterface: "eth1",
+    target: "4",
+    targetInterface: "in",
+    expectedDistance: 300,
+    actualDistance: 0,
+  },
+  {
+    id: "edge4",
+    source: "4",
+    sourceInterface: "out",
+    target: "5",
+    targetInterface: "eth",
+    expectedDistance: 150,
+    actualDistance: 0,
+  },
+]
 
 export default function KonvaPage() {
   // Container and stage size (screen coordinates)
@@ -74,35 +190,41 @@ export default function KonvaPage() {
     error: null as string | null,
   })
 
-  // Objects (defined in scene coordinates)
-  const [objects, setObjects] = useState<Object[]>([
-    {
-      id: "1",
-      name: "Object 1",
-      size: { width: 100, height: 100 },
-      position: { x: 100, y: 100 }, // Initial position in scene coordinates
-      rotation: 0, // Initial rotation in degrees
-      referencePosition: [0, 0], // Center
-      interfacePositions: new Map([
-        ["1", [0, 0.5]],
-        ["2", [1, 0.5]],
-      ]),
-      isColliding: false,
-    },
-    {
-      id: "2",
-      name: "Object 2",
-      size: { width: 150, height: 80 },
-      position: { x: 300, y: 300 }, // Initial position in scene coordinates
-      rotation: 0, // Initial rotation in degrees
-      referencePosition: [0.5, 0.5], // Center
-      interfacePositions: new Map([
-        ["1", [0, 0.5]],
-        ["2", [1, 0.5]],
-      ]),
-      isColliding: false,
-    },
-  ])
+  // Use mock data for objects and edges
+  const [objects, setObjects] = useState<Object[]>(mockObjects)
+  const [edges, setEdges] = useState<Edge[]>(mockEdges)
+
+  // Calculate actual distances for edges when objects change
+  useEffect(() => {
+    setEdges((prevEdges) =>
+      prevEdges.map((edge) => {
+        const sourcePos = getInterfacePosition(edge.source, edge.sourceInterface)
+        const targetPos = getInterfacePosition(edge.target, edge.targetInterface)
+
+        if (!sourcePos || !targetPos) return edge
+
+        const distance = calculateManhattanDistance(sourcePos, targetPos)
+
+        return {
+          ...edge,
+          actualDistance: distance,
+        }
+      }),
+    )
+  }, [objects])
+
+  // Edge management functions
+  const handleEdgeUpdate = (updatedEdge: Edge) => {
+    setEdges((prevEdges) => prevEdges.map((edge) => (edge.id === updatedEdge.id ? updatedEdge : edge)))
+  }
+
+  const handleEdgeDelete = (edgeId: string) => {
+    setEdges((prevEdges) => prevEdges.filter((edge) => edge.id !== edgeId))
+  }
+
+  const handleEdgeAdd = (newEdge: Edge) => {
+    setEdges((prevEdges) => [...prevEdges, newEdge])
+  }
 
   // Get the size of the container to set the stage size
   useEffect(() => {
@@ -597,16 +719,100 @@ export default function KonvaPage() {
           fill="red"
         />
         {Array.from(object.interfacePositions).map(([intf, position]) => (
-          <Circle
-            key={intf}
-            x={position[0] * object.size.width}
-            y={position[1] * object.size.height}
-            radius={2 / scale} // Adjust size based on zoom
-            fill="blue"
-          />
+          <Group key={intf}>
+            <Circle
+              x={position[0] * object.size.width}
+              y={position[1] * object.size.height}
+              radius={3 / scale} // Adjust size based on zoom
+              fill="blue"
+            />
+            <Text
+              text={intf}
+              x={position[0] * object.size.width - 15 / scale}
+              y={position[1] * object.size.height - 15 / scale}
+              fontSize={8 / scale}
+              fill="black"
+              width={30 / scale}
+              align="center"
+            />
+          </Group>
         ))}
       </Group>
     )
+  }
+
+  // Get interface position in scene coordinates
+  const getInterfacePosition = (objectId: string, interfaceId: string) => {
+    const object = objects.find((obj) => obj.id === objectId)
+    if (!object) return null
+
+    const interfacePosition = object.interfacePositions.get(interfaceId)
+    if (!interfacePosition) return null
+
+    const refX = object.referencePosition[0] * object.size.width
+    const refY = object.referencePosition[1] * object.size.height
+
+    const objectX = object.position.x
+    const objectY = object.position.y
+    const objectRotation = object.rotation
+
+    const interfaceX = interfacePosition[0] * object.size.width
+    const interfaceY = interfacePosition[1] * object.size.height
+
+    // Rotate the interface position around the object's reference point
+    const angleInRadians = (objectRotation * Math.PI) / 180
+    const rotatedX =
+      Math.cos(angleInRadians) * (interfaceX - refX) - Math.sin(angleInRadians) * (interfaceY - refY) + refX
+    const rotatedY =
+      Math.sin(angleInRadians) * (interfaceX - refX) + Math.cos(angleInRadians) * (interfaceY - refY) + refY
+
+    return {
+      x: objectX + rotatedX - refX,
+      y: objectY + rotatedY - refY,
+    }
+  }
+
+  // Calculate Manhattan distance between two points
+  const calculateManhattanDistance = (p1: { x: number; y: number }, p2: { x: number; y: number }) => {
+    return Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y)
+  }
+
+  // Generate orthogonal path points between two interface points
+  const generateOrthogonalPath = (start: { x: number; y: number }, end: { x: number; y: number }) => {
+    // Create a simple L-shaped path (vertical first, then horizontal)
+    return [start.x, start.y, start.x, end.y, end.x, end.y]
+  }
+
+  // Render edges between objects
+  const edgeRender = () => {
+    return edges.map((edge) => {
+      const sourcePos = getInterfacePosition(edge.source, edge.sourceInterface)
+      const targetPos = getInterfacePosition(edge.target, edge.targetInterface)
+
+      if (!sourcePos || !targetPos) return null
+
+      // Generate orthogonal path
+      const pathPoints = generateOrthogonalPath(sourcePos, targetPos)
+
+      // Determine color based on distance comparison
+      const distanceDifference = Math.abs(edge.actualDistance - edge.expectedDistance)
+      const isDistanceMatching = distanceDifference < 5
+      const strokeColor = isDistanceMatching ? "green" : "red"
+
+      return (
+        <Group key={edge.id}>
+          <Line points={pathPoints} stroke={strokeColor} strokeWidth={1.5 / scale} lineCap="round" lineJoin="round" />
+          <Text
+            text={`${Math.round(edge.actualDistance)}/${edge.expectedDistance}`}
+            x={(sourcePos.x + targetPos.x) / 2}
+            y={(sourcePos.y + targetPos.y) / 2 - 15 / scale}
+            fontSize={10 / scale}
+            fill={strokeColor}
+            align="center"
+          />
+        </Group>
+      )
+    })
   }
 
   // Handle stage drag end
@@ -621,9 +827,49 @@ export default function KonvaPage() {
     }
   }
 
+  // Reset view to fit all objects
+  const resetView = () => {
+    // Calculate bounding box of all objects
+    if (objects.length === 0) return
+
+    let minX = Number.POSITIVE_INFINITY
+    let minY = Number.POSITIVE_INFINITY
+    let maxX = Number.NEGATIVE_INFINITY
+    let maxY = Number.NEGATIVE_INFINITY
+
+    objects.forEach((obj) => {
+      const box = getObjectBoundingBox(obj)
+      minX = Math.min(minX, box.x)
+      minY = Math.min(minY, box.y)
+      maxX = Math.max(maxX, box.x + box.width)
+      maxY = Math.max(maxY, box.y + box.height)
+    })
+
+    // Add padding
+    const padding = 100
+    minX -= padding
+    minY -= padding
+    maxX += padding
+    maxY += padding
+
+    // Calculate scale to fit
+    const scaleX = stageSize.width / (maxX - minX)
+    const scaleY = stageSize.height / (maxY - minY)
+    const newScale = Math.min(scaleX, scaleY, 1) // Limit max scale to 1
+
+    // Calculate position
+    const newPos = {
+      x: stageSize.width / 2 - ((minX + maxX) / 2) * newScale,
+      y: stageSize.height / 2 - ((minY + maxY) / 2) * newScale,
+    }
+
+    setScale(newScale)
+    setPosition(newPos)
+  }
+
   // Add debug UI to visualize and control snap settings
   const DebugUI = () => (
-    <div className="absolute top-2 right-2 bg-white p-2 rounded shadow-md z-10">
+    <div className="absolute top-2 right-2 bg-white p-2 rounded shadow-md z-10 max-w-xs">
       <div>
         <label className="flex items-center">
           <input
@@ -632,6 +878,13 @@ export default function KonvaPage() {
             onChange={(e) => setSnapEnabled(e.target.checked)}
             className="mr-2"
           />
+          Snap to Grid
+        </label>
+      </div>
+      <div className="mt-2">
+        <label>
+          Snap Threshold: {snapThreshold}px
+          <input className="mr-2" />
           Snap to Grid
         </label>
       </div>
@@ -652,15 +905,30 @@ export default function KonvaPage() {
         <div>Zoom: {scale.toFixed(2)}x</div>
         <div>Selected: {selectedObjectId || "None"}</div>
       </div>
-      <div className="mt-2">
+      <div className="mt-2 flex space-x-2">
         <button
-          className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
+          className="bg-blue-500 text-white px-2 py-1 rounded"
           onClick={() => selectedObjectId && rotateObject(selectedObjectId)}
           disabled={!selectedObjectId}
         >
           Rotate 90°
         </button>
+        <button className="bg-green-500 text-white px-2 py-1 rounded" onClick={resetView}>
+          Reset View
+        </button>
       </div>
+
+      {/* Edge Manager */}
+      <div className="mt-4">
+        <EdgeManager
+          edges={edges}
+          onEdgeUpdate={handleEdgeUpdate}
+          onEdgeDelete={handleEdgeDelete}
+          onEdgeAdd={handleEdgeAdd}
+          objects={objects}
+        />
+      </div>
+
       <div className="mt-2 text-xs">
         <div>Stage visible: {debug.isStageVisible ? "Yes" : "No"}</div>
         <div>
@@ -705,6 +973,9 @@ export default function KonvaPage() {
           <Layer>
             {/* Table Render */}
             {tableRender()}
+
+            {/* Edge Render */}
+            {edgeRender()}
 
             {/* Object Render */}
             {objects.map((object) => objectRender(object))}
