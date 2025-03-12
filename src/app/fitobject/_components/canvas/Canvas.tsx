@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Stage, Layer, Line, Circle, Image as KonvaImage, Group, Rect, Text } from "react-konva"
@@ -536,7 +534,8 @@ function Canvas({ edges: externalEdges }: CanvasProps = {}) {
           gridLines.push(<Circle key={`d${i}-${j}`} radius={1} x={i} y={j} fill={gridColor} opacity={gridOpacity} />)
         }
       }
-    } else {
+    } 
+    else {
       for (let i = gridSize; i < canvas.canvasWidth; i += gridSize) {
         gridLines.push(
           <Line
