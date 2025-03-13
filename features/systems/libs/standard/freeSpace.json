@@ -1,9 +1,269 @@
 {
   "freeSpaces": [
     {
-      "id": "92e2bf3d-b2df-479c-9904-6a4bb1899bab",
+      "id": "d080429d-4478-4da9-aa39-2d6740495686",
       "name": "Regular",
-      "formulas": []
+      "formulas": [
+        {
+          "paramId": "e82e6c79-4e2b-457f-aef7-02ab28cd19c1",
+          "formulaTokens": [
+            {
+              "id": "33cd11cc-a33c-4cfc-82dd-c30926dca38c",
+              "stream": "",
+              "variable": {
+                "id": "56641dfc-e0fd-4601-8b6c-a83172acd9f8",
+                "type": "parameter",
+                "paramId": "e82e6c79-4e2b-457f-aef7-02ab28cd19c1"
+              }
+            },
+            {
+              "id": "5fa909d0-23c5-4772-9a41-9098fb3f1072",
+              "stream": "+",
+              "variable": {
+                "id": "8ce8a59c-418b-41fc-9a79-d4ca0bcaca40",
+                "type": "distance"
+              }
+            },
+            {
+              "id": "7566f1d6-f617-4173-bfd4-01cc05e75234",
+              "stream": "*",
+              "variable": {
+                "id": "0197e31a-2e82-4f2b-8fa3-cee86bdd0110",
+                "type": "parameter",
+                "paramId": "2c6b38a6-ebd5-4132-b4be-c5757e418d51"
+              }
+            }
+          ],
+          "lastStream": "",
+          "completeStream": "x[1]+x[2]*x[3]",
+          "variables": [
+            {
+              "id": "56641dfc-e0fd-4601-8b6c-a83172acd9f8",
+              "type": "parameter",
+              "paramId": "e82e6c79-4e2b-457f-aef7-02ab28cd19c1"
+            },
+            {
+              "id": "8ce8a59c-418b-41fc-9a79-d4ca0bcaca40",
+              "type": "distance"
+            },
+            {
+              "id": "0197e31a-2e82-4f2b-8fa3-cee86bdd0110",
+              "type": "parameter",
+              "paramId": "2c6b38a6-ebd5-4132-b4be-c5757e418d51"
+            }
+          ]
+        },
+        {
+          "paramId": "2c6b38a6-ebd5-4132-b4be-c5757e418d51",
+          "formulaTokens": [
+            {
+              "id": "1b91d5cb-92c4-46e1-8502-ff410009e5c8",
+              "stream": "",
+              "variable": {
+                "id": "82287766-acd3-4226-87c8-d5b1a333a726",
+                "type": "parameter",
+                "paramId": "2c6b38a6-ebd5-4132-b4be-c5757e418d51"
+              }
+            }
+          ],
+          "lastStream": "",
+          "completeStream": "x[1]",
+          "variables": [
+            {
+              "id": "82287766-acd3-4226-87c8-d5b1a333a726",
+              "type": "parameter",
+              "paramId": "2c6b38a6-ebd5-4132-b4be-c5757e418d51"
+            }
+          ]
+        },
+        {
+          "paramId": "c1ff5f01-8383-44e3-b5f1-b2aca399c8fd",
+          "formulaTokens": [
+            {
+              "id": "c354a822-9621-4c7f-acdc-a91eed9273f3",
+              "stream": "",
+              "variable": {
+                "id": "fec8b90c-38c1-49b8-8d90-d0407a3ed5cc",
+                "type": "parameter",
+                "paramId": "c1ff5f01-8383-44e3-b5f1-b2aca399c8fd"
+              }
+            },
+            {
+              "id": "d45a4b3d-28d6-4200-9b6b-5bfb90d0b29c",
+              "stream": "+",
+              "variable": {
+                "id": "985aa7ac-f6fe-44c4-92a2-02eb0565686a",
+                "type": "distance"
+              }
+            },
+            {
+              "id": "049633f5-f6b7-4d61-8caa-e29a3f36998c",
+              "stream": "*",
+              "variable": {
+                "id": "cd663924-2db2-4798-bf35-c10cb7fa0b3d",
+                "type": "parameter",
+                "paramId": "68046322-f647-4c6e-90a2-3eda1a717a3e"
+              }
+            }
+          ],
+          "lastStream": "",
+          "completeStream": "x[1]+x[2]*x[3]",
+          "variables": [
+            {
+              "id": "fec8b90c-38c1-49b8-8d90-d0407a3ed5cc",
+              "type": "parameter",
+              "paramId": "c1ff5f01-8383-44e3-b5f1-b2aca399c8fd"
+            },
+            {
+              "id": "985aa7ac-f6fe-44c4-92a2-02eb0565686a",
+              "type": "distance"
+            },
+            {
+              "id": "cd663924-2db2-4798-bf35-c10cb7fa0b3d",
+              "type": "parameter",
+              "paramId": "68046322-f647-4c6e-90a2-3eda1a717a3e"
+            }
+          ]
+        },
+        {
+          "paramId": "68046322-f647-4c6e-90a2-3eda1a717a3e",
+          "formulaTokens": [
+            {
+              "id": "7e2b4e1a-e178-4a41-8db0-70f3bbdb92d8",
+              "stream": "",
+              "variable": {
+                "id": "d13a239d-e68a-4c21-ada5-124d079f93df",
+                "type": "parameter",
+                "paramId": "68046322-f647-4c6e-90a2-3eda1a717a3e"
+              }
+            }
+          ],
+          "lastStream": "",
+          "completeStream": "x[1]",
+          "variables": [
+            {
+              "id": "d13a239d-e68a-4c21-ada5-124d079f93df",
+              "type": "parameter",
+              "paramId": "68046322-f647-4c6e-90a2-3eda1a717a3e"
+            }
+          ]
+        },
+        {
+          "paramId": "4f1cf485-92ba-4152-a731-ea0ccfae7b93",
+          "formulaTokens": [
+            {
+              "id": "439cb56e-9245-4cb7-bb27-4e247f5ab7dd",
+              "stream": "",
+              "variable": {
+                "id": "a600f3a1-ef41-45b4-8adc-bd5c4bf3939d",
+                "type": "parameter",
+                "paramId": "4f1cf485-92ba-4152-a731-ea0ccfae7b93"
+              }
+            }
+          ],
+          "lastStream": "",
+          "completeStream": "x[1]",
+          "variables": [
+            {
+              "id": "a600f3a1-ef41-45b4-8adc-bd5c4bf3939d",
+              "type": "parameter",
+              "paramId": "4f1cf485-92ba-4152-a731-ea0ccfae7b93"
+            }
+          ]
+        },
+        {
+          "paramId": "678d3330-961c-442b-8a9e-12df7536ee6e",
+          "formulaTokens": [
+            {
+              "id": "fe6f0c7a-5ec6-4e7b-bc75-762b7a1f853a",
+              "stream": "",
+              "variable": {
+                "id": "14ab9a8b-40b4-4ae4-aa66-6781db7c8b55",
+                "type": "parameter",
+                "paramId": "678d3330-961c-442b-8a9e-12df7536ee6e"
+              }
+            }
+          ],
+          "lastStream": "",
+          "completeStream": "x[1]",
+          "variables": [
+            {
+              "id": "14ab9a8b-40b4-4ae4-aa66-6781db7c8b55",
+              "type": "parameter",
+              "paramId": "678d3330-961c-442b-8a9e-12df7536ee6e"
+            }
+          ]
+        },
+        {
+          "paramId": "c039c4d3-8e79-42b8-9c31-486e0cf36b20",
+          "formulaTokens": [
+            {
+              "id": "3aae7f4d-b168-4256-9d21-624807e86353",
+              "stream": "",
+              "variable": {
+                "id": "2d98ceab-876f-419d-a65f-4ca3ecbc0b77",
+                "type": "parameter",
+                "paramId": "c039c4d3-8e79-42b8-9c31-486e0cf36b20"
+              }
+            }
+          ],
+          "lastStream": "",
+          "completeStream": "x[1]",
+          "variables": [
+            {
+              "id": "2d98ceab-876f-419d-a65f-4ca3ecbc0b77",
+              "type": "parameter",
+              "paramId": "c039c4d3-8e79-42b8-9c31-486e0cf36b20"
+            }
+          ]
+        },
+        {
+          "paramId": "f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5",
+          "formulaTokens": [
+            {
+              "id": "a689553c-cf3b-43a8-8c8a-87e23f195b23",
+              "stream": "",
+              "variable": {
+                "id": "c5a54167-54ad-477a-b99e-87b7e9512f79",
+                "type": "parameter",
+                "paramId": "f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5"
+              }
+            }
+          ],
+          "lastStream": "",
+          "completeStream": "x[1]",
+          "variables": [
+            {
+              "id": "c5a54167-54ad-477a-b99e-87b7e9512f79",
+              "type": "parameter",
+              "paramId": "f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5"
+            }
+          ]
+        },
+        {
+          "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47",
+          "formulaTokens": [
+            {
+              "id": "26d813c3-1594-4b74-86ad-fa45ac4ec52f",
+              "stream": "",
+              "variable": {
+                "id": "b0906953-c999-4d93-a40f-b368d47a3e51",
+                "type": "parameter",
+                "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
+              }
+            }
+          ],
+          "lastStream": "",
+          "completeStream": "x[1]",
+          "variables": [
+            {
+              "id": "b0906953-c999-4d93-a40f-b368d47a3e51",
+              "type": "parameter",
+              "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

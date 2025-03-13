@@ -5,6 +5,7 @@ import { createProjectData, createProjectSchema } from "../schema/project";
 import { client } from "@/lib/service";
 import parameterConfig from "@/features/systems/libs/standard/parameter.json";
 import parameterGroupConfig from "@/features/systems/libs/standard/parameterGroup.json";
+import freeSpaceConfig from "@/features/systems/libs/standard/freeSpace.json";
 import { AppEdge } from "@/features/systems/libs/ClassEdge/types/AppEdge";
 import { Config } from "@/features/systems/libs/ClassConfig/types/Config";
 
@@ -40,7 +41,7 @@ export default async function createProject(form: createProjectData) {
     // types: [],
     ...parameterConfig,
     ...parameterGroupConfig,
-    freeSpaces: [{ id: crypto.randomUUID(), name: "Regular", formulas: [] }],
+    ...JSON.parse(JSON.stringify(freeSpaceConfig)),
   };
 
   if (!success) {
