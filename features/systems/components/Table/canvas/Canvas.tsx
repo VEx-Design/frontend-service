@@ -948,7 +948,7 @@ export default function Canvas() {
       const distanceDifference = Math.abs(
         edge.actualDistance - edge.expectedDistance
       );
-      const isDistanceMatching = distanceDifference < 5;
+      const isDistanceMatching = distanceDifference == 0;
       const strokeColor = isDistanceMatching ? "green" : "red";
 
       // Calculate corner positions (where the edge bends)
