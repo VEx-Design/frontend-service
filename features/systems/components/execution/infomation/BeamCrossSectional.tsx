@@ -13,6 +13,14 @@ const BeamCrossSectional: React.FC<BeamCrossSectionalProps> = ({
   cx = 110,
   cy = 110,
 }) => {
+  // Ensure rx and ry are valid numbers
+  const safeRx = Number.isFinite(rx) ? rx : 50;
+  const safeRy = Number.isFinite(ry) ? ry : 50;
+
+  if (!Number.isFinite(rx) || !Number.isFinite(ry)) {
+    console.warn("Invalid rx or ry value in BeamCrossSectional:", { rx, ry });
+  }
+
   return (
     <svg
       width="100%"
@@ -20,11 +28,11 @@ const BeamCrossSectional: React.FC<BeamCrossSectionalProps> = ({
       viewBox="0 0 220 220"
       preserveAspectRatio="xMidYMid meet"
     >
-      {rx === ry ? (
+      {safeRx === safeRy ? (
         <circle
           cx={cx}
           cy={cy}
-          r={rx}
+          r={safeRx}
           fill="#f2f3f4"
           strokeWidth={1.5}
           stroke="black"
@@ -33,8 +41,8 @@ const BeamCrossSectional: React.FC<BeamCrossSectionalProps> = ({
         <ellipse
           cx={cx}
           cy={cy}
-          rx={rx}
-          ry={ry}
+          rx={safeRx}
+          ry={safeRy}
           fill="#f2f3f4"
           strokeWidth={1.5}
           stroke="black"
