@@ -54,7 +54,19 @@ export default function ObjectInspector() {
                 title={`${prop.name} (${prop.symbol})`}
                 value={getValue(focusNode.data, prop.id).toString()}
                 onChange={(e) => {
-                  nodeAction.setValue(prop.id, parseFloat(e.target.value));
+                  if (prop.unitId === "DEGREE") {
+                    nodeAction.setValue(
+                      prop.id,
+                      (parseFloat(e.target.value) * Math.PI) / 180,
+                      e.target.value
+                    );
+                  } else {
+                    nodeAction.setValue(
+                      prop.id,
+                      parseFloat(e.target.value),
+                      e.target.value
+                    );
+                  }
                 }}
                 unitId={prop.unitId}
                 prefixId={getVarPrefixId(focusNode.data, prop.id)}

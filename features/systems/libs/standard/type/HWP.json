@@ -713,7 +713,7 @@
                 },
                 {
                   "id": "ca5e5ff7-19c5-445b-8cba-37355f021bbb",
-                  "stream": "*(cos(2*",
+                  "stream": "*(cos(2*-",
                   "variable": {
                     "id": "8df8b278-4780-4d71-971c-29383c082ab9",
                     "type": "prop",
@@ -732,7 +732,7 @@
                 },
                 {
                   "id": "454b37f3-551e-4ee0-af4f-db98647c30b8",
-                  "stream": "*(sin(2*",
+                  "stream": "*(sin(2*-",
                   "variable": {
                     "id": "28ed821d-a673-4739-ab54-07ae0b242ec7",
                     "type": "prop",
@@ -751,7 +751,7 @@
                 },
                 {
                   "id": "be14b06b-47fe-4d34-9104-568ecd69acd9",
-                  "stream": "*cos(2*",
+                  "stream": "*cos(2*-",
                   "variable": {
                     "id": "a49c349e-fd09-4f19-b1f3-6d4722a3312c",
                     "type": "prop",
@@ -760,7 +760,7 @@
                 },
                 {
                   "id": "6e881626-4366-454c-b188-6691d143f217",
-                  "stream": ")*sin(2*",
+                  "stream": ")*sin(2*-",
                   "variable": {
                     "id": "37631d8e-e8a9-473d-a40b-3da708c26f55",
                     "type": "prop",
@@ -768,10 +768,10 @@
                   }
                 },
                 {
-                  "id": "a890bdd9-daf8-40c2-b5ad-e09c91ac4d87",
+                  "id": "76aa962c-abfb-4670-afe2-7438e152b617",
                   "stream": ")*(1-cos(pi))+",
                   "variable": {
-                    "id": "47b266fc-66b9-4885-aaee-29d9f963c345",
+                    "id": "98d97812-222e-47e0-82db-f690056777de",
                     "type": "interface",
                     "interfaceId": "06ca245d-1c09-4ec0-882a-9aab5cccf4cf",
                     "paramId": "f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5"
@@ -779,7 +779,7 @@
                 },
                 {
                   "id": "cc097c5e-d130-4a89-b68f-ea8c4b4fb0d7",
-                  "stream": "*sin(2*",
+                  "stream": "*sin(2*-",
                   "variable": {
                     "id": "19a97a2d-5cbd-462c-93ef-2972c17fc13e",
                     "type": "prop",
@@ -788,7 +788,7 @@
                 }
               ],
               "lastStream": ")*sin(pi)",
-              "completeStream": "x[1]*(cos(2*x[2])^2)+x[3]*(sin(2*x[4])^2)*cos(pi)+x[5]*cos(2*x[6])*sin(2*x[7])*(1-cos(pi))+x[8]*sin(2*x[9])*sin(pi)",
+              "completeStream": "x[1]*(cos(2*-x[2])^2)+x[3]*(sin(2*-x[4])^2)*cos(pi)+x[5]*cos(2*-x[6])*sin(2*-x[7])*(1-cos(pi))+x[8]*sin(2*-x[9])*sin(pi)",
               "variables": [
                 {
                   "id": "ace624c8-225c-477e-bd5f-04c900dc0b93",
@@ -829,7 +829,7 @@
                   "propId": "2e353356-cce7-4814-b98f-c279bb6e8f3f"
                 },
                 {
-                  "id": "47b266fc-66b9-4885-aaee-29d9f963c345",
+                  "id": "98d97812-222e-47e0-82db-f690056777de",
                   "type": "interface",
                   "interfaceId": "06ca245d-1c09-4ec0-882a-9aab5cccf4cf",
                   "paramId": "f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5"
@@ -857,7 +857,7 @@
                 },
                 {
                   "id": "1fd9eaef-aee9-4d6d-a604-c7ca2d3b139e",
-                  "stream": "*cos(2*",
+                  "stream": "*cos(2*-",
                   "variable": {
                     "id": "6eb6292b-055d-4b6e-b803-fede55883f0b",
                     "type": "prop",
@@ -866,7 +866,7 @@
                 },
                 {
                   "id": "33d3c320-cf95-4810-b8bf-72af4b407f86",
-                  "stream": ")*sin(2*",
+                  "stream": ")*sin(2*-",
                   "variable": {
                     "id": "cacec461-9cd9-4f8b-80c2-61711bd283d7",
                     "type": "prop",
@@ -885,7 +885,7 @@
                 },
                 {
                   "id": "d968e3e9-562b-4bde-9fbd-88f1595b4452",
-                  "stream": "*(cos(2*",
+                  "stream": "*(cos(2*-",
                   "variable": {
                     "id": "a049a4fe-e28d-4c2b-919a-095675228479",
                     "type": "prop",
@@ -904,7 +904,7 @@
                 },
                 {
                   "id": "3d132910-011d-4157-8242-815c3e88ce82",
-                  "stream": "*(sin(2*",
+                  "stream": "*(sin(2*-",
                   "variable": {
                     "id": "d61cd611-d2fd-4226-9dd2-4e6272a386c6",
                     "type": "prop",
@@ -923,7 +923,7 @@
                 },
                 {
                   "id": "047d9f04-727d-44a6-aa24-f02da2ebe1bf",
-                  "stream": "*cos(2*",
+                  "stream": "*cos(2*-",
                   "variable": {
                     "id": "a9c6801d-1e36-48b4-97d9-f9d38d6d2506",
                     "type": "prop",
@@ -932,7 +932,7 @@
                 }
               ],
               "lastStream": ")*sin(pi)",
-              "completeStream": "x[1]*cos(2*x[2])*sin(2*x[3])*(1-cos(pi))+x[4]*(cos(2*x[5])^2)*cos(pi)+x[6]*(sin(2*x[7])^2)-x[8]*cos(2*x[9])*sin(pi)",
+              "completeStream": "x[1]*cos(2*-x[2])*sin(2*-x[3])*(1-cos(pi))+x[4]*(cos(2*-x[5])^2)*cos(pi)+x[6]*(sin(2*-x[7])^2)-x[8]*cos(2*-x[9])*sin(pi)",
               "variables": [
                 {
                   "id": "c3501938-4718-425e-8848-d4fdd8734994",
@@ -1001,7 +1001,7 @@
                 },
                 {
                   "id": "2783e8b4-f4f7-4c55-a75f-9fb73be724c1",
-                  "stream": "*sin(2*",
+                  "stream": "*sin(2*-",
                   "variable": {
                     "id": "e8acc7f7-2029-4ea4-aace-e548e9661df0",
                     "type": "prop",
@@ -1020,7 +1020,7 @@
                 },
                 {
                   "id": "b316ff4d-e49e-477e-a11b-16f7360bbe7e",
-                  "stream": "*cos(2*",
+                  "stream": "*cos(2*-",
                   "variable": {
                     "id": "e97f4413-d8f2-4f33-b585-7e0e4745fde7",
                     "type": "prop",
@@ -1039,7 +1039,7 @@
                 }
               ],
               "lastStream": "*cos(pi)",
-              "completeStream": "-x[1]*sin(2*x[2])*sin(pi)+x[3]*cos(2*x[4])*sin(pi)+x[5]*cos(pi)",
+              "completeStream": "-x[1]*sin(2*-x[2])*sin(pi)+x[3]*cos(2*-x[4])*sin(pi)+x[5]*cos(pi)",
               "variables": [
                 {
                   "id": "1a7ea40c-35f4-418a-9a1d-31becd9d816b",

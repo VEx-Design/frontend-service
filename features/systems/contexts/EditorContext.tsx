@@ -84,7 +84,7 @@ interface EdgesState {
 interface NodeAction {
   createNode: (type: string, position: Coordinate, objectType?: Type) => void;
   setInitial: (lightId: string, paramId: string, value: number) => void;
-  setValue: (propId: string, value: number) => void;
+  setValue: (propId: string, value: number, valueShow: string) => void;
   addInitialLight: () => void;
   updatePathColor: (lightId: string, color: string) => void;
   rotate: () => void;
@@ -179,9 +179,14 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
           editNode(focusNode.id, updatedData);
         }
       },
-      setValue: (propId: string, value: number) => {
+      setValue: (propId: string, value: number, valueShow: string) => {
         if (focusNode?.data) {
-          const updatedData = setValue(focusNode.data, propId, value);
+          const updatedData = setValue(
+            focusNode.data,
+            propId,
+            value,
+            valueShow
+          );
           updateFocusNodeData(updatedData);
           editNode(focusNode.id, updatedData);
         }
