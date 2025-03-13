@@ -726,14 +726,11 @@ export default function KonvaPage() {
     const interfaceY = interfacePosition[1] * mirrorHeight;
 
     // Calculate the mirror position so that the interface point is exactly at the corner position
-    // The mirror position is where the reference point will be
     const mirrorObject: Object = {
       id: mirrorId,
       name: "Mirror",
       size: { width: mirrorWidth, height: mirrorHeight },
       position: {
-        // Position the object so that the interface point is exactly at the corner position
-        // We need to account for the reference point offset
         x: position.x - interfaceX + refX,
         y: position.y - interfaceY + refY,
       },
@@ -748,7 +745,7 @@ export default function KonvaPage() {
     setObjects((prevObjects) => [...prevObjects, mirrorObject]);
 
     // Create two new edges to replace the original edge
-    // First edge: from source to mirror - direct path with no corners
+    // First edge: from source to mirror
     const edge1: Edge = {
       id: `edge-${Date.now()}-1`,
       source: edge.source,
@@ -759,7 +756,7 @@ export default function KonvaPage() {
       actualDistance: 0,
     };
 
-    // Second edge: from mirror to target - direct path with no corners
+    // Second edge: from mirror to target
     const edge2: Edge = {
       id: `edge-${Date.now()}-2`,
       source: mirrorId,
@@ -1164,22 +1161,25 @@ export default function KonvaPage() {
     start: { x: number; y: number },
     end: { x: number; y: number }
   ) => {
-    // Check if there's a mirror at either end of the path
-    const sourceIsMirror = objects.some(
+    // Check if either end is connected to a mirror
+    const sourceMirror = objects.find(
       (obj) =>
         obj.isMirror &&
-        Math.abs(obj.position.x - start.x) < 5 &&
-        Math.abs(obj.position.y - start.y) < 5
-    );
-    const targetIsMirror = objects.some(
-      (obj) =>
-        obj.isMirror &&
-        Math.abs(obj.position.x - end.x) < 5 &&
-        Math.abs(obj.position.y - end.y) < 5
+        getInterfacePosition(obj.id, "in") &&
+        Math.abs(getInterfacePosition(obj.id, "in")!.x - start.x) < 5 &&
+        Math.abs(getInterfacePosition(obj.id, "in")!.y - start.y) < 5
     );
 
-    // If either end is a mirror, use a direct path to avoid small orthogonal segments
-    if (sourceIsMirror || targetIsMirror) {
+    const targetMirror = objects.find(
+      (obj) =>
+        obj.isMirror &&
+        getInterfacePosition(obj.id, "in") &&
+        Math.abs(getInterfacePosition(obj.id, "in")!.x - end.x) < 5 &&
+        Math.abs(getInterfacePosition(obj.id, "in")!.y - end.y) < 5
+    );
+
+    // If either end is connected to a mirror, use a direct path
+    if (sourceMirror || targetMirror) {
       return [start.x, start.y, end.x, end.y];
     }
 
