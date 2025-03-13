@@ -177,7 +177,18 @@ export const CanvasProvider = (props: { children: React.ReactNode }) => {
         actualDistance: 0,
       });
     }
-    setEdges(newEdges);
+    const uniqueEdges = newEdges.filter(
+      (edge, index, self) =>
+        index ===
+        self.findIndex(
+          (e) =>
+            e.source === edge.source &&
+            e.sourceInterface === edge.sourceInterface &&
+            e.target === edge.target &&
+            e.targetInterface === edge.targetInterface
+        )
+    );
+    setEdges(uniqueEdges);
   }, [mapBounding, nodesState.nodes, edgesState.edges]);
 
   return (
