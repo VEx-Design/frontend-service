@@ -705,21 +705,41 @@ export default function KonvaPage() {
     const edge = edges.find((e) => e.id === edgeId);
     if (!edge) return;
 
+    // Get source and target positions
+    const sourcePos = getInterfacePosition(edge.source, edge.sourceInterface);
+    const targetPos = getInterfacePosition(edge.target, edge.targetInterface);
+    if (!sourcePos || !targetPos) return;
+
     // Determine the appropriate interface position based on the edge direction
     const interfacePosition = determineInterfacePosition(position, edge);
 
-    // Create the mirror object with default size (Medium)
+    // Default mirror size (Medium)
+    const mirrorWidth = 30;
+    const mirrorHeight = 30;
+
+    // Calculate the reference point offset
+    const refX = 0.5 * mirrorWidth;
+    const refY = 0.5 * mirrorHeight;
+
+    // Calculate the interface point offset from the reference point
+    const interfaceX = interfacePosition[0] * mirrorWidth;
+    const interfaceY = interfacePosition[1] * mirrorHeight;
+
+    // Calculate the mirror position so that the interface point is exactly at the corner position
+    // The mirror position is where the reference point will be
     const mirrorObject: Object = {
       id: mirrorId,
       name: "Mirror",
-      size: { width: 30, height: 30 }, // Default to Medium size
-      position: position,
-      rotation: 0, // No rotation for the mirror object itself
+      size: { width: mirrorWidth, height: mirrorHeight },
+      position: {
+        // Position the object so that the interface point is exactly at the corner position
+        // We need to account for the reference point offset
+        x: position.x - interfaceX + refX,
+        y: position.y - interfaceY + refY,
+      },
+      rotation: 0,
       referencePosition: [0.5, 0.5], // Center of the object
-      interfacePositions: new Map([
-        // For a diamond shape, we place the interface at the appropriate corner
-        ["in", interfacePosition],
-      ]),
+      interfacePositions: new Map([["in", interfacePosition]]),
       isColliding: false,
       isMirror: true,
     };
@@ -728,7 +748,7 @@ export default function KonvaPage() {
     setObjects((prevObjects) => [...prevObjects, mirrorObject]);
 
     // Create two new edges to replace the original edge
-    // First edge: from source to mirror
+    // First edge: from source to mirror - direct path with no corners
     const edge1: Edge = {
       id: `edge-${Date.now()}-1`,
       source: edge.source,
@@ -739,7 +759,7 @@ export default function KonvaPage() {
       actualDistance: 0,
     };
 
-    // Second edge: from mirror to target
+    // Second edge: from mirror to target - direct path with no corners
     const edge2: Edge = {
       id: `edge-${Date.now()}-2`,
       source: mirrorId,
@@ -1144,6 +1164,25 @@ export default function KonvaPage() {
     start: { x: number; y: number },
     end: { x: number; y: number }
   ) => {
+    // Check if there's a mirror at either end of the path
+    const sourceIsMirror = objects.some(
+      (obj) =>
+        obj.isMirror &&
+        Math.abs(obj.position.x - start.x) < 5 &&
+        Math.abs(obj.position.y - start.y) < 5
+    );
+    const targetIsMirror = objects.some(
+      (obj) =>
+        obj.isMirror &&
+        Math.abs(obj.position.x - end.x) < 5 &&
+        Math.abs(obj.position.y - end.y) < 5
+    );
+
+    // If either end is a mirror, use a direct path to avoid small orthogonal segments
+    if (sourceIsMirror || targetIsMirror) {
+      return [start.x, start.y, end.x, end.y];
+    }
+
     // Get all mirror objects to avoid their bounding boxes
     const mirrors = objects.filter((obj) => obj.isMirror);
 
