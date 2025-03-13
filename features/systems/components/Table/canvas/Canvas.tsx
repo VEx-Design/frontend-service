@@ -5,108 +5,61 @@ import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { Circle, Group, Layer, Line, Rect, Stage, Text } from "react-konva";
 import { EdgeManager } from "./edge-manager";
-import { Edge } from "../Class/edge";
 import { Table } from "../Class/table";
+import { Edge } from "../Class/edge";
 import { Object } from "../Class/object";
-
-// Mirror size options
-const MIRROR_SIZES = [
-  { name: "Small", width: 20, height: 20 },
-  { name: "Medium", width: 30, height: 30 },
-  { name: "Large", width: 40, height: 40 },
-  { name: "Rectangle", width: 50, height: 25 },
-];
-
-// Mock data for testing
-const mockObjects: Object[] = [
-  {
-    id: "1",
-    name: "Laser Generator",
-    size: { width: 50, height: 50 },
-    position: { x: 0, y: 0 },
-    rotation: 0,
-    referencePosition: [0.5, 0.5],
-    interfacePositions: new Map([["start", [0.5, 0.5]]]),
-    isColliding: false,
-  },
-  {
-    id: "2",
-    name: "Lens",
-    size: { width: 50, height: 50 },
-    position: { x: 50, y: 50 },
-    rotation: 0,
-    referencePosition: [0.5, 0.5],
-    interfacePositions: new Map([
-      ["1", [0.5, 0.5]],
-      ["2", [0.5, 0.5]],
-    ]),
-    isColliding: false,
-  },
-  {
-    id: "3",
-    name: "Detector",
-    size: { width: 50, height: 50 },
-    position: { x: 100, y: 100 },
-    rotation: 0,
-    referencePosition: [0.5, 0.5],
-    interfacePositions: new Map([["terminal", [0.5, 0.5]]]),
-    isColliding: false,
-  },
-];
-
-// Mock edges for testing
-const mockEdges: Edge[] = [
-  {
-    id: "edge1",
-    source: "1",
-    sourceInterface: "start",
-    target: "2",
-    targetInterface: "1",
-    expectedDistance: 200,
-    actualDistance: 0,
-  },
-  {
-    id: "edge2",
-    source: "2",
-    sourceInterface: "2",
-    target: "3",
-    targetInterface: "terminal",
-    expectedDistance: 200,
-    actualDistance: 0,
-  },
-];
+import { useCanvas } from "@/features/systems/contexts/CanvasContext";
+import { Mirror } from "../Class/mirror";
+import {
+  calculateManhattanDistance,
+  generateOrthogonalPath,
+  getInterfacePosition,
+  getObjectBoundingBox,
+} from "./edge-routing";
 
 export default function Canvas() {
   // Container and stage size (screen coordinates)
   const containerRef = useRef<HTMLDivElement>(null);
-  const [stageSize, setStageSize] = useState({ width: 800, height: 600 }); // Default size
   const stageRef = useRef<Konva.Stage | null>(null);
 
+  // Stage size (screen coordinates)
+  const { stageSize, setStageSize } = useCanvas() as {
+    stageSize: { width: number; height: number };
+    setStageSize: React.Dispatch<
+      React.SetStateAction<{ width: number; height: number }>
+    >;
+  };
+
+  // Table and grid (defined in scene coordinates)
+  const { table, setTable } = useCanvas() as {
+    table: Table;
+    setTable: React.Dispatch<React.SetStateAction<Table>>;
+  };
+  const { objects, setObjects } = useCanvas() as {
+    objects: Object[];
+    setObjects: React.Dispatch<React.SetStateAction<Object[]>>;
+  };
+  const { edges, setEdges } = useCanvas() as {
+    edges: Edge[];
+    setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
+  };
+  const { mirrors } = useCanvas() as { mirrors: Mirror[] };
+
   // SCENE COORDINATE APPROACH: Zoom and position state
-  const [scale, setScale] = useState(1);
-  const [position, setPosition] = useState({ x: 100, y: 100 }); // Start with some offset
+  const { scale, setScale } = useCanvas();
+  const { position, setPosition } = useCanvas();
+
+  // Selected object
+  const { selectedObjectId, setSelectedObjectId } = useCanvas();
+
+  // Snap grid points (in scene coordinates)
+  const { snapPoints, setSnapPoints } = useCanvas();
+  const { snapEnabled, setSnapEnabled } = useCanvas();
+  const { snapThreshold, setSnapThreshold } = useCanvas();
 
   // Track if we're currently dragging an object
   const [isDraggingObject, setIsDraggingObject] = useState(false);
   const [draggedObjectId, setDraggedObjectId] = useState<string | null>(null);
-
-  // Selected object
-  const [selectedObjectId, setSelectedObjectId] = useState<string | null>(null);
-
-  // Table and grid (defined in scene coordinates)
-  const [table, setTable] = useState<Table>({
-    size: { width: 2500, height: 1000 },
-    margin: { width: 50, height: 50 },
-    gridDistance: 25,
-    gridStyle: "dot",
-    gridColor: "black",
-    gridOpacity: 0.5,
-  });
-
-  // Snap grid points (in scene coordinates)
-  const [snapPoints, setSnapPoints] = useState<{ x: number; y: number }[]>([]);
-  const [snapEnabled, setSnapEnabled] = useState(true);
-  const [snapThreshold, setSnapThreshold] = useState(10); // in screen pixels
 
   // Debug state
   const [debug, setDebug] = useState({
@@ -115,19 +68,17 @@ export default function Canvas() {
     error: null as string | null,
   });
 
-  // Use mock data for objects and edges
-  const [objects, setObjects] = useState<Object[]>(mockObjects);
-  const [edges, setEdges] = useState<Edge[]>(mockEdges);
-
   // Calculate actual distances for edges when objects change
   useEffect(() => {
-    setEdges((prevEdges) =>
-      prevEdges.map((edge) => {
+    setEdges((prevEdges: Edge[]) => {
+      return prevEdges.map((edge) => {
         const sourcePos = getInterfacePosition(
+          objects,
           edge.source,
           edge.sourceInterface
         );
         const targetPos = getInterfacePosition(
+          objects,
           edge.target,
           edge.targetInterface
         );
@@ -140,24 +91,9 @@ export default function Canvas() {
           ...edge,
           actualDistance: distance,
         };
-      })
-    );
+      });
+    });
   }, [objects]);
-
-  // Edge management functions
-  const handleEdgeUpdate = (updatedEdge: Edge) => {
-    setEdges((prevEdges) =>
-      prevEdges.map((edge) => (edge.id === updatedEdge.id ? updatedEdge : edge))
-    );
-  };
-
-  const handleEdgeDelete = (edgeId: string) => {
-    setEdges((prevEdges) => prevEdges.filter((edge) => edge.id !== edgeId));
-  };
-
-  const handleEdgeAdd = (newEdge: Edge) => {
-    setEdges((prevEdges) => [...prevEdges, newEdge]);
-  };
 
   // Get the size of the container to set the stage size
   useEffect(() => {
@@ -204,18 +140,6 @@ export default function Canvas() {
       setDebug((prev) => ({ ...prev, isStageVisible: true }));
     }
   }, [stageRef.current]);
-
-  // Add keyboard event listener for rotation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "r" && selectedObjectId) {
-        rotateObject(selectedObjectId);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedObjectId]);
 
   // Generate snap points in scene coordinates
   useEffect(() => {
@@ -367,35 +291,6 @@ export default function Canvas() {
     return scenePos;
   };
 
-  // Calculate object's bounding box considering rotation
-  const getObjectBoundingBox = (object: Object) => {
-    const { position, size, rotation, referencePosition } = object;
-
-    // Calculate the reference point
-    const refX = referencePosition[0] * size.width;
-    const refY = referencePosition[1] * size.height;
-
-    // Create a temporary Konva.Rect to calculate the rotated bounds
-    const tempRect = new Konva.Rect({
-      x: position.x,
-      y: position.y,
-      width: size.width,
-      height: size.height,
-      rotation: rotation,
-      offset: { x: refX, y: refY },
-    });
-
-    // Get the bounding box
-    const box = tempRect.getClientRect();
-
-    return {
-      x: box.x,
-      y: box.y,
-      width: box.width,
-      height: box.height,
-    };
-  };
-
   // Check if two objects collide
   const checkCollision = (obj1: Object, obj2: Object) => {
     const box1 = getObjectBoundingBox(obj1);
@@ -432,21 +327,6 @@ export default function Canvas() {
       if (obj.id === objectId) return false; // Skip self
       return checkCollision(tempObject, obj);
     });
-  };
-
-  // Rotate an object by 90 degrees clockwise
-  const rotateObject = (objectId: string) => {
-    const object = objects.find((obj) => obj.id === objectId);
-    if (!object) return;
-
-    const newRotation = (object.rotation + 90) % 360;
-
-    // Apply rotation without checking for collisions
-    setObjects((prevObjects) =>
-      prevObjects.map((obj) =>
-        obj.id === objectId ? { ...obj, rotation: newRotation } : obj
-      )
-    );
   };
 
   // SCENE COORDINATE APPROACH: Handle object drag start
@@ -576,8 +456,16 @@ export default function Canvas() {
     edge: Edge
   ): [number, number] => {
     // Get the source and target positions
-    const sourcePos = getInterfacePosition(edge.source, edge.sourceInterface);
-    const targetPos = getInterfacePosition(edge.target, edge.targetInterface);
+    const sourcePos = getInterfacePosition(
+      objects,
+      edge.source,
+      edge.sourceInterface
+    );
+    const targetPos = getInterfacePosition(
+      objects,
+      edge.target,
+      edge.targetInterface
+    );
 
     if (!sourcePos || !targetPos) return [0.25, 0.25]; // Default to top-left if we can't determine
 
@@ -622,8 +510,16 @@ export default function Canvas() {
     if (!edge) return;
 
     // Get source and target positions
-    const sourcePos = getInterfacePosition(edge.source, edge.sourceInterface);
-    const targetPos = getInterfacePosition(edge.target, edge.targetInterface);
+    const sourcePos = getInterfacePosition(
+      objects,
+      edge.source,
+      edge.sourceInterface
+    );
+    const targetPos = getInterfacePosition(
+      objects,
+      edge.target,
+      edge.targetInterface
+    );
     if (!sourcePos || !targetPos) return;
 
     // Determine the appropriate interface position based on the edge direction
@@ -712,54 +608,6 @@ export default function Canvas() {
   ) => {
     // Create a mirror object at the corner position
     createMirrorObject(cornerPosition, edgeId);
-  };
-
-  // Change the size of a mirror
-  const changeMirrorSize = (mirrorId: string, sizeIndex: number) => {
-    const size = MIRROR_SIZES[sizeIndex];
-    if (!size) return;
-
-    const mirror = objects.find((obj) => obj.id === mirrorId);
-    if (!mirror || !mirror.isMirror) return;
-
-    // Get the current interface position in absolute coordinates
-    const interfacePos = getInterfacePosition(mirrorId, "in");
-    if (!interfacePos) return;
-
-    // Get the interface position ratio
-    const interfaceRatio = mirror.interfacePositions.get("in");
-    if (!interfaceRatio) return;
-
-    // Calculate the reference point offset
-    const oldRefX = mirror.referencePosition[0] * mirror.size.width;
-    const oldRefY = mirror.referencePosition[0] * mirror.size.height;
-
-    // Calculate the new reference point offset
-    const newRefX = mirror.referencePosition[0] * size.width;
-    const newRefY = mirror.referencePosition[0] * size.height;
-
-    // Calculate the interface point offset from the reference point in the new size
-    const newInterfaceX = interfaceRatio[0] * size.width;
-    const newInterfaceY = interfaceRatio[1] * size.height;
-
-    // Calculate the new position to keep the interface point at the same absolute position
-    const newPosition = {
-      x: interfacePos.x - newInterfaceX + newRefX,
-      y: interfacePos.y - newInterfaceY + newRefY,
-    };
-
-    // Update the object with the new size and position
-    setObjects((prevObjects) =>
-      prevObjects.map((obj) =>
-        obj.id === mirrorId
-          ? {
-              ...obj,
-              size: { width: size.width, height: size.height },
-              position: newPosition,
-            }
-          : obj
-      )
-    );
   };
 
   // SCENE COORDINATE APPROACH: Generate grid lines/dots
@@ -1077,198 +925,24 @@ export default function Canvas() {
     );
   };
 
-  // Get interface position in scene coordinates
-  const getInterfacePosition = (objectId: string, interfaceId: string) => {
-    const object = objects.find((obj) => obj.id === objectId);
-    if (!object) return null;
-
-    const interfacePosition = object.interfacePositions.get(interfaceId);
-    if (!interfacePosition) return null;
-
-    const refX = object.referencePosition[0] * object.size.width;
-    const refY = object.referencePosition[1] * object.size.height;
-
-    const objectX = object.position.x;
-    const objectY = object.position.y;
-    const objectRotation = object.rotation;
-
-    const interfaceX = interfacePosition[0] * object.size.width;
-    const interfaceY = interfacePosition[1] * object.size.height;
-
-    // Rotate the interface position around the object's reference point
-    const angleInRadians = (objectRotation * Math.PI) / 180;
-    const rotatedX =
-      Math.cos(angleInRadians) * (interfaceX - refX) -
-      Math.sin(angleInRadians) * (interfaceY - refY) +
-      refX;
-    const rotatedY =
-      Math.sin(angleInRadians) * (interfaceX - refX) +
-      Math.cos(angleInRadians) * (interfaceY - refY) +
-      refY;
-
-    return {
-      x: objectX + rotatedX - refX,
-      y: objectY + rotatedY - refY,
-    };
-  };
-
-  // Calculate Manhattan distance between two points
-  const calculateManhattanDistance = (
-    p1: { x: number; y: number },
-    p2: { x: number; y: number }
-  ) => {
-    return Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y);
-  };
-
-  // Generate orthogonal path points between two interface points
-  const generateOrthogonalPath = (
-    start: { x: number; y: number },
-    end: { x: number; y: number }
-  ) => {
-    // Check if either end is connected to a mirror
-    const isMirrorInterface = (pos: { x: number; y: number }) => {
-      return objects.some((obj) => {
-        if (!obj.isMirror) return false;
-
-        const interfacePos = getInterfacePosition(obj.id, "in");
-        if (!interfacePos) return false;
-
-        return (
-          Math.abs(interfacePos.x - pos.x) < 5 &&
-          Math.abs(interfacePos.y - pos.y) < 5
-        );
-      });
-    };
-
-    const startIsMirror = isMirrorInterface(start);
-    const endIsMirror = isMirrorInterface(end);
-
-    // Always use orthogonal paths, even with mirrors
-    // Option 1: Vertical first, then horizontal
-    const path1 = [start.x, start.y, start.x, end.y, end.x, end.y];
-
-    // Option 2: Horizontal first, then vertical
-    const path2 = [start.x, start.y, end.x, start.y, end.x, end.y];
-
-    // Get all mirror objects to avoid their bounding boxes
-    const mirrors = objects.filter((obj) => obj.isMirror);
-    const mirrorBoxes = mirrors.map((mirror) => getObjectBoundingBox(mirror));
-
-    // Check if a path segment intersects with any mirror bounding box
-    const intersectsWithMirror = (
-      x1: number,
-      y1: number,
-      x2: number,
-      y2: number
-    ) => {
-      return mirrorBoxes.some((box) => {
-        // Simple line-rectangle intersection check
-        // For vertical lines
-        if (x1 === x2) {
-          const minY = Math.min(y1, y2);
-          const maxY = Math.max(y1, y2);
-          return (
-            x1 >= box.x &&
-            x1 <= box.x + box.width &&
-            maxY >= box.y &&
-            minY <= box.y + box.height
-          );
-        }
-        // For horizontal lines
-        if (y1 === y2) {
-          const minX = Math.min(x1, x2);
-          const maxX = Math.max(x1, x2);
-          return (
-            y1 >= box.y &&
-            y1 <= box.y + box.height &&
-            maxX >= box.x &&
-            minX <= box.x + box.width
-          );
-        }
-        return false;
-      });
-    };
-
-    // Check if paths intersect with mirrors
-    const path1Intersects =
-      intersectsWithMirror(path1[0], path1[1], path1[2], path1[3]) ||
-      intersectsWithMirror(path1[2], path1[3], path1[4], path1[5]);
-
-    const path2Intersects =
-      intersectsWithMirror(path2[0], path2[1], path2[2], path2[3]) ||
-      intersectsWithMirror(path2[2], path2[3], path2[4], path2[5]);
-
-    // If neither path intersects, choose the shorter one
-    if (!path1Intersects && !path2Intersects) {
-      // Prefer vertical first as default
-      return path1;
-    }
-
-    // If only one path doesn't intersect, use that one
-    if (!path1Intersects) return path1;
-    if (!path2Intersects) return path2;
-
-    // If both paths intersect, try a more complex path with two turns
-    const offset = 30; // Offset distance to go around objects
-    const dx = end.x - start.x;
-    const dy = end.y - start.y;
-
-    if (Math.abs(dx) > Math.abs(dy)) {
-      // If horizontal distance is greater, go vertical first with offset
-      const offsetY = dy > 0 ? start.y - offset : start.y + offset;
-      const path3 = [
-        start.x,
-        start.y,
-        start.x,
-        offsetY,
-        end.x,
-        offsetY,
-        end.x,
-        end.y,
-      ];
-
-      const path3Intersects =
-        intersectsWithMirror(path3[0], path3[1], path3[2], path3[3]) ||
-        intersectsWithMirror(path3[2], path3[3], path3[4], path3[5]) ||
-        intersectsWithMirror(path3[4], path3[5], path3[6], path3[7]);
-
-      if (!path3Intersects) return path3;
-    } else {
-      // If vertical distance is greater, go horizontal first with offset
-      const offsetX = dx > 0 ? start.x - offset : start.x + offset;
-      const path3 = [
-        start.x,
-        start.y,
-        offsetX,
-        start.y,
-        offsetX,
-        end.y,
-        end.x,
-        end.y,
-      ];
-
-      const path3Intersects =
-        intersectsWithMirror(path3[0], path3[1], path3[2], path3[3]) ||
-        intersectsWithMirror(path3[2], path3[3], path3[4], path3[5]) ||
-        intersectsWithMirror(path3[4], path3[5], path3[6], path3[7]);
-
-      if (!path3Intersects) return path3;
-    }
-
-    // If all else fails, use the original path (vertical first)
-    return path1;
-  };
-
   // Render edges between objects
   const edgeRender = () => {
     return edges.map((edge) => {
-      const sourcePos = getInterfacePosition(edge.source, edge.sourceInterface);
-      const targetPos = getInterfacePosition(edge.target, edge.targetInterface);
+      const sourcePos = getInterfacePosition(
+        objects,
+        edge.source,
+        edge.sourceInterface
+      );
+      const targetPos = getInterfacePosition(
+        objects,
+        edge.target,
+        edge.targetInterface
+      );
 
       if (!sourcePos || !targetPos) return null;
 
       // Generate orthogonal path
-      const pathPoints = generateOrthogonalPath(sourcePos, targetPos);
+      const pathPoints = generateOrthogonalPath(objects, sourcePos, targetPos);
 
       // Determine color based on distance comparison
       const distanceDifference = Math.abs(
@@ -1332,160 +1006,6 @@ export default function Canvas() {
     }
   };
 
-  // Reset view to fit all objects
-  const resetView = () => {
-    // Calculate bounding box of all objects
-    if (objects.length === 0) return;
-
-    let minX = Number.POSITIVE_INFINITY;
-    let minY = Number.POSITIVE_INFINITY;
-    let maxX = Number.NEGATIVE_INFINITY;
-    let maxY = Number.NEGATIVE_INFINITY;
-
-    objects.forEach((obj) => {
-      const box = getObjectBoundingBox(obj);
-      minX = Math.min(minX, box.x);
-      minY = Math.min(minY, box.y);
-      maxX = Math.max(maxX, box.x + box.width);
-      maxY = Math.max(maxY, box.y + box.height);
-    });
-
-    // Add padding
-    const padding = 100;
-    minX -= padding;
-    minY -= padding;
-    maxX += padding;
-    maxY += padding;
-
-    // Calculate scale to fit
-    const scaleX = stageSize.width / (maxX - minX);
-    const scaleY = stageSize.height / (maxY - minY);
-    const newScale = Math.min(scaleX, scaleY, 1); // Limit max scale to 1
-
-    // Calculate position
-    const newPos = {
-      x: stageSize.width / 2 - ((minX + maxX) / 2) * newScale,
-      y: stageSize.height / 2 - ((minY + maxY) / 2) * newScale,
-    };
-
-    setScale(newScale);
-    setPosition(newPos);
-  };
-
-  // Check if selected object is a mirror
-  const isSelectedMirror = () => {
-    if (!selectedObjectId) return false;
-    const selectedObject = objects.find((obj) => obj.id === selectedObjectId);
-    return selectedObject?.isMirror === true;
-  };
-
-  // Get current mirror size index
-  const getCurrentMirrorSizeIndex = () => {
-    if (!selectedObjectId) return 1; // Default to Medium
-    const selectedObject = objects.find((obj) => obj.id === selectedObjectId);
-    if (!selectedObject?.isMirror) return 1;
-
-    const { width, height } = selectedObject.size;
-    return (
-      MIRROR_SIZES.findIndex(
-        (size) => size.width === width && size.height === height
-      ) || 1
-    );
-  };
-
-  // Add debug UI to visualize and control snap settings
-  const DebugUI = () => (
-    <div className="absolute top-2 right-2 bg-white p-2 rounded shadow-md z-10 max-w-xs">
-      <div>
-        <label className="flex items-center">
-          <input
-            type="checkbox"
-            checked={snapEnabled}
-            onChange={(e) => setSnapEnabled(e.target.checked)}
-            className="mr-2"
-          />
-          Snap to Grid
-        </label>
-      </div>
-      <div className="mt-2">
-        <label>
-          Snap Threshold: {snapThreshold}px
-          <input
-            type="range"
-            min="1"
-            max="50"
-            value={snapThreshold}
-            onChange={(e) => setSnapThreshold(Number.parseInt(e.target.value))}
-            className="w-full mt-1"
-          />
-        </label>
-      </div>
-      <div className="mt-2">
-        <div>Zoom: {scale.toFixed(2)}x</div>
-        <div>Selected: {selectedObjectId || "None"}</div>
-      </div>
-
-      {/* Mirror size selector (only shown when a mirror is selected) */}
-      {isSelectedMirror() && (
-        <div className="mt-2">
-          <label>
-            Mirror Size:
-            <select
-              className="w-full p-1 mt-1 text-sm"
-              value={getCurrentMirrorSizeIndex()}
-              onChange={(e) =>
-                changeMirrorSize(selectedObjectId!, Number(e.target.value))
-              }
-            >
-              {MIRROR_SIZES.map((size, index) => (
-                <option key={index} value={index}>
-                  {size.name} ({size.width}x{size.height})
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-      )}
-
-      <div className="mt-2 flex space-x-2">
-        <button
-          className="bg-blue-500 text-white px-2 py-1 rounded"
-          onClick={() => selectedObjectId && rotateObject(selectedObjectId)}
-          disabled={!selectedObjectId}
-        >
-          Rotate 90°
-        </button>
-        <button
-          className="bg-green-500 text-white px-2 py-1 rounded"
-          onClick={resetView}
-        >
-          Reset View
-        </button>
-      </div>
-
-      {/* Edge Manager */}
-      <div className="mt-4">
-        <EdgeManager
-          edges={edges}
-          onEdgeUpdate={handleEdgeUpdate}
-          onEdgeDelete={handleEdgeDelete}
-          onEdgeAdd={handleEdgeAdd}
-          objects={objects}
-        />
-      </div>
-
-      <div className="mt-2 text-xs">
-        <div>Stage visible: {debug.isStageVisible ? "Yes" : "No"}</div>
-        <div>
-          Container: {debug.containerSize.width}x{debug.containerSize.height}
-        </div>
-        {debug.error && (
-          <div className="text-red-500">Error: {debug.error}</div>
-        )}
-      </div>
-    </div>
-  );
-
   return (
     <div
       ref={containerRef}
@@ -1529,9 +1049,6 @@ export default function Canvas() {
           {debug.containerSize.height}
         </div>
       )}
-
-      {/* Debug UI */}
-      <DebugUI />
     </div>
   );
 }

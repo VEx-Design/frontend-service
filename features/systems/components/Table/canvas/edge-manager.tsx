@@ -1,52 +1,54 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-
-interface Edge {
-  id: string
-  source: string
-  sourceInterface: string
-  target: string
-  targetInterface: string
-  expectedDistance: number
-  actualDistance: number
-}
+import { useState } from "react";
+import { Edge } from "../Class/edge";
 
 interface EdgeManagerProps {
-  edges: Edge[]
-  onEdgeUpdate: (edge: Edge) => void
-  onEdgeDelete: (edgeId: string) => void
-  onEdgeAdd: (edge: Edge) => void
+  edges: Edge[];
+  onEdgeUpdate: (edge: Edge) => void;
+  onEdgeDelete: (edgeId: string) => void;
+  onEdgeAdd: (edge: Edge) => void;
   objects: Array<{
-    id: string
-    name: string
-    interfacePositions: Map<string, [number, number]>
-  }>
+    id: string;
+    name: string;
+    interfacePositions: Map<string, [number, number]>;
+  }>;
 }
 
-export function EdgeManager({ edges, onEdgeUpdate, onEdgeDelete, onEdgeAdd, objects }: EdgeManagerProps) {
-  const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null)
+export function EdgeManager({
+  edges,
+  onEdgeUpdate,
+  onEdgeDelete,
+  onEdgeAdd,
+  objects,
+}: EdgeManagerProps) {
+  const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
   const [newEdgeForm, setNewEdgeForm] = useState({
     source: "",
     sourceInterface: "",
     target: "",
     targetInterface: "",
     expectedDistance: 200,
-  })
-  const [showNewEdgeForm, setShowNewEdgeForm] = useState(false)
+  });
+  const [showNewEdgeForm, setShowNewEdgeForm] = useState(false);
 
   const handleExpectedDistanceChange = (edgeId: string, value: number) => {
-    const edge = edges.find((e) => e.id === edgeId)
+    const edge = edges.find((e) => e.id === edgeId);
     if (edge) {
       onEdgeUpdate({
         ...edge,
         expectedDistance: value,
-      })
+      });
     }
-  }
+  };
 
   const handleNewEdgeSubmit = () => {
-    if (newEdgeForm.source && newEdgeForm.sourceInterface && newEdgeForm.target && newEdgeForm.targetInterface) {
+    if (
+      newEdgeForm.source &&
+      newEdgeForm.sourceInterface &&
+      newEdgeForm.target &&
+      newEdgeForm.targetInterface
+    ) {
       onEdgeAdd({
         id: `edge${Date.now()}`,
         source: newEdgeForm.source,
@@ -55,17 +57,17 @@ export function EdgeManager({ edges, onEdgeUpdate, onEdgeDelete, onEdgeAdd, obje
         targetInterface: newEdgeForm.targetInterface,
         expectedDistance: newEdgeForm.expectedDistance,
         actualDistance: 0,
-      })
-      setShowNewEdgeForm(false)
+      });
+      setShowNewEdgeForm(false);
       setNewEdgeForm({
         source: "",
         sourceInterface: "",
         target: "",
         targetInterface: "",
         expectedDistance: 200,
-      })
+      });
     }
-  }
+  };
 
   return (
     <div className="bg-white p-3 rounded shadow-md">
@@ -73,8 +75,8 @@ export function EdgeManager({ edges, onEdgeUpdate, onEdgeDelete, onEdgeAdd, obje
 
       <div className="max-h-40 overflow-y-auto">
         {edges.map((edge) => {
-          const sourceObj = objects.find((o) => o.id === edge.source)
-          const targetObj = objects.find((o) => o.id === edge.target)
+          const sourceObj = objects.find((o) => o.id === edge.source);
+          const targetObj = objects.find((o) => o.id === edge.target);
 
           return (
             <div
@@ -86,14 +88,14 @@ export function EdgeManager({ edges, onEdgeUpdate, onEdgeDelete, onEdgeAdd, obje
             >
               <div className="flex justify-between">
                 <span>
-                  {sourceObj?.name || edge.source}.{edge.sourceInterface} → {targetObj?.name || edge.target}.
-                  {edge.targetInterface}
+                  {sourceObj?.name || edge.source}.{edge.sourceInterface} →{" "}
+                  {targetObj?.name || edge.target}.{edge.targetInterface}
                 </span>
                 <button
                   className="text-red-500 text-xs"
                   onClick={(e) => {
-                    e.stopPropagation()
-                    onEdgeDelete(edge.id)
+                    e.stopPropagation();
+                    onEdgeDelete(edge.id);
                   }}
                 >
                   Delete
@@ -107,7 +109,12 @@ export function EdgeManager({ edges, onEdgeUpdate, onEdgeDelete, onEdgeAdd, obje
                     <input
                       type="number"
                       value={edge.expectedDistance}
-                      onChange={(e) => handleExpectedDistanceChange(edge.id, Number.parseInt(e.target.value))}
+                      onChange={(e) =>
+                        handleExpectedDistanceChange(
+                          edge.id,
+                          Number.parseInt(e.target.value)
+                        )
+                      }
                       className="w-full p-1 border rounded mt-1"
                     />
                   </label>
@@ -115,7 +122,10 @@ export function EdgeManager({ edges, onEdgeUpdate, onEdgeDelete, onEdgeAdd, obje
                     Actual:{" "}
                     <span
                       className={
-                        Math.abs(edge.actualDistance - edge.expectedDistance) < 5 ? "text-green-500" : "text-red-500"
+                        Math.abs(edge.actualDistance - edge.expectedDistance) <
+                        5
+                          ? "text-green-500"
+                          : "text-red-500"
                       }
                     >
                       {Math.round(edge.actualDistance)}
@@ -124,7 +134,7 @@ export function EdgeManager({ edges, onEdgeUpdate, onEdgeDelete, onEdgeAdd, obje
                 </div>
               )}
             </div>
-          )
+          );
         })}
       </div>
 
@@ -142,7 +152,7 @@ export function EdgeManager({ edges, onEdgeUpdate, onEdgeDelete, onEdgeAdd, obje
                   ...newEdgeForm,
                   source: e.target.value,
                   sourceInterface: "",
-                })
+                });
               }}
             >
               <option value="">Select Object</option>
@@ -160,17 +170,25 @@ export function EdgeManager({ edges, onEdgeUpdate, onEdgeDelete, onEdgeAdd, obje
               <select
                 className="w-full p-1 text-sm border rounded"
                 value={newEdgeForm.sourceInterface}
-                onChange={(e) => setNewEdgeForm({ ...newEdgeForm, sourceInterface: e.target.value })}
+                onChange={(e) =>
+                  setNewEdgeForm({
+                    ...newEdgeForm,
+                    sourceInterface: e.target.value,
+                  })
+                }
               >
                 <option value="">Select Interface</option>
-                {objects.find((o) => o.id === newEdgeForm.source)?.interfacePositions &&
-                  Array.from(objects.find((o) => o.id === newEdgeForm.source)!.interfacePositions.keys()).map(
-                    (intf) => (
-                      <option key={intf} value={intf}>
-                        {intf}
-                      </option>
-                    ),
-                  )}
+                {objects.find((o) => o.id === newEdgeForm.source)
+                  ?.interfacePositions &&
+                  Array.from(
+                    objects
+                      .find((o) => o.id === newEdgeForm.source)!
+                      .interfacePositions.keys()
+                  ).map((intf) => (
+                    <option key={intf} value={intf}>
+                      {intf}
+                    </option>
+                  ))}
               </select>
             </div>
           )}
@@ -185,7 +203,7 @@ export function EdgeManager({ edges, onEdgeUpdate, onEdgeDelete, onEdgeAdd, obje
                   ...newEdgeForm,
                   target: e.target.value,
                   targetInterface: "",
-                })
+                });
               }}
             >
               <option value="">Select Object</option>
@@ -205,17 +223,25 @@ export function EdgeManager({ edges, onEdgeUpdate, onEdgeDelete, onEdgeAdd, obje
               <select
                 className="w-full p-1 text-sm border rounded"
                 value={newEdgeForm.targetInterface}
-                onChange={(e) => setNewEdgeForm({ ...newEdgeForm, targetInterface: e.target.value })}
+                onChange={(e) =>
+                  setNewEdgeForm({
+                    ...newEdgeForm,
+                    targetInterface: e.target.value,
+                  })
+                }
               >
                 <option value="">Select Interface</option>
-                {objects.find((o) => o.id === newEdgeForm.target)?.interfacePositions &&
-                  Array.from(objects.find((o) => o.id === newEdgeForm.target)!.interfacePositions.keys()).map(
-                    (intf) => (
-                      <option key={intf} value={intf}>
-                        {intf}
-                      </option>
-                    ),
-                  )}
+                {objects.find((o) => o.id === newEdgeForm.target)
+                  ?.interfacePositions &&
+                  Array.from(
+                    objects
+                      .find((o) => o.id === newEdgeForm.target)!
+                      .interfacePositions.keys()
+                  ).map((intf) => (
+                    <option key={intf} value={intf}>
+                      {intf}
+                    </option>
+                  ))}
               </select>
             </div>
           )}
@@ -226,7 +252,12 @@ export function EdgeManager({ edges, onEdgeUpdate, onEdgeDelete, onEdgeAdd, obje
               type="number"
               className="w-full p-1 text-sm border rounded"
               value={newEdgeForm.expectedDistance}
-              onChange={(e) => setNewEdgeForm({ ...newEdgeForm, expectedDistance: Number.parseInt(e.target.value) })}
+              onChange={(e) =>
+                setNewEdgeForm({
+                  ...newEdgeForm,
+                  expectedDistance: Number.parseInt(e.target.value),
+                })
+              }
             />
           </div>
 
@@ -260,6 +291,5 @@ export function EdgeManager({ edges, onEdgeUpdate, onEdgeDelete, onEdgeAdd, obje
         </button>
       )}
     </div>
-  )
+  );
 }
-

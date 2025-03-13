@@ -1,242 +1,164 @@
+import { useCanvas } from "@/features/systems/contexts/CanvasContext";
 import React, { useState } from "react";
-import { LuPanelBottomClose } from "react-icons/lu";
-import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
-import { useCanvas } from "../../../contexts/CanvasContext";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Object } from "../Class/object";
+import { getInterfacePosition } from "../canvas/edge-routing";
 
 const RightSidebar = () => {
-  const [isOpen, setIsOpen] = useState(true);
-  const [isLock, setIsLock] = useState(true);
-  const handleClick = () => setIsOpen((prev) => !prev);
-  const handleLock = () => setIsLock((prev) => !prev);
+  const { objects, setObjects } = useCanvas() as {
+    objects: Object[];
+    setObjects: React.Dispatch<React.SetStateAction<Object[]>>;
+  };
 
-  const { canvas, getSelectedObject, updateObject, updateCanvas, setGrid } =
-    useCanvas();
-  const selectObject = getSelectedObject();
+  const { selectedObjectId } = useCanvas();
+  const { mirrors, setDefaultMirror } = useCanvas();
 
-  const renderObjectProperties = () => {
-    if (!selectObject) return null;
+  const { snapEnabled, setSnapEnabled } = useCanvas();
 
+  // Check if selected object is a mirror
+  const isSelectedMirror = () => {
+    if (!selectedObjectId) return false;
+    const selectedObject = objects.find((obj) => obj.id === selectedObjectId);
+    return selectedObject?.isMirror === true;
+  };
+
+  // Get current mirror size index
+  const getCurrentMirrorSizeIndex = () => {
+    if (!selectedObjectId) return 1; // Default to Medium
+
+    const selectedObject = objects.find((obj) => obj.id === selectedObjectId);
+    if (!selectedObject?.isMirror) return 1;
+
+    const { width, height } = selectedObject.size;
     return (
-      <div className="space-y-4">
-        {/* Properties */}
-        <div className="flex flex-col gap-1 border-b">
-          <div className="text-sm">Properties</div>
-          <div className="text-xs text-gray-500 pb-2">
-            {selectObject.name || "Select an object"}
-          </div>
-        </div>
-
-        {/* ID */}
-        <div className="flex flex-col gap-1 border-b">
-          <div className="text-sm">ID</div>
-          <div className="text-xs text-gray-500 pb-2">
-            {selectObject.id || "Select an object"}
-          </div>
-        </div>
-
-        {/* Position */}
-        <div className="flex flex-col gap-1 border-b">
-          <div className="text-sm">Position</div>
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            <div>
-              <Label className="text-xs text-gray-500">X</Label>
-              <Input
-                type="number"
-                value={Math.floor(selectObject.x)}
-                onChange={(e) =>
-                  updateObject(selectObject.id, { x: Number(e.target.value) })
-                }
-              />
-            </div>
-            <div>
-              <Label className="text-xs text-gray-500">Y</Label>
-              <Input
-                type="number"
-                value={Math.floor(selectObject.y)}
-                onChange={(e) =>
-                  updateObject(selectObject.id, { y: Number(e.target.value) })
-                }
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+      mirrors.findIndex(
+        (size) => size.width === width && size.height === height
+      ) || 1
     );
   };
 
-  const renderCanvasProperties = () => {
-    return (
-      <div className="space-y-4">
-        {/* Table Size */}
-        <div className="flex flex-col gap-1 border-b">
-          <div className="flex justify-between items-center">
-            <Label className="text-sm">Table Size</Label>
-            <button onClick={handleLock}>
-              {isLock ? (
-                <MdOutlineLock size={15} />
-              ) : (
-                <MdOutlineLockOpen size={15} />
-              )}
-            </button>
-          </div>
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            <div>
-              <Label className="text-xs text-ChildText" htmlFor="width">
-                Width
-              </Label>
-              <Input
-                type="number"
-                value={Math.floor(canvas.canvasWidth / 10)}
-                onChange={(e) =>
-                  updateCanvas({ canvasWidth: Number(e.target.value) })
-                }
-                disabled={true}
-                id="width"
-              />
-            </div>
-            <div>
-              <Label className="text-xs text-ChildText" htmlFor="height">
-                Height
-              </Label>
-              <Input
-                type="number"
-                value={Math.floor(canvas.canvasHeight / 10)}
-                onChange={(e) =>
-                  updateCanvas({ canvasHeight: Number(e.target.value) })
-                }
-                disabled={true}
-                id="height"
-              />
-            </div>
-          </div>
-        </div>
-        {/* Grid Layout section */}
-        <div className="flex flex-col gap-1 border-b pb-4">
-          <div className="flex justify-between items-center">
-            <Label className="text-sm">Layout Grid</Label>
-            <Switch
-              checked={canvas.grid.showGrid}
-              onCheckedChange={(checked) => setGrid({ showGrid: checked })}
-            />
-          </div>
+  // Change the size of a mirror
+  const changeMirrorSize = (mirrorId: string, sizeIndex: number) => {
+    const size = mirrors[sizeIndex];
+    if (!size) return;
 
-          {canvas.grid.showGrid && (
-            <div className="space-y-1 mt-2">
-              <div className="grid grid-cols-2 gap-2 ">
-                {/* Grid Size */}
-                <div>
-                  <Label className="text-xs text-ChildText">Grid Size</Label>
-                  <Input
-                    type="number"
-                    value={canvas.grid.gridSize}
-                    onChange={(e) =>
-                      setGrid({ gridSize: Number(e.target.value) })
-                    }
-                    onKeyDown={(e) =>
-                      setGrid({ gridSize: Number(e.currentTarget.value) })
-                    }
-                    min={25}
-                    max={100}
-                  />
-                </div>
-                {/* Grid Style */}
-                <div>
-                  <Label className="text-xs text-ChildText">Grid Style</Label>
-                  <Select
-                    value={canvas.grid.gridStyle}
-                    onValueChange={(value: "dot" | "line") =>
-                      setGrid({ gridStyle: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="line">Line</SelectItem>
-                      <SelectItem value="dot">Dot</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+    const mirror = objects.find((obj) => obj.id === mirrorId);
+    if (!mirror || !mirror.isMirror) return;
 
-              {/* Grid Opacity */}
-              <div>
-                <Label className="text-xs text-ChildText">Opacity</Label>
-                <Slider
-                  value={[canvas.grid.gridOpacity * 100]}
-                  min={0}
-                  max={100}
-                  onValueChange={([value]) =>
-                    setGrid({ gridOpacity: value / 100 })
-                  }
-                  className="mt-2"
-                />
-              </div>
-              {/* Grid Color */}
-              <div>
-                <Label className="text-xs text-ChildText">Color</Label>
-                <Input
-                  type="color"
-                  value={canvas.grid.gridColor}
-                  onChange={(e) => setGrid({ gridColor: e.target.value })}
-                  className="mt-2"
-                />
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+    // Get the current interface position in absolute coordinates
+    const interfacePos = getInterfacePosition(objects, mirrorId, "in");
+    if (!interfacePos) return;
+
+    // Get the interface position ratio
+    const interfaceRatio = mirror.interfacePositions.get("in");
+    if (!interfaceRatio) return;
+
+    // Calculate the reference point offset
+    const oldRefX = mirror.referencePosition[0] * mirror.size.width;
+    const oldRefY = mirror.referencePosition[0] * mirror.size.height;
+
+    // Calculate the new reference point offset
+    const newRefX = mirror.referencePosition[0] * size.width;
+    const newRefY = mirror.referencePosition[0] * size.height;
+
+    // Calculate the interface point offset from the reference point in the new size
+    const newInterfaceX = interfaceRatio[0] * size.width;
+    const newInterfaceY = interfaceRatio[1] * size.height;
+
+    // Calculate the new position to keep the interface point at the same absolute position
+    const newPosition = {
+      x: interfacePos.x - newInterfaceX + newRefX,
+      y: interfacePos.y - newInterfaceY + newRefY,
+    };
+
+    // Update the object with the new size and position
+    setObjects((prevObjects) =>
+      prevObjects.map((obj) =>
+        obj.id === mirrorId
+          ? {
+              ...obj,
+              size: { width: size.width, height: size.height },
+              position: newPosition,
+            }
+          : obj
+      )
+    );
+  };
+
+  // Rotate an object by 90 degrees clockwise
+  const rotateObject = (objectId: string) => {
+    const object = objects.find((obj) => obj.id === objectId);
+    if (!object) return;
+
+    const newRotation = (object.rotation + 90) % 360;
+
+    // Apply rotation without checking for collisions
+    setObjects((prevObjects) =>
+      prevObjects.map((obj) =>
+        obj.id === objectId ? { ...obj, rotation: newRotation } : obj
+      )
     );
   };
 
   return (
     <div className="w-64 h-full overflow-y-auto p-2 bg-transparent">
-      <div
-        className={`bg-white rounded-md h-full p-4 space-y-4 ${
-          isOpen ? "" : "hidden"
-        }`}
-      >
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          {/* <button onClick={handleClick}>
-            {}
-            <LuPanelTopClose size={18} />
-          </button> */}
-
-          {/* <UserButton
-            appearance={{ elements: { userButtonAvatarBox: "w-9 h-9" } }}
-          /> */}
-        </div>
-        {selectObject ? renderObjectProperties() : renderCanvasProperties()}
+      <div>
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            checked={snapEnabled}
+            onChange={(e) => setSnapEnabled(e.target.checked)}
+            className="mr-2"
+          />
+          Snap to Grid
+        </label>
       </div>
 
-      {/* Sidebar Closed */}
-      <div
-        className={`bg-white rounded-md h-fit p-4 space-y-4 ${
-          isOpen ? "hidden" : ""
-        }`}
-      >
-        <div className="flex justify-between items-center">
-          <button onClick={handleClick}>
-            {}
-            <LuPanelBottomClose size={18} />
+      <div>
+        <label className="block mt-2 text-sm">Default Mirror</label>
+        <select
+          className="w-full p-1 mt-1 text-sm"
+          onChange={(e) => setDefaultMirror(Number(e.target.value))}
+        >
+          {mirrors.map((mirror, index) => (
+            <option key={index} value={index}>
+              {mirror.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {selectedObjectId && (
+        <div className="mt-2 flex space-x-2">
+          <button
+            className="bg-blue-500 text-white px-2 py-1 rounded"
+            onClick={() => selectedObjectId && rotateObject(selectedObjectId)}
+            disabled={!selectedObjectId}
+          >
+            Rotate 90°
           </button>
-          {/* <UserButton
-            appearance={{ elements: { userButtonAvatarBox: "w-9 h-9" } }}
-          /> */}
         </div>
-      </div>
+      )}
+      {/* Mirror size selector (only shown when a mirror is selected) */}
+      {isSelectedMirror() && (
+        <div className="mt-2">
+          <label>
+            Mirror Size:
+            <select
+              className="w-full p-1 mt-1 text-sm"
+              value={getCurrentMirrorSizeIndex()}
+              onChange={(e) =>
+                changeMirrorSize(selectedObjectId!, Number(e.target.value))
+              }
+            >
+              {mirrors.map((mirror, index) => (
+                <option key={index} value={index}>
+                  {mirror.name} ({mirror.width}x{mirror.height})
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      )}
     </div>
   );
 };

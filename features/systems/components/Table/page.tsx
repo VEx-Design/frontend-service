@@ -14,7 +14,9 @@ const TableSimulation = () => {
         <div className="flex flex-1 flex-col h-full w-full">
           <main className="flex flex-1 w-full h-full">
             {/* Left sidebar with fixed width */}
-            <div className="h-full shrink-0">{/* <LeftSidebar /> */}</div>
+            <div className="h-full shrink-0">
+              <LeftSidebar />
+            </div>
 
             {/* Canvas that fills available space */}
             <div className="flex-1 h-full overflow-hidden">
@@ -22,7 +24,9 @@ const TableSimulation = () => {
             </div>
 
             {/* Right sidebar with fixed width */}
-            <div className="h-full shrink-0">{/* <RightSidebar /> */}</div>
+            <div className="h-full shrink-0">
+              <RightSidebar />
+            </div>
           </main>
         </div>
       </CanvasProvider>
