@@ -5,37 +5,9 @@ import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { Circle, Group, Layer, Line, Rect, Stage, Text } from "react-konva";
 import { EdgeManager } from "./edge-manager";
-
-interface Table {
-  size: { width: number; height: number }; // unit in mm (scene coordinates)
-  margin: { width: number; height: number }; // unit in mm (scene coordinates)
-  gridDistance: number; // unit in mm (scene coordinates)
-  gridStyle: "dot" | "line"; // grid style
-  gridColor: string; // grid color
-  gridOpacity: number; // grid opacity
-}
-
-interface Object {
-  id: string; // object id
-  name: string; // object name
-  size: { width: number; height: number }; // unit in mm (scene coordinates)
-  position: { x: number; y: number }; // position in scene coordinates
-  rotation: number; // rotation in degrees
-  referencePosition: [number, number]; // unit in ratio
-  interfacePositions: Map<string, [number, number]>; // Map<interface, position> unit in ratio
-  isColliding?: boolean; // Flag to indicate if object is colliding
-  isMirror?: boolean; // Flag to indicate if object is a mirror
-}
-
-interface Edge {
-  id: string;
-  source: string;
-  sourceInterface: string;
-  target: string;
-  targetInterface: string;
-  expectedDistance: number;
-  actualDistance: number;
-}
+import { Edge } from "../Class/edge";
+import { Table } from "../Class/table";
+import { Object } from "../Class/object";
 
 // Mirror size options
 const MIRROR_SIZES = [
@@ -49,73 +21,35 @@ const MIRROR_SIZES = [
 const mockObjects: Object[] = [
   {
     id: "1",
-    name: "Router",
-    size: { width: 100, height: 100 },
-    position: { x: 200, y: 200 },
+    name: "Laser Generator",
+    size: { width: 50, height: 50 },
+    position: { x: 0, y: 0 },
     rotation: 0,
     referencePosition: [0.5, 0.5],
-    interfacePositions: new Map([
-      ["eth0", [0, 0.25]],
-      ["eth1", [0, 0.75]],
-      ["wan0", [1, 0.25]],
-      ["wan1", [1, 0.75]],
-    ]),
+    interfacePositions: new Map([["start", [0.5, 0.5]]]),
     isColliding: false,
   },
   {
     id: "2",
-    name: "Switch",
-    size: { width: 150, height: 80 },
-    position: { x: 400, y: 300 },
+    name: "Lens",
+    size: { width: 50, height: 50 },
+    position: { x: 50, y: 50 },
     rotation: 0,
     referencePosition: [0.5, 0.5],
     interfacePositions: new Map([
-      ["port1", [0, 0.3]],
-      ["port2", [0, 0.7]],
-      ["port3", [1, 0.3]],
-      ["port4", [1, 0.7]],
+      ["1", [0.5, 0.5]],
+      ["2", [0.5, 0.5]],
     ]),
     isColliding: false,
   },
   {
     id: "3",
-    name: "Server",
-    size: { width: 120, height: 120 },
-    position: { x: 600, y: 200 },
-    rotation: 45,
-    referencePosition: [0.5, 0.5],
-    interfacePositions: new Map([
-      ["nic1", [0, 0.5]],
-      ["nic2", [1, 0.5]],
-      ["mgmt", [0.5, 0]],
-    ]),
-    isColliding: false,
-  },
-  {
-    id: "4",
-    name: "Firewall",
-    size: { width: 100, height: 80 },
-    position: { x: 300, y: 500 },
-    rotation: 90,
-    referencePosition: [0.5, 0.5],
-    interfacePositions: new Map([
-      ["in", [0, 0.5]],
-      ["out", [1, 0.5]],
-      ["mgmt", [0.5, 0]],
-    ]),
-    isColliding: false,
-  },
-  {
-    id: "5",
-    name: "Client",
-    size: { width: 80, height: 60 },
-    position: { x: 500, y: 500 },
+    name: "Detector",
+    size: { width: 50, height: 50 },
+    position: { x: 100, y: 100 },
     rotation: 0,
     referencePosition: [0.5, 0.5],
-    interfacePositions: new Map([
-      ["eth", [0, 0.5]],
-      ["wifi", [0.5, 0]],
-    ]),
+    interfacePositions: new Map([["terminal", [0.5, 0.5]]]),
     isColliding: false,
   },
 ];
@@ -125,42 +59,24 @@ const mockEdges: Edge[] = [
   {
     id: "edge1",
     source: "1",
-    sourceInterface: "wan0",
+    sourceInterface: "start",
     target: "2",
-    targetInterface: "port1",
+    targetInterface: "1",
     expectedDistance: 200,
     actualDistance: 0,
   },
   {
     id: "edge2",
     source: "2",
-    sourceInterface: "port3",
+    sourceInterface: "2",
     target: "3",
-    targetInterface: "nic1",
-    expectedDistance: 250,
-    actualDistance: 0,
-  },
-  {
-    id: "edge3",
-    source: "1",
-    sourceInterface: "eth1",
-    target: "4",
-    targetInterface: "in",
-    expectedDistance: 300,
-    actualDistance: 0,
-  },
-  {
-    id: "edge4",
-    source: "4",
-    sourceInterface: "out",
-    target: "5",
-    targetInterface: "eth",
-    expectedDistance: 150,
+    targetInterface: "terminal",
+    expectedDistance: 200,
     actualDistance: 0,
   },
 ];
 
-export default function KonvaPage() {
+export default function Canvas() {
   // Container and stage size (screen coordinates)
   const containerRef = useRef<HTMLDivElement>(null);
   const [stageSize, setStageSize] = useState({ width: 800, height: 600 }); // Default size
@@ -1573,15 +1489,10 @@ export default function KonvaPage() {
   return (
     <div
       ref={containerRef}
-      style={
-        {
-          width: "100%",
-          height: "100vh",
-          position: "relative",
-          overflow: "hidden",
-          backgroundColor: "#f0f0f0",
-        } as React.CSSProperties
-      }
+      style={{
+        width: "100%",
+        height: "100%",
+      }}
     >
       {stageSize.width > 0 && stageSize.height > 0 ? (
         <Stage

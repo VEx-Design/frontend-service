@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { LuPanelBottomClose } from "react-icons/lu";
 import { MdOutlineLock, MdOutlineLockOpen } from "react-icons/md";
-import { useCanvas } from "../canvas/CanvasContext";
+import { useCanvas } from "../../../contexts/CanvasContext";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -71,7 +71,6 @@ const RightSidebar = () => {
             </div>
           </div>
         </div>
-        
       </div>
     );
   };
@@ -210,7 +209,6 @@ const RightSidebar = () => {
       >
         {/* Header */}
         <div className="flex justify-between items-center">
-
           {/* <button onClick={handleClick}>
             {}
             <LuPanelTopClose size={18} />

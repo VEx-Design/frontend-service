@@ -23,9 +23,10 @@ import Execution from "../Execution";
 import { ExecutionProvider } from "../../contexts/Execution/ExecutionContext";
 import Box from "../Box";
 import { BoxProvider } from "../../contexts/BoxContext";
-import FitObject from "@/src/app/fitobject/page";
 import { GiTable } from "react-icons/gi";
 import { ConfigTypeProvider } from "../../contexts/Configuration/ConfigTypeContext";
+import { CanvasProvider } from "../../contexts/CanvasContext";
+import TableSimulation from "../../components/Table/page";
 
 export default function Project() {
   const { projName, onSave, savePending, setIsTriggered } = useProject();
@@ -86,9 +87,9 @@ export default function Project() {
           </BoxProvider>
         </TabsContent>
         <TabsContent name="Table">
-          <BoxProvider>
-            <FitObject />
-          </BoxProvider>
+          <CanvasProvider>
+            <TableSimulation />
+          </CanvasProvider>
         </TabsContent>
       </Tabs>
     </>

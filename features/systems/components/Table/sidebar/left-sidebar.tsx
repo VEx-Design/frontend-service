@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React, { useState } from "react";
-import { useCanvas } from "../canvas/CanvasContext";
+import { useCanvas } from "../../../contexts/CanvasContext";
 import { LuPanelBottomClose, LuPanelTopClose } from "react-icons/lu";
 
 const LeftSidebar = ({}) => {
@@ -19,7 +19,6 @@ const LeftSidebar = ({}) => {
           isOpen ? "" : "hidden"
         }`}
       >
-
         {/* Main
         <div className="flex justify-between items-center">
           <a href="/project">
