@@ -11,9 +11,15 @@ export default function LightLister() {
         Lights
       </div>
       <div className="flex flex-col p-2 gap-2">
-        {focusEdge?.data?.lights?.map((light, index) => (
-          <LightBox key={light.id} light={light} index={index} />
-        ))}
+        {focusEdge?.data?.lights?.length ?? 0 > 0 ? (
+          focusEdge?.data?.lights?.map((light, index) => (
+            <LightBox key={light.id} light={light} index={index} />
+          ))
+        ) : (
+          <div className="flex items-center justify-center h-20 text-muted-foreground text-sm italic">
+            {"No lights available"}
+          </div>
+        )}
       </div>
     </div>
   );

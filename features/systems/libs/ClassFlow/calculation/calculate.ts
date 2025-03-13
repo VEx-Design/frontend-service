@@ -27,7 +27,7 @@ export default function calculate(flow: Flow, config: Config): Flow {
     const edge = processQueue.shift();
     if (!edge) continue;
 
-    const { source } = edge;
+    const { source, target } = edge;
     const sourceNode = resultFlow.nodes.find((node) => node.id === source);
 
     if (!sourceNode) continue;
@@ -113,6 +113,13 @@ export default function calculate(flow: Flow, config: Config): Flow {
       });
       inputObjects.push(newInput);
     });
+
+    resultFlow = setNodeInput(
+      resultFlow,
+      target,
+      targetInterfaceId,
+      inputObjects
+    );
 
     const targetData = targetNode.data.data;
     if (targetNode.type === "starter") continue;

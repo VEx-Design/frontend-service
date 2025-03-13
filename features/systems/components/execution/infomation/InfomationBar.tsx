@@ -1,6 +1,8 @@
 import React from "react";
 import EdgeInfomation from "./edges/EdgeInfomation";
 import { LightInfoProvider } from "@/features/systems/contexts/Execution/LightInfoContext";
+import NodeInfomation from "./nodes/NodeInfomation";
+import { NodeInfoProvider } from "@/features/systems/contexts/Execution/NodeInfoContext";
 
 export default function InfomationBar() {
   return (
@@ -8,6 +10,9 @@ export default function InfomationBar() {
       <LightInfoProvider>
         <EdgeInfomation />
       </LightInfoProvider>
+      <NodeInfoProvider>
+        <NodeInfomation />
+      </NodeInfoProvider>
     </div>
   );
 }
