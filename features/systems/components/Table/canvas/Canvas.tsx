@@ -819,26 +819,28 @@ export default function Canvas() {
           // Render mirror as a diamond shape with delete button
           <>
             {/* Draw a diamond shape */}
-            <Line
-              points={[
-                object.size.width / 2,
-                0, // top
-                object.size.width,
-                object.size.height / 2, // right
-                object.size.width / 2,
-                object.size.height, // bottom
-                0,
-                object.size.height / 2, // left
-              ]}
-              closed={true}
-              fill={fillColor}
-              opacity={0.6}
-              stroke={isSelected ? "blue" : "transparent"}
-              strokeWidth={1 / scale}
-            />
+            {showBoundingBox && (
+              <Line
+                points={[
+                  object.size.width / 2,
+                  0, // top
+                  object.size.width,
+                  object.size.height / 2, // right
+                  object.size.width / 2,
+                  object.size.height, // bottom
+                  0,
+                  object.size.height / 2, // left
+                ]}
+                closed={true}
+                fill={fillColor}
+                opacity={0.6}
+                stroke={isSelected ? "blue" : "transparent"}
+                strokeWidth={1 / scale}
+              />
+            )}
 
             {/* Image inside mirror with 80% fit, aligned with interface point */}
-            {hasImage && object.interfacePositions.has("in") && (
+            {showImages && hasImage && object.interfacePositions.has("in") && (
               <Group>
                 {(() => {
                   // Calculate diamond dimensions
@@ -880,30 +882,6 @@ export default function Canvas() {
                 })()}
               </Group>
             )}
-
-            <Text
-              text="Mirror"
-              x={-15}
-              y={-25}
-              width={object.size.width + 30}
-              height={20}
-              align="center"
-              verticalAlign="middle"
-              fontSize={10 / scale}
-              fill="black"
-            />
-            <Text
-              text="×"
-              x={object.size.width / 2 + 10}
-              y={-object.size.height / 2 - 12}
-              fontSize={14 / scale}
-              fill="white"
-              align="center"
-              verticalAlign="middle"
-              width={10}
-              height={14}
-              listening={false}
-            />
           </>
         ) : (
           // Render regular object
@@ -923,11 +901,31 @@ export default function Canvas() {
             {hasImage && (
               <KonvaImage
                 image={loadedImages[object.id]}
-                width={object.size.width * 0.9}
-                height={object.size.height * 0.9}
-                x={object.size.width * 0.05} // Center the image by adding 5% padding on each side
-                y={object.size.height * 0.05}
-                opacity={0.9}
+                width={Math.min(
+                  object.size.width,
+                  loadedImages[object.id]?.width || 1
+                )}
+                height={Math.min(
+                  object.size.height,
+                  loadedImages[object.id]?.height || 1
+                )}
+                x={
+                  (object.size.width -
+                    Math.min(
+                      object.size.width,
+                      loadedImages[object.id]?.width || 1
+                    )) /
+                  2
+                }
+                y={
+                  (object.size.height -
+                    Math.min(
+                      object.size.height,
+                      loadedImages[object.id]?.height || 1
+                    )) /
+                  2
+                }
+                opacity={1}
               />
             )}
 
@@ -1058,8 +1056,8 @@ export default function Canvas() {
                 y={corner.y}
                 radius={5 / scale}
                 fill="transparent"
-                stroke="blue"
-                strokeWidth={1 / scale}
+                stroke="black"
+                strokeWidth={3 / scale}
                 opacity={0.6}
                 onClick={() => handleEdgeCornerClick(edge.id, corner)}
                 onTap={() => handleEdgeCornerClick(edge.id, corner)}

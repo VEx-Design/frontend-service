@@ -5,11 +5,16 @@ import {
   type ReactNode,
   useCallback,
   useEffect,
+  use,
 } from "react";
 import { Table } from "../components/Table/Class/table";
 import { Object } from "../components/Table/Class/object";
 import { Edge } from "../components/Table/Class/edge";
 import { Mirror } from "../components/Table/Class/mirror";
+import { useNodesState } from "@xyflow/react";
+import { useConfig } from "./ProjectWrapper/ConfigContext";
+import { useNodes } from "./ProjectWrapper/NodesContext";
+import { useEdges } from "./ProjectWrapper/EdgesContext";
 
 interface CanvasContextValue {
   //Stage size
@@ -56,6 +61,11 @@ interface CanvasContextValue {
 const CanvasContext = createContext<CanvasContextValue | null>(null);
 
 export const CanvasProvider = (props: { children: React.ReactNode }) => {
+  const { mapBounding } = useConfig();
+  const nodesState = useNodes();
+  const edgesState = useEdges();
+  const { config } = useConfig();
+
   //Stage size state
   const [stageSize, setStageSize] = useState<{ width: number; height: number }>(
     {
@@ -73,76 +83,30 @@ export const CanvasProvider = (props: { children: React.ReactNode }) => {
     gridColor: "black",
     gridOpacity: 0.5,
   });
-  const [objects, setObjects] = useState<Object[]>([
-    {
-      id: "1",
-      name: "Laser Generator",
-      size: { width: 50, height: 50 },
-      position: { x: 0, y: 0 },
-      rotation: 0,
-      referencePosition: [0.5, 0.5],
-      interfacePositions: new Map([["start", [0.5, 0.5]]]),
-      isColliding: false,
-      imageUrl:
-        "https://images.squarespace-cdn.com/content/v1/54822a56e4b0b30bd821480c/45ed8ecf-0bb2-4e34-8fcf-624db47c43c8/Golden+Retrievers+dans+pet+care.jpeg",
-    },
-    {
-      id: "2",
-      name: "Lens",
-      size: { width: 50, height: 50 },
-      position: { x: 50, y: 50 },
-      rotation: 0,
-      referencePosition: [0.5, 0.5],
-      interfacePositions: new Map([
-        ["1", [0.5, 0.5]],
-        ["2", [0.5, 0.5]],
-      ]),
-      isColliding: false,
-      imageUrl: "/images/lens.png",
-    },
-    {
-      id: "3",
-      name: "Detector",
-      size: { width: 50, height: 50 },
-      position: { x: 100, y: 100 },
-      rotation: 0,
-      referencePosition: [0.5, 0.5],
-      interfacePositions: new Map([["terminal", [0.5, 0.5]]]),
-      isColliding: false,
-    },
-  ]);
-  const [edges, setEdges] = useState<Edge[]>([
-    {
-      id: "edge1",
-      source: "1",
-      sourceInterface: "start",
-      target: "2",
-      targetInterface: "1",
-      expectedDistance: 200,
-      actualDistance: 0,
-    },
-    {
-      id: "edge2",
-      source: "2",
-      sourceInterface: "2",
-      target: "3",
-      targetInterface: "terminal",
-      expectedDistance: 200,
-      actualDistance: 0,
-    },
-  ]);
+
+  const [objects, setObjects] = useState<Object[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
   const [mirrors, setMirrors] = useState<Mirror[]>([
     {
-      name: "Small",
-      width: 20,
-      height: 20,
-      imageUrl:
-        "https://images.squarespace-cdn.com/content/v1/54822a56e4b0b30bd821480c/45ed8ecf-0bb2-4e34-8fcf-624db47c43c8/Golden+Retrievers+dans+pet+care.jpeg",
+      name: "Mirror 1",
+      width: 50,
+      height: 50,
+      imageUrl: "",
     },
-    { name: "Medium", width: 30, height: 30 },
-    { name: "Large", width: 40, height: 40 },
+    {
+      name: "Mirror 2",
+      width: 100,
+      height: 100,
+      imageUrl: "",
+    },
+    {
+      name: "Mirror 3",
+      width: 150,
+      height: 150,
+      imageUrl: "",
+    },
   ]);
-  const [defaultMirror, setDefaultMirror] = useState<number>(0);
+  const [defaultMirror, setDefaultMirror] = useState<number>(1);
 
   //State for handling zoom and position
   const [scale, setScale] = useState<number>(1);
@@ -162,6 +126,59 @@ export const CanvasProvider = (props: { children: React.ReactNode }) => {
   //State for dragging object
   const [draggingObjectId, setDraggingObjectId] = useState<string | null>(null);
   const [isDraggingObject, setIsDraggingObject] = useState(false);
+
+  //mirrors
+
+  function extractUUID(input: string): string {
+    return input.replace(/^(source-handle-|target-handle-)/, "");
+  }
+
+  useEffect(() => {
+    const objects = mapBounding.entries();
+    const newObjects: Object[] = [];
+    let moveDistance = 0;
+    for (const [id, bounding] of objects) {
+      const node = nodesState.nodes.find((node) => node.id === id);
+      const name =
+        node?.data.data.object?.name ||
+        (node?.type === "starter" ? "Starter" : "Terminal");
+      const image =
+        config.types.find((type) => type.id === node?.data.data.object?.typeId)
+          ?.picture || "";
+      newObjects.push({
+        id: id,
+        name: name,
+        size: { width: bounding.width, height: bounding.height },
+        position: { x: moveDistance, y: 0 },
+        rotation: 0,
+        referencePosition: bounding.referencePosition,
+        interfacePositions: bounding.interfacePositions,
+        imageUrl: image,
+        isColliding: false,
+        isMirror: false,
+      });
+      moveDistance += bounding.width + 30;
+    }
+    setObjects(newObjects);
+
+    const newEdges: Edge[] = [];
+    for (const edge of edgesState.edges) {
+      newEdges.push({
+        id: edge.id,
+        source: edge.source,
+        sourceInterface: edge.sourceHandle
+          ? extractUUID(edge.sourceHandle)
+          : "",
+        target: edge.target,
+        targetInterface: edge.targetHandle
+          ? extractUUID(edge.targetHandle)
+          : "",
+        expectedDistance: +(edge?.data?.data?.distance ?? 0),
+        actualDistance: 0,
+      });
+    }
+    setEdges(newEdges);
+  }, [mapBounding, nodesState.nodes, edgesState.edges]);
 
   return (
     <CanvasContext.Provider

@@ -1,8 +1,10 @@
+"use client";
+
 import type React from "react";
 import { useEffect, useState } from "react";
 import { useBox } from "../../contexts/BoxContext";
 import { BoundingConfiguration } from "../../libs/ClassBox/types/BoundingConfiguration";
-import { Check, ChevronDown, Focus, ArrowDownToDotIcon } from "lucide-react"
+import { Check, ChevronDown, Focus, ArrowDownToDotIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -92,10 +94,10 @@ export default function BoxSizing() {
     if (newWidth > 1000) newWidth = 1000;
 
     // Ensure height and width are not negative
-    if (newHeight < 0 || newWidth < 0) return
+    if (newHeight < 0 || newWidth < 0) return;
 
-    const referencePoint = existingConfig?.referencePosition || [0.5, 0.5]
-    const interfacePositions = existingConfig?.interfacePositions || new Map()
+    const referencePoint = existingConfig?.referencePosition || [0.5, 0.5];
+    const interfacePositions = existingConfig?.interfacePositions || new Map();
 
     if (
       !(
@@ -230,9 +232,9 @@ export default function BoxSizing() {
           });
         }
       } else if (node.type === "starter") {
-        newInterfacePositions.set("starter", [0.5, 0.5]);
+        newInterfacePositions.set("1", [0.5, 0.5]);
       } else {
-        newInterfacePositions.set("terminal", [0.5, 0.5]);
+        newInterfacePositions.set("1", [0.5, 0.5]);
       }
 
       setMapBounding((prev) => {
@@ -293,9 +295,15 @@ export default function BoxSizing() {
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg">Boundnig Configuration</CardTitle>
-            <Button variant="outline" size="sm" onClick={setAllNodesDefault} className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={setAllNodesDefault}
+              className="flex items-center gap-1"
+            >
               <ArrowDownToDotIcon className="h-4 w-4" />
-             Apply  <strong>Center Interfaces </strong> to <strong>All Nodes</strong>
+              Apply <strong>Center Interfaces </strong> to{" "}
+              <strong>All Nodes</strong>
             </Button>
           </div>
         </CardHeader>
@@ -321,69 +329,54 @@ export default function BoxSizing() {
                     <label htmlFor="width" className="text-sm font-medium">
                       Width (mm)
                     </label>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        id="width"
-                        type="number"
-                        value={width}
-                        onChange={handleWidthChange}
-                        onClick={(e) => e.stopPropagation()}
-                        className="w-full"
-                      />
-                      {showSaveWidth && Number(width) >= 0 && (
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 text-green-500"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleSave();
-                          }}
-                        >
-                          <Check className="h-4 w-4" />
-                          <span className="sr-only">Save width</span>
-                        </Button>
-                      )}
-                    </div>
+                    <Input
+                      id="width"
+                      type="number"
+                      value={width}
+                      onChange={handleWidthChange}
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-full"
+                    />
                   </div>
 
                   <div className="space-y-2">
                     <label htmlFor="height" className="text-sm font-medium">
                       Height (mm)
                     </label>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        id="height"
-                        type="number"
-                        value={height}
-                        onChange={handleHeightChange}
-                        onClick={(e) => e.stopPropagation()}
-                        className="w-full"
-                      />
-                      {showSaveHeight && Number(height) >= 0 && (
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 text-green-500"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleSave();
-                          }}
-                        >
-                          <Check className="h-4 w-4" />
-                          <span className="sr-only">Save height</span>
-                        </Button>
-                      )}
-                    </div>
+                    <Input
+                      id="height"
+                      type="number"
+                      value={height}
+                      onChange={handleHeightChange}
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-full"
+                    />
                   </div>
                 </div>
+
+                {(showSaveWidth || showSaveHeight) &&
+                  Number(width) >= 0 &&
+                  Number(height) >= 0 && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-2 text-green-500 border-green-500 hover:bg-green-50 hover:text-green-600"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSave();
+                      }}
+                    >
+                      <Check className="h-4 w-4 mr-2" />
+                      Apply Changes
+                    </Button>
+                  )}
               </div>
 
               <Separator />
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                <h2 className="text-medium font-bold">Reference Point</h2>
+                  <h2 className="text-medium font-bold">Reference Point</h2>
                   {focusPoint === "Reference Point" && (
                     <Badge variant="outline" className="bg-red-50">
                       Selecting
@@ -403,24 +396,35 @@ export default function BoxSizing() {
               <div className="space-y-4">
                 <h2 className="text-medium font-bold">Interfaces</h2>
                 <div className="grid gap-3">
-      {interfaces.map((intf, index) => (
-        <div key={`${intf[0]}-${index}`} className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className={`${focusPoint === intf[0] ? "font-bold text-primary text-sm" : "text-sm"}`}>{intf[1]}</span>
-            {focusPoint === intf[0] && (
-              <Badge variant="outline" className="bg-green-50">
-                Selecting
-              </Badge>
-            )}
-          </div>
-          <DropdownMenuComponent
-            label="Set Position"
-            actions={InterfacePointActions(intf[0])}
-            dropdownId={`interface-${intf[0]}`}
-          />
-        </div>
-      ))}
-    </div>
+                  {interfaces.map((intf, index) => (
+                    <div
+                      key={`${intf[0]}-${index}`}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`${
+                            focusPoint === intf[0]
+                              ? "font-bold text-primary text-sm"
+                              : "text-sm"
+                          }`}
+                        >
+                          {intf[1]}
+                        </span>
+                        {focusPoint === intf[0] && (
+                          <Badge variant="outline" className="bg-green-50">
+                            Selecting
+                          </Badge>
+                        )}
+                      </div>
+                      <DropdownMenuComponent
+                        label="Set Position"
+                        actions={InterfacePointActions(intf[0])}
+                        dropdownId={`interface-${intf[0]}`}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           ) : (
@@ -450,7 +454,11 @@ function DropdownMenuComponent({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="flex items-center justify-between">
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex items-center justify-between"
+        >
           {label}
           <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
         </Button>
@@ -472,8 +480,8 @@ function DropdownMenuComponent({
           <DropdownMenuItem
             key={`${dropdownId}-manual`}
             onClick={(e) => {
-              e.stopPropagation()
-              actions[actions.length - 1].action()
+              e.stopPropagation();
+              actions[actions.length - 1].action();
             }}
             className="text-primary font-medium"
           >
