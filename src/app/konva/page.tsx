@@ -744,6 +744,20 @@ export default function KonvaPage() {
     // Add the mirror object to the objects array
     setObjects((prevObjects) => [...prevObjects, mirrorObject]);
 
+    // Calculate the actual distances for the two segments
+    const sourceToCornerDistance =
+      Math.abs(sourcePos.x - position.x) + Math.abs(sourcePos.y - position.y);
+    const cornerToTargetDistance =
+      Math.abs(position.x - targetPos.x) + Math.abs(position.y - targetPos.y);
+    const totalDistance = sourceToCornerDistance + cornerToTargetDistance;
+
+    // Calculate the expected distances proportionally
+    const sourceToCornerExpected = Math.round(
+      (sourceToCornerDistance / totalDistance) * edge.expectedDistance
+    );
+    const cornerToTargetExpected =
+      edge.expectedDistance - sourceToCornerExpected;
+
     // Create two new edges to replace the original edge
     // First edge: from source to mirror
     const edge1: Edge = {
@@ -752,7 +766,7 @@ export default function KonvaPage() {
       sourceInterface: edge.sourceInterface,
       target: mirrorId,
       targetInterface: "in",
-      expectedDistance: Math.floor(edge.expectedDistance / 2),
+      expectedDistance: sourceToCornerExpected,
       actualDistance: 0,
     };
 
@@ -763,7 +777,7 @@ export default function KonvaPage() {
       sourceInterface: "in",
       target: edge.target,
       targetInterface: edge.targetInterface,
-      expectedDistance: Math.ceil(edge.expectedDistance / 2),
+      expectedDistance: cornerToTargetExpected,
       actualDistance: 0,
     };
 
@@ -789,10 +803,44 @@ export default function KonvaPage() {
     const size = MIRROR_SIZES[sizeIndex];
     if (!size) return;
 
+    const mirror = objects.find((obj) => obj.id === mirrorId);
+    if (!mirror || !mirror.isMirror) return;
+
+    // Get the current interface position in absolute coordinates
+    const interfacePos = getInterfacePosition(mirrorId, "in");
+    if (!interfacePos) return;
+
+    // Get the interface position ratio
+    const interfaceRatio = mirror.interfacePositions.get("in");
+    if (!interfaceRatio) return;
+
+    // Calculate the reference point offset
+    const oldRefX = mirror.referencePosition[0] * mirror.size.width;
+    const oldRefY = mirror.referencePosition[0] * mirror.size.height;
+
+    // Calculate the new reference point offset
+    const newRefX = mirror.referencePosition[0] * size.width;
+    const newRefY = mirror.referencePosition[0] * size.height;
+
+    // Calculate the interface point offset from the reference point in the new size
+    const newInterfaceX = interfaceRatio[0] * size.width;
+    const newInterfaceY = interfaceRatio[1] * size.height;
+
+    // Calculate the new position to keep the interface point at the same absolute position
+    const newPosition = {
+      x: interfacePos.x - newInterfaceX + newRefX,
+      y: interfacePos.y - newInterfaceY + newRefY,
+    };
+
+    // Update the object with the new size and position
     setObjects((prevObjects) =>
       prevObjects.map((obj) =>
         obj.id === mirrorId
-          ? { ...obj, size: { width: size.width, height: size.height } }
+          ? {
+              ...obj,
+              size: { width: size.width, height: size.height },
+              position: newPosition,
+            }
           : obj
       )
     );
@@ -1162,36 +1210,32 @@ export default function KonvaPage() {
     end: { x: number; y: number }
   ) => {
     // Check if either end is connected to a mirror
-    const sourceMirror = objects.find(
-      (obj) =>
-        obj.isMirror &&
-        getInterfacePosition(obj.id, "in") &&
-        Math.abs(getInterfacePosition(obj.id, "in")!.x - start.x) < 5 &&
-        Math.abs(getInterfacePosition(obj.id, "in")!.y - start.y) < 5
-    );
+    const isMirrorInterface = (pos: { x: number; y: number }) => {
+      return objects.some((obj) => {
+        if (!obj.isMirror) return false;
 
-    const targetMirror = objects.find(
-      (obj) =>
-        obj.isMirror &&
-        getInterfacePosition(obj.id, "in") &&
-        Math.abs(getInterfacePosition(obj.id, "in")!.x - end.x) < 5 &&
-        Math.abs(getInterfacePosition(obj.id, "in")!.y - end.y) < 5
-    );
+        const interfacePos = getInterfacePosition(obj.id, "in");
+        if (!interfacePos) return false;
 
-    // If either end is connected to a mirror, use a direct path
-    if (sourceMirror || targetMirror) {
-      return [start.x, start.y, end.x, end.y];
-    }
+        return (
+          Math.abs(interfacePos.x - pos.x) < 5 &&
+          Math.abs(interfacePos.y - pos.y) < 5
+        );
+      });
+    };
+
+    const startIsMirror = isMirrorInterface(start);
+    const endIsMirror = isMirrorInterface(end);
+
+    // Always use orthogonal paths, even with mirrors
+    // Option 1: Vertical first, then horizontal
+    const path1 = [start.x, start.y, start.x, end.y, end.x, end.y];
+
+    // Option 2: Horizontal first, then vertical
+    const path2 = [start.x, start.y, end.x, start.y, end.x, end.y];
 
     // Get all mirror objects to avoid their bounding boxes
     const mirrors = objects.filter((obj) => obj.isMirror);
-
-    // If there are no mirrors, use a simple L-shaped path
-    if (mirrors.length === 0) {
-      return [start.x, start.y, start.x, end.y, end.x, end.y];
-    }
-
-    // Get bounding boxes for all mirrors
     const mirrorBoxes = mirrors.map((mirror) => getObjectBoundingBox(mirror));
 
     // Check if a path segment intersects with any mirror bounding box
@@ -1229,24 +1273,17 @@ export default function KonvaPage() {
       });
     };
 
-    // Try different path options
-    // Option 1: Vertical first, then horizontal
-    const path1 = [start.x, start.y, start.x, end.y, end.x, end.y];
+    // Check if paths intersect with mirrors
     const path1Intersects =
       intersectsWithMirror(path1[0], path1[1], path1[2], path1[3]) ||
       intersectsWithMirror(path1[2], path1[3], path1[4], path1[5]);
 
-    // Option 2: Horizontal first, then vertical
-    const path2 = [start.x, start.y, end.x, start.y, end.x, end.y];
     const path2Intersects =
       intersectsWithMirror(path2[0], path2[1], path2[2], path2[3]) ||
       intersectsWithMirror(path2[2], path2[3], path2[4], path2[5]);
 
     // If neither path intersects, choose the shorter one
     if (!path1Intersects && !path2Intersects) {
-      // Calculate Manhattan distance (same for both paths)
-      const distance = Math.abs(end.x - start.x) + Math.abs(end.y - start.y);
-
       // Prefer vertical first as default
       return path1;
     }
@@ -1256,12 +1293,7 @@ export default function KonvaPage() {
     if (!path2Intersects) return path2;
 
     // If both paths intersect, try a more complex path with two turns
-    // Try going out and around
-    const midX = (start.x + end.x) / 2;
-    const midY = (start.y + end.y) / 2;
     const offset = 30; // Offset distance to go around objects
-
-    // Option 3: Go out from start, then to end X, then to end Y
     const dx = end.x - start.x;
     const dy = end.y - start.y;
 
@@ -1308,7 +1340,6 @@ export default function KonvaPage() {
     }
 
     // If all else fails, use the original path (vertical first)
-    // In a more complete implementation, we would use a pathfinding algorithm
     return path1;
   };
 
