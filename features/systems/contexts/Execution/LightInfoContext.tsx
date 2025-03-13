@@ -22,12 +22,22 @@ const LightInfoContext = createContext<LightInfoContextValue | undefined>(
 
 export function LightInfoProvider(props: { children: React.ReactNode }) {
   const [lightInfo, setLightInfo] = useState<Light | undefined>(undefined);
-  const { focusEdge } = useExecution();
+  const { focusEdge, focusNode } = useExecution();
   const { config } = useConfig();
 
   useEffect(() => {
     setLightInfo(focusEdge?.data?.lights?.[0]);
   }, [focusEdge?.data?.lights, focusEdge?.id]);
+
+  useEffect(() => {
+    if (focusNode?.type === "starter") {
+      setLightInfo(focusNode.data?.initials?.[0]);
+    } else if (focusNode?.type === "terminal") {
+      setLightInfo(focusNode.data?.mesurement?.[0]);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusNode?.data?.initials, focusNode?.data?.mesurement, focusNode?.id]);
 
   const lightParam = useCallback(
     (paramId: string): LightParam | undefined => {

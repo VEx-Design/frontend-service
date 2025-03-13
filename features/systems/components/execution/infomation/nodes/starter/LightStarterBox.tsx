@@ -1,15 +1,15 @@
+import PathColor from "@/features/systems/components/_components/PathColor";
 import { useLightInfo } from "@/features/systems/contexts/Execution/LightInfoContext";
 import { Light } from "@/features/systems/libs/ClassLight/types/Light";
 import { cn } from "@/lib/utils";
 import React from "react";
-import PathColor from "../../../_components/PathColor";
 
 interface Props {
   index: number;
   light: Light;
 }
 
-export default function LightBox({ index, light }: Props) {
+export default function LightStarterBox({ index, light }: Props) {
   const { lightInfo, setLightInfo } = useLightInfo();
   const id = lightInfo?.id;
 

@@ -11,6 +11,7 @@ import setNodeOutput from "../setNodeOuput";
 import addInterface from "../addInterface";
 import isThereLight from "./isThereLight";
 import createFreeScope from "./createFreeScope";
+import setMesurement from "../setMesurement";
 
 export default function calculate(flow: Flow, config: Config): Flow {
   const { types, parameters } = config;
@@ -124,8 +125,13 @@ export default function calculate(flow: Flow, config: Config): Flow {
     const targetData = targetNode.data.data;
     if (targetNode.type === "starter") continue;
 
+    if (targetNode.type === "terminal") {
+      resultFlow = setMesurement(resultFlow, target, inputObjects);
+    }
+
     const targetObject = targetData.object;
     if (!targetObject) continue;
+
     const targetType = types.find((type) => type.id === targetObject.typeId);
     const targetAction = targetType?.interfaces.find(
       (inter) => inter.id === targetInterfaceId
