@@ -44,6 +44,7 @@ export default function Canvas() {
     setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
   };
   const { mirrors } = useCanvas() as { mirrors: Mirror[] };
+  const { defaultMirror } = useCanvas() as { defaultMirror: number };
 
   // SCENE COORDINATE APPROACH: Zoom and position state
   const { scale, setScale } = useCanvas();
@@ -525,9 +526,8 @@ export default function Canvas() {
     // Determine the appropriate interface position based on the edge direction
     const interfacePosition = determineInterfacePosition(position, edge);
 
-    // Default mirror size (Medium)
-    const mirrorWidth = 30;
-    const mirrorHeight = 30;
+    // Default mirror size
+    const { width: mirrorWidth, height: mirrorHeight } = mirrors[defaultMirror];
 
     // Calculate the reference point offset
     const refX = 0.5 * mirrorWidth;
