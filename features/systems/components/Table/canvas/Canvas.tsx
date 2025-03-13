@@ -26,6 +26,11 @@ import {
 } from "./edge-routing";
 import { Camera, Eye, EyeOff, RefreshCw, RotateCw } from "lucide-react";
 
+// Extended Object type to include image rotation
+type ExtendedObject = Object & {
+  imageRotation?: number;
+};
+
 export default function Canvas() {
   // Container and stage size (screen coordinates)
   const containerRef = useRef<HTMLDivElement>(null);
@@ -45,8 +50,8 @@ export default function Canvas() {
     setTable: React.Dispatch<React.SetStateAction<Table>>;
   };
   const { objects, setObjects } = useCanvas() as {
-    objects: Object[];
-    setObjects: React.Dispatch<React.SetStateAction<Object[]>>;
+    objects: ExtendedObject[];
+    setObjects: React.Dispatch<React.SetStateAction<ExtendedObject[]>>;
   };
   const { edges, setEdges } = useCanvas() as {
     edges: Edge[];
@@ -492,6 +497,27 @@ export default function Canvas() {
     setSelectedObjectId(objectId === selectedObjectId ? null : objectId);
   };
 
+  // Rotate the image inside a mirror
+  const rotateImageInMirror = () => {
+    if (selectedObjectId) {
+      const object = objects.find((obj) => obj.id === selectedObjectId);
+      if (!object || !object.isMirror) return;
+
+      // Calculate new rotation (add 45 degrees each time)
+      const currentRotation = object.imageRotation || 45;
+      const newRotation = (currentRotation + 45) % 360;
+
+      // Update the object with the new image rotation
+      setObjects((prevObjects) =>
+        prevObjects.map((obj) =>
+          obj.id === selectedObjectId
+            ? { ...obj, imageRotation: newRotation }
+            : obj
+        )
+      );
+    }
+  };
+
   // Determine the appropriate interface position based on the edge direction
   const determineInterfacePosition = (
     cornerPosition: { x: number; y: number },
@@ -579,7 +605,7 @@ export default function Canvas() {
     const interfaceY = interfacePosition[1] * mirrorHeight;
 
     // Calculate the mirror position so that the interface point is exactly at the corner position
-    const mirrorObject: Object = {
+    const mirrorObject: ExtendedObject = {
       id: mirrorId,
       name: "Mirror",
       size: { width: mirrorWidth, height: mirrorHeight },
@@ -588,10 +614,12 @@ export default function Canvas() {
         y: position.y - interfaceY + refY,
       },
       rotation: 0,
+      imageRotation: 45, // Default image rotation to 45 degrees to align with diamond
       referencePosition: [0.5, 0.5], // Center of the object
       interfacePositions: new Map([["in", interfacePosition]]),
       isColliding: false,
       isMirror: true,
+      imageUrl: mirrors[defaultMirror].imageUrl,
     };
 
     // Add the mirror object to the objects array
@@ -755,11 +783,8 @@ export default function Canvas() {
     );
   };
 
-  // Update the objectRender function to handle bounding box correctly and keep rect fill color consistent
-  // Replace the existing objectRender function with this updated version:
-
   // Render object
-  const objectRender = (object: Object) => {
+  const objectRender = (object: ExtendedObject) => {
     const refX = object.referencePosition[0] * object.size.width;
     const refY = object.referencePosition[1] * object.size.height;
     const isSelected = selectedObjectId === object.id;
@@ -811,6 +836,50 @@ export default function Canvas() {
               stroke={isSelected ? "blue" : "transparent"}
               strokeWidth={1 / scale}
             />
+
+            {/* Image inside mirror with 80% fit, aligned with interface point */}
+            {hasImage && object.interfacePositions.has("in") && (
+              <Group>
+                {(() => {
+                  // Calculate diamond dimensions
+                  const diamondWidth = object.size.width;
+                  const diamondHeight = object.size.height;
+
+                  // Calculate image size to fit diamond (about 65% of diamond size)
+                  const imgWidth = diamondWidth * 0.65;
+                  const imgHeight = diamondHeight * 0.65;
+
+                  // Get the image rotation (default to 45 if not set)
+                  const imageRotation = object.imageRotation || 45;
+
+                  return (
+                    <KonvaImage
+                      image={loadedImages[object.id]}
+                      width={imgWidth}
+                      height={imgHeight}
+                      // Position in center of diamond
+                      x={diamondWidth / 2}
+                      y={diamondHeight / 2}
+                      // Center the image
+                      offsetX={imgWidth / 2}
+                      offsetY={imgHeight / 2}
+                      // Apply the image-specific rotation
+                      rotation={imageRotation}
+                      opacity={0.9}
+                      // Clip the image to the diamond shape
+                      clipFunc={(ctx: CanvasRenderingContext2D) => {
+                        ctx.beginPath();
+                        ctx.moveTo(diamondWidth / 2, 0);
+                        ctx.lineTo(diamondWidth, diamondHeight / 2);
+                        ctx.lineTo(diamondWidth / 2, diamondHeight);
+                        ctx.lineTo(0, diamondHeight / 2);
+                        ctx.closePath();
+                      }}
+                    />
+                  );
+                })()}
+              </Group>
+            )}
 
             <Text
               text="Mirror"
@@ -1017,7 +1086,7 @@ export default function Canvas() {
   // Replace the existing CanvasFooter function with this updated version:
 
   const CanvasFooter = () => {
-    const [visibilityExpanded, setVisibilityExpanded] = useState(true);
+    const [visibilityExpanded, setVisibilityExpanded] = useState(false);
 
     const handleResetView = () => {
       // Calculate bounding box of all objects
@@ -1100,6 +1169,12 @@ export default function Canvas() {
       setShowImages(value);
     };
 
+    // Check if the selected object is a mirror
+    const selectedObject = selectedObjectId
+      ? objects.find((obj) => obj.id === selectedObjectId)
+      : null;
+    const isSelectedMirror = selectedObject?.isMirror || false;
+
     return (
       <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col gap-2 bg-white p-3 rounded-lg shadow-lg">
         {/* Main toolbar */}
@@ -1124,7 +1199,22 @@ export default function Canvas() {
             disabled={!selectedObjectId}
           >
             <RotateCw className="w-4 h-4 mr-2" />
-            Rotate
+            Rotate Object
+          </button>
+
+          {/* Add button to rotate image inside mirror */}
+          <button
+            onClick={rotateImageInMirror}
+            className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded transition-colors ${
+              isSelectedMirror
+                ? "bg-gray-100 hover:bg-gray-200"
+                : "bg-gray-50 text-gray-400 cursor-not-allowed"
+            }`}
+            title="Rotate Image Inside Mirror"
+            disabled={!isSelectedMirror}
+          >
+            <RotateCw className="w-4 h-4 mr-2" />
+            Rotate Image
           </button>
 
           <button
