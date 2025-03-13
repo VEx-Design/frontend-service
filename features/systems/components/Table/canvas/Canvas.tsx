@@ -710,58 +710,6 @@ export default function Canvas() {
     );
   };
 
-  // Handle mirror deletion
-  const handleMirrorDelete = (mirrorId: string) => {
-    // Find the mirror object
-    const mirror = objects.find((obj) => obj.id === mirrorId && obj.isMirror);
-    if (!mirror) return;
-
-    // Find all edges connected to this mirror
-    const incomingEdges = edges.filter((edge) => edge.target === mirrorId);
-    const outgoingEdges = edges.filter((edge) => edge.source === mirrorId);
-
-    // If we have exactly one incoming and one outgoing edge, reconnect them
-    if (incomingEdges.length === 1 && outgoingEdges.length === 1) {
-      const incomingEdge = incomingEdges[0];
-      const outgoingEdge = outgoingEdges[0];
-
-      // Create a new edge connecting the original source and target
-      const newEdge: Edge = {
-        id: `edge-${Date.now()}`,
-        source: incomingEdge.source,
-        sourceInterface: incomingEdge.sourceInterface,
-        target: outgoingEdge.target,
-        targetInterface: outgoingEdge.targetInterface,
-        expectedDistance:
-          incomingEdge.expectedDistance + outgoingEdge.expectedDistance,
-        actualDistance: 0,
-      };
-
-      // Update edges: remove the two connected edges and add the new one
-      setEdges((prevEdges) => [
-        ...prevEdges.filter(
-          (e) => e.id !== incomingEdge.id && e.id !== outgoingEdge.id
-        ),
-        newEdge,
-      ]);
-    } else {
-      // If the mirror has other connections, just remove the edges connected to it
-      setEdges((prevEdges) =>
-        prevEdges.filter((e) => e.source !== mirrorId && e.target !== mirrorId)
-      );
-    }
-
-    // Remove the mirror object
-    setObjects((prevObjects) =>
-      prevObjects.filter((obj) => obj.id !== mirrorId)
-    );
-
-    // If the deleted mirror was selected, clear selection
-    if (selectedObjectId === mirrorId) {
-      setSelectedObjectId(null);
-    }
-  };
-
   // Render object
   const objectRender = (object: Object) => {
     const refX = object.referencePosition[0] * object.size.width;
@@ -826,23 +774,6 @@ export default function Canvas() {
               fontSize={10 / scale}
               fill="black"
             />
-
-            <Circle
-              x={object.size.width / 2 + 15}
-              y={-object.size.height / 2 - 5}
-              radius={8 / scale}
-              fill="red"
-              opacity={0.8}
-              onClick={(e) => {
-                e.cancelBubble = true; // Stop event propagation
-                handleMirrorDelete(object.id);
-              }}
-              onTap={(e) => {
-                e.cancelBubble = true; // Stop event propagation
-                handleMirrorDelete(object.id);
-              }}
-            />
-
             <Text
               text="×"
               x={object.size.width / 2 + 10}
