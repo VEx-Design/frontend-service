@@ -36,7 +36,11 @@ export default function ObjectPropertyBox({
         <input
           className="w-full border border-editbar-border rounded-md p-1 text-sm"
           type="number"
-          value={objVariable.value}
+          value={
+            property.unitId === "DEGREE"
+              ? objVariable.value * (180 / Math.PI)
+              : objVariable.value
+          }
           disabled
         />
       </div>

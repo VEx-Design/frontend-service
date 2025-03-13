@@ -11,7 +11,7 @@ import ObjectInfomation from "./main/ObjectInfomation";
 
 export default function NodeInfomation() {
   const { focusNode } = useExecution();
-  if (!focusNode) return null;
+  if (!focusNode || focusNode.type !== "ObjectNode") return null;
 
   return (
     <ResizablePanelGroup direction="horizontal" className="h-full w-full">
