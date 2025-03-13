@@ -98,7 +98,7 @@ export default function calculate(flow: Flow, config: Config): Flow {
           );
           newInput.params.push({
             paramId: param.id,
-            value: freeValue,
+            value: Math.abs(freeValue) < Number.EPSILON ? 0 : freeValue,
             unitPrefixId: "MILLI",
           });
         } else {
@@ -159,7 +159,7 @@ export default function calculate(flow: Flow, config: Config): Flow {
               const value = evaluate(formulaParam.completeStream, scope);
               output.params.push({
                 paramId: param.id,
-                value: value,
+                value: Math.abs(value) < Number.EPSILON ? 0 : value,
                 unitPrefixId: "MILLI",
               });
             } else {
