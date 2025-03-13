@@ -1,21 +1,30 @@
 "use client";
 
-import Konva from "konva";
+import type Konva from "konva";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
-import { Circle, Group, Layer, Line, Rect, Stage, Text } from "react-konva";
-import { EdgeManager } from "./edge-manager";
-import { Table } from "../Class/table";
-import { Edge } from "../Class/edge";
-import { Object } from "../Class/object";
+import {
+  Circle,
+  Group,
+  Layer,
+  Line,
+  Rect,
+  Stage,
+  Text,
+  Image as KonvaImage,
+} from "react-konva";
+import type { Table } from "../Class/table";
+import type { Edge } from "../Class/edge";
+import type { Object } from "../Class/object";
 import { useCanvas } from "@/features/systems/contexts/CanvasContext";
-import { Mirror } from "../Class/mirror";
+import type { Mirror } from "../Class/mirror";
 import {
   calculateManhattanDistance,
   generateOrthogonalPath,
   getInterfacePosition,
   getObjectBoundingBox,
 } from "./edge-routing";
+import { Camera, Eye, EyeOff, RefreshCw, RotateCw } from "lucide-react";
 
 export default function Canvas() {
   // Container and stage size (screen coordinates)
@@ -62,12 +71,44 @@ export default function Canvas() {
   const [isDraggingObject, setIsDraggingObject] = useState(false);
   const [draggedObjectId, setDraggedObjectId] = useState<string | null>(null);
 
+  // Store loaded images
+  const [loadedImages, setLoadedImages] = useState<
+    Record<string, HTMLImageElement>
+  >({});
+
+  //State for showing name, bounding box, reference points, interface points, and expected distance
+  const [showObjectNames, setShowObjectNames] = useState(false);
+  const [showBoundingBox, setShowBoundingBox] = useState(true);
+  const [showExpectedDistance, setShowExpectedDistance] = useState(true);
+  const [showReferencePoints, setShowReferencePoints] = useState(true);
+  const [showInterfacePoints, setShowInterfacePoints] = useState(false);
+  const [showCornerPoints, setShowCornerPoints] = useState(true);
+  const [showActualDistance, setShowActualDistance] = useState(true);
+  const [showImages, setShowImages] = useState(true);
+
   // Debug state
   const [debug, setDebug] = useState({
     isStageVisible: false,
     containerSize: { width: 0, height: 0 },
     error: null as string | null,
   });
+
+  // Load images for objects with imageUrl
+  useEffect(() => {
+    objects.forEach((obj) => {
+      if (obj.imageUrl && !loadedImages[obj.id]) {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = obj.imageUrl;
+        img.onload = () => {
+          setLoadedImages((prev) => ({
+            ...prev,
+            [obj.id]: img,
+          }));
+        };
+      }
+    });
+  }, [objects]);
 
   // Calculate actual distances for edges when objects change
   useEffect(() => {
@@ -704,17 +745,25 @@ export default function Canvas() {
           height={table.size.height}
           fill="white"
           cornerRadius={3}
+          onMouseDown={(e) => {
+            e.evt.stopPropagation();
+            setSelectedObjectId(null);
+          }} // Prevent object selection
         />
         {gridRender()}
       </>
     );
   };
 
+  // Update the objectRender function to handle bounding box correctly and keep rect fill color consistent
+  // Replace the existing objectRender function with this updated version:
+
   // Render object
   const objectRender = (object: Object) => {
     const refX = object.referencePosition[0] * object.size.width;
     const refY = object.referencePosition[1] * object.size.height;
     const isSelected = selectedObjectId === object.id;
+    const hasImage = showImages && object.imageUrl && loadedImages[object.id];
 
     // Determine fill color based on collision, selection state, and object type
     let fillColor = "grey";
@@ -723,7 +772,7 @@ export default function Canvas() {
     } else if (isSelected) {
       fillColor = "#8888FF";
     } else if (object.isMirror) {
-      fillColor = "#FFA500"; // Orange for mirrors
+      fillColor = "#808080";
     }
 
     return (
@@ -790,68 +839,86 @@ export default function Canvas() {
         ) : (
           // Render regular object
           <>
+            {/* Base rectangle */}
             <Rect
               width={object.size.width}
               height={object.size.height}
-              fill={fillColor}
+              fill={showBoundingBox ? fillColor : "transparent"}
               cornerRadius={3}
               opacity={0.4}
               stroke={isSelected ? "blue" : "transparent"}
               strokeWidth={1 / scale}
             />
-            <Text
-              text={object.name}
-              x={0}
-              y={0}
-              width={object.size.width}
-              height={object.size.height}
-              align="center"
-              verticalAlign="middle"
-              fontSize={12 / scale}
-              fill="black"
-            />
+
+            {/* Image if available */}
+            {hasImage && (
+              <KonvaImage
+                image={loadedImages[object.id]}
+                width={object.size.width * 0.9}
+                height={object.size.height * 0.9}
+                x={object.size.width * 0.05} // Center the image by adding 5% padding on each side
+                y={object.size.height * 0.05}
+                opacity={0.9}
+              />
+            )}
+
+            {/* Object name */}
+            {showObjectNames && (
+              <Text
+                text={object.name}
+                x={0}
+                y={0}
+                width={object.size.width}
+                height={object.size.height}
+                align="center"
+                verticalAlign="middle"
+                fontSize={12 / scale}
+                fill={hasImage ? "white" : "black"}
+                shadowColor={hasImage ? "black" : undefined}
+                shadowBlur={hasImage ? 2 : 0}
+                shadowOpacity={hasImage ? 0.8 : 0}
+              />
+            )}
           </>
         )}
 
-        <Circle
-          x={refX}
-          y={refY}
-          radius={2 / scale} // Adjust size based on zoom
-          fill="red"
-        />
+        {showReferencePoints && (
+          <Circle x={refX} y={refY} radius={2 / scale} fill="red" />
+        )}
 
-        {Array.from(object.interfacePositions).map(([intf, position]) => (
-          <Group key={intf}>
-            <Circle
-              x={position[0] * object.size.width}
-              y={position[1] * object.size.height}
-              radius={3 / scale} // Adjust size based on zoom
-              fill="blue"
-            />
-            {!object.isMirror && (
-              <Text
-                text={intf}
-                x={position[0] * object.size.width - 15 / scale}
-                y={position[1] * object.size.height - 15 / scale}
-                fontSize={8 / scale}
-                fill="black"
-                width={30 / scale}
-                align="center"
+        {showInterfacePoints &&
+          Array.from(object.interfacePositions).map(([intf, position]) => (
+            <Group key={intf}>
+              <Circle
+                x={position[0] * object.size.width}
+                y={position[1] * object.size.height}
+                radius={3 / scale}
+                fill="blue"
               />
-            )}
-            {object.isMirror && (
-              <Text
-                text={intf}
-                x={position[0] * object.size.width - 10 / scale}
-                y={position[1] * object.size.height - 10 / scale}
-                fontSize={8 / scale}
-                fill="black"
-                width={20 / scale}
-                align="center"
-              />
-            )}
-          </Group>
-        ))}
+              {!object.isMirror && (
+                <Text
+                  text={intf}
+                  x={position[0] * object.size.width - 15 / scale}
+                  y={position[1] * object.size.height - 15 / scale}
+                  fontSize={8 / scale}
+                  fill="black"
+                  width={30 / scale}
+                  align="center"
+                />
+              )}
+              {object.isMirror && (
+                <Text
+                  text={intf}
+                  x={position[0] * object.size.width - 10 / scale}
+                  y={position[1] * object.size.height - 10 / scale}
+                  fontSize={8 / scale}
+                  fill="black"
+                  width={20 / scale}
+                  align="center"
+                />
+              )}
+            </Group>
+          ))}
       </Group>
     );
   };
@@ -880,7 +947,11 @@ export default function Canvas() {
         edge.actualDistance - edge.expectedDistance
       );
       const isDistanceMatching = distanceDifference == 0;
-      const strokeColor = isDistanceMatching ? "green" : "red";
+      const strokeColor = showExpectedDistance
+        ? isDistanceMatching
+          ? "green"
+          : "gray"
+        : "red";
 
       // Calculate corner positions (where the edge bends)
       const cornerPositions = [];
@@ -893,12 +964,16 @@ export default function Canvas() {
           <Line
             points={pathPoints}
             stroke={strokeColor}
-            strokeWidth={1.5 / scale}
+            strokeWidth={2 / scale}
             lineCap="round"
             lineJoin="round"
           />
           <Text
-            text={`${Math.round(edge.actualDistance)}/${edge.expectedDistance}`}
+            text={`${
+              showActualDistance ? Math.round(edge.actualDistance) : ""
+            }${showActualDistance && showExpectedDistance ? "/" : ""}${
+              showExpectedDistance ? edge.expectedDistance : ""
+            }`}
             x={(sourcePos.x + targetPos.x) / 2}
             y={(sourcePos.y + targetPos.y) / 2 - 15 / scale}
             fontSize={10 / scale}
@@ -906,20 +981,21 @@ export default function Canvas() {
             align="center"
           />
           {/* Clickable corner points to add mirrors */}
-          {cornerPositions.map((corner, index) => (
-            <Circle
-              key={`corner-${index}`}
-              x={corner.x}
-              y={corner.y}
-              radius={5 / scale}
-              fill="transparent"
-              stroke="blue"
-              strokeWidth={1 / scale}
-              opacity={0.6}
-              onClick={() => handleEdgeCornerClick(edge.id, corner)}
-              onTap={() => handleEdgeCornerClick(edge.id, corner)}
-            />
-          ))}
+          {showCornerPoints &&
+            cornerPositions.map((corner, index) => (
+              <Circle
+                key={`corner-${index}`}
+                x={corner.x}
+                y={corner.y}
+                radius={5 / scale}
+                fill="transparent"
+                stroke="blue"
+                strokeWidth={1 / scale}
+                opacity={0.6}
+                onClick={() => handleEdgeCornerClick(edge.id, corner)}
+                onTap={() => handleEdgeCornerClick(edge.id, corner)}
+              />
+            ))}
         </Group>
       );
     });
@@ -936,6 +1012,258 @@ export default function Canvas() {
       });
     }
   };
+
+  // Update the CanvasFooter component to add collapsible visibility controls
+  // Replace the existing CanvasFooter function with this updated version:
+
+  const CanvasFooter = () => {
+    const [visibilityExpanded, setVisibilityExpanded] = useState(true);
+
+    const handleResetView = () => {
+      // Calculate bounding box of all objects
+      if (objects.length === 0) return;
+
+      let minX = Number.POSITIVE_INFINITY;
+      let minY = Number.POSITIVE_INFINITY;
+      let maxX = Number.NEGATIVE_INFINITY;
+      let maxY = Number.NEGATIVE_INFINITY;
+
+      objects.forEach((obj) => {
+        const box = getObjectBoundingBox(obj);
+        minX = Math.min(minX, box.x);
+        minY = Math.min(minY, box.y);
+        maxX = Math.max(maxX, box.x + box.width);
+        maxY = Math.max(maxY, box.y + box.height);
+      });
+
+      // Add padding
+      const padding = 100;
+      minX -= padding;
+      minY -= padding;
+      maxX += padding;
+      maxY += padding;
+
+      // Calculate scale to fit
+      const scaleX = stageSize.width / (maxX - minX);
+      const scaleY = stageSize.height / (maxY - minY);
+      const newScale = Math.min(scaleX, scaleY, 1); // Limit max scale to 1
+
+      // Calculate position
+      const newPos = {
+        x: stageSize.width / 2 - ((minX + maxX) / 2) * newScale,
+        y: stageSize.height / 2 - ((minY + maxY) / 2) * newScale,
+      };
+
+      setScale(newScale);
+      setPosition(newPos);
+    };
+
+    const handleRotate = () => {
+      if (selectedObjectId) {
+        const object = objects.find((obj) => obj.id === selectedObjectId);
+        if (!object) return;
+
+        const newRotation = (object.rotation + 90) % 360;
+
+        // Apply rotation without checking for collisions
+        setObjects((prevObjects) =>
+          prevObjects.map((obj) =>
+            obj.id === selectedObjectId
+              ? { ...obj, rotation: newRotation }
+              : obj
+          )
+        );
+      }
+    };
+
+    const handleSavePicture = () => {
+      if (stageRef.current) {
+        const uri = stageRef.current.toDataURL({ pixelRatio: 3 });
+        const link = document.createElement("a");
+        link.download = "picture.png";
+        link.href = uri;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    };
+
+    // Toggle all visibility options on or off
+    const toggleAll = (value: boolean) => {
+      setShowObjectNames(value);
+      setShowBoundingBox(value);
+      setShowExpectedDistance(value);
+      setShowReferencePoints(value);
+      setShowInterfacePoints(value);
+      setShowCornerPoints(value);
+      setShowActualDistance(value);
+      setShowImages(value);
+    };
+
+    return (
+      <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col gap-2 bg-white p-3 rounded-lg shadow-lg">
+        {/* Main toolbar */}
+        <div className="flex space-x-3 justify-center">
+          <button
+            onClick={handleResetView}
+            className="inline-flex items-center px-3 py-2 text-sm font-medium rounded bg-gray-100 hover:bg-gray-200 transition-colors"
+            title="Reset View"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Reset View
+          </button>
+
+          <button
+            onClick={handleRotate}
+            className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded transition-colors ${
+              selectedObjectId
+                ? "bg-gray-100 hover:bg-gray-200"
+                : "bg-gray-50 text-gray-400 cursor-not-allowed"
+            }`}
+            title="Rotate Selected Object"
+            disabled={!selectedObjectId}
+          >
+            <RotateCw className="w-4 h-4 mr-2" />
+            Rotate
+          </button>
+
+          <button
+            onClick={handleSavePicture}
+            className="inline-flex items-center px-3 py-2 text-sm font-medium rounded bg-gray-100 hover:bg-gray-200 transition-colors"
+            title="Save as Image"
+          >
+            <Camera className="w-4 h-4 mr-2" />
+            Save Image
+          </button>
+        </div>
+
+        {/* Visibility controls header with toggle */}
+        <div className="border-t pt-2 mt-1">
+          <button
+            onClick={() => setVisibilityExpanded(!visibilityExpanded)}
+            className="flex w-full justify-between items-center text-xs font-medium text-gray-600 hover:bg-gray-50 rounded px-1 py-0.5"
+          >
+            <span>Visibility Controls</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={`transition-transform ${
+                visibilityExpanded ? "rotate-180" : ""
+              }`}
+            >
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          {/* Visibility controls content */}
+          {visibilityExpanded && (
+            <>
+              <div className="flex justify-end mt-1 mb-2">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => toggleAll(true)}
+                    className="text-xs text-gray-600 hover:text-gray-800"
+                  >
+                    Show All
+                  </button>
+                  <button
+                    onClick={() => toggleAll(false)}
+                    className="text-xs text-gray-600 hover:text-gray-800"
+                  >
+                    Hide All
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-4 gap-2">
+                <VisibilityToggle
+                  label="Name"
+                  state={showObjectNames}
+                  setState={setShowObjectNames}
+                />
+                <VisibilityToggle
+                  label="Bounding"
+                  state={showBoundingBox}
+                  setState={setShowBoundingBox}
+                />
+                <VisibilityToggle
+                  label="Actual Distance"
+                  state={showActualDistance}
+                  setState={setShowActualDistance}
+                />
+                <VisibilityToggle
+                  label="Expected Distanace"
+                  state={showExpectedDistance}
+                  setState={setShowExpectedDistance}
+                />
+
+                <VisibilityToggle
+                  label="Reference Point"
+                  state={showReferencePoints}
+                  setState={setShowReferencePoints}
+                />
+                <VisibilityToggle
+                  label="Interface Point"
+                  state={showInterfacePoints}
+                  setState={setShowInterfacePoints}
+                />
+                <VisibilityToggle
+                  label="Corner Point"
+                  state={showCornerPoints}
+                  setState={setShowCornerPoints}
+                />
+                <VisibilityToggle
+                  label="Image"
+                  state={showImages}
+                  setState={setShowImages}
+                  icon={
+                    showImages ? (
+                      <Eye className="w-3 h-3 mr-1" />
+                    ) : (
+                      <EyeOff className="w-3 h-3 mr-1" />
+                    )
+                  }
+                />
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // Add a new VisibilityToggle component for the improved toolbar
+  const VisibilityToggle = ({
+    label,
+    state,
+    setState,
+    icon,
+  }: {
+    label: string;
+    state: boolean;
+    setState: (state: boolean) => void;
+    icon?: React.ReactNode;
+  }) => (
+    <button
+      onClick={() => setState(!state)}
+      className={`flex items-center justify-center px-2 py-1.5 text-xs font-medium rounded transition-colors ${
+        state
+          ? "bg-gray-300 text-black hover:bg-gray-600"
+          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+      }`}
+      title={`${state ? "Hide" : "Show"} ${label}`}
+    >
+      {icon}
+      {label}
+    </button>
+  );
 
   return (
     <div
@@ -980,6 +1308,7 @@ export default function Canvas() {
           {debug.containerSize.height}
         </div>
       )}
+      <CanvasFooter />
     </div>
   );
 }

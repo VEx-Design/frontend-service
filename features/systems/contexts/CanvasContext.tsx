@@ -83,6 +83,8 @@ export const CanvasProvider = (props: { children: React.ReactNode }) => {
       referencePosition: [0.5, 0.5],
       interfacePositions: new Map([["start", [0.5, 0.5]]]),
       isColliding: false,
+      imageUrl:
+        "https://images.squarespace-cdn.com/content/v1/54822a56e4b0b30bd821480c/45ed8ecf-0bb2-4e34-8fcf-624db47c43c8/Golden+Retrievers+dans+pet+care.jpeg",
     },
     {
       id: "2",
@@ -96,6 +98,7 @@ export const CanvasProvider = (props: { children: React.ReactNode }) => {
         ["2", [0.5, 0.5]],
       ]),
       isColliding: false,
+      imageUrl: "/images/lens.png",
     },
     {
       id: "3",
@@ -129,7 +132,13 @@ export const CanvasProvider = (props: { children: React.ReactNode }) => {
     },
   ]);
   const [mirrors, setMirrors] = useState<Mirror[]>([
-    { name: "Small", width: 20, height: 20 },
+    {
+      name: "Small",
+      width: 20,
+      height: 20,
+      imageUrl:
+        "https://images.squarespace-cdn.com/content/v1/54822a56e4b0b30bd821480c/45ed8ecf-0bb2-4e34-8fcf-624db47c43c8/Golden+Retrievers+dans+pet+care.jpeg",
+    },
     { name: "Medium", width: 30, height: 30 },
     { name: "Large", width: 40, height: 40 },
   ]);

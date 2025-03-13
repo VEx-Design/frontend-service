@@ -8,4 +8,5 @@ export interface Object {
   interfacePositions: Map<string, [number, number]>; // Map<interface, position> unit in ratio
   isColliding?: boolean; // Flag to indicate if object is colliding
   isMirror?: boolean; // Flag to indicate if object is a mirror
+  imageUrl?: string; // Image URL for object
 }
