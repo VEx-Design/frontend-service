@@ -1,4 +1,3 @@
-import React from "react";
 import VariableBadge from "./VariableBadge";
 import { useConfigInterface } from "@/features/systems/contexts/Configuration/ConfigInterfaceContext";
 import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigContext";
@@ -10,33 +9,49 @@ export default function VariableLister() {
   const { currentInterface } = useConfigInterface();
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex gap-2 items-center">
-        <p className="text-sm">Type variable:</p>
-        {currentType?.properties.length === 0 ? (
-          <p className="text-xs font-thin text-gray-500">No properties</p>
-        ) : (
-          <div className="flex gap-2">
-            {currentType?.properties.map((prop) => (
-              <VariableBadge key={prop.id} type="prop" prop={prop} canClick />
-            ))}
-          </div>
-        )}
-      </div>
-      <div className="flex gap-2">
-        <p className="text-sm font-thin">{`${currentInterface?.name}:`}</p>
-        <div className="flex gap-2">
-          {config.parameters.map((param) => (
-            <VariableBadge
-              key={currentInterface?.id + param.id}
-              type="interface"
-              inter={currentInterface}
-              param={param}
-              canClick
-            />
-          ))}
+    <section className="flex flex-col gap-4 w-full">
+      <div className="flex flex-col gap-1">
+        <h3 className="text-sm font-medium">Type variables:</h3>
+        <div className="overflow-x-auto pb-1">
+          {!currentType || currentType.properties.length === 0 ? (
+            <p className="text-xs text-muted-foreground italic">
+              No type properties available
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {currentType.properties.map((prop) => (
+                <VariableBadge key={prop.id} type="prop" prop={prop} canClick />
+              ))}
+            </div>
+          )}
         </div>
       </div>
-    </div>
+      <div className="flex flex-col gap-2">
+        <h3 className="text-sm font-medium">
+          {currentInterface?.name || "Interface"} parameters:
+        </h3>
+        <div className="overflow-x-auto pb-2">
+          {!currentInterface ||
+          !config.parameters ||
+          config.parameters.length === 0 ? (
+            <p className="text-xs text-muted-foreground italic">
+              No interface parameters available
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {config.parameters.map((param) => (
+                <VariableBadge
+                  key={`${currentInterface.id}-${param.id}`}
+                  type="interface"
+                  inter={currentInterface}
+                  param={param}
+                  canClick
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
   );
 }

@@ -31,6 +31,7 @@ import { toast } from "sonner";
 import { useNodes } from "./ProjectWrapper/NodesContext";
 import { useEdges } from "./ProjectWrapper/EdgesContext";
 import { isEqual } from "lodash";
+import updatePathColor from "../libs/ClassNode/updatePathColor";
 
 interface Coordinate {
   x: number;
@@ -46,6 +47,10 @@ interface FocusNode {
 interface FocusEdge {
   id: string;
   type: string;
+  target: string;
+  source: string;
+  targetHandle: string;
+  sourceHandle: string;
   data: EdgeData;
 }
 
@@ -56,6 +61,8 @@ interface EditorContextValue {
   setFocusNode: (node?: FocusNode) => void;
   focusEdge?: FocusEdge;
   setFocusEdge: (edge?: FocusEdge) => void;
+  twinFocusEdge: FocusEdge | undefined;
+  setTwinFocusEdge: (edge?: FocusEdge) => void;
   contextMenuPosition: Coordinate | null;
   setContextMenuPosition: (position: Coordinate | null) => void;
   nodeAction: NodeAction;
@@ -77,8 +84,10 @@ interface EdgesState {
 interface NodeAction {
   createNode: (type: string, position: Coordinate, objectType?: Type) => void;
   setInitial: (lightId: string, paramId: string, value: number) => void;
-  setValue: (propId: string, value: number) => void;
+  setValue: (propId: string, value: number, valueShow: string) => void;
   addInitialLight: () => void;
+  updatePathColor: (lightId: string, color: string) => void;
+  rotate: () => void;
 }
 
 interface EdgeAction {
@@ -94,6 +103,7 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
 
   const [focusNode, setFocusNode] = useState<FocusNode | undefined>();
   const [focusEdge, setFocusEdge] = useState<FocusEdge | undefined>();
+  const [twinFocusEdge, setTwinFocusEdge] = useState<FocusEdge | undefined>();
   const [contextMenuPosition, setContextMenuPosition] =
     useState<Coordinate | null>(null);
 
@@ -169,9 +179,14 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
           editNode(focusNode.id, updatedData);
         }
       },
-      setValue: (propId: string, value: number) => {
+      setValue: (propId: string, value: number, valueShow: string) => {
         if (focusNode?.data) {
-          const updatedData = setValue(focusNode.data, propId, value);
+          const updatedData = setValue(
+            focusNode.data,
+            propId,
+            value,
+            valueShow
+          );
           updateFocusNodeData(updatedData);
           editNode(focusNode.id, updatedData);
         }
@@ -179,6 +194,23 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
       addInitialLight: () => {
         if (focusNode?.data) {
           const updatedData = addInitialLight(focusNode.data);
+          updateFocusNodeData(updatedData);
+          editNode(focusNode.id, updatedData);
+        }
+      },
+      updatePathColor: (lightId: string, color: string) => {
+        if (focusNode?.data) {
+          const updatedData = updatePathColor(focusNode.data, lightId, color);
+          updateFocusNodeData(updatedData);
+          editNode(focusNode.id, updatedData);
+        }
+      },
+      rotate: () => {
+        if (focusNode?.data) {
+          const updatedData = {
+            ...focusNode.data,
+            rotate: ((focusNode.data.rotate + 90) % 360) as 0 | 90 | 180 | 270,
+          };
           updateFocusNodeData(updatedData);
           editNode(focusNode.id, updatedData);
         }
@@ -193,6 +225,28 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
       editNode,
     ]
   );
+
+  useEffect(() => {
+    if (focusNode?.data) {
+      setEdges((prevEdges) =>
+        prevEdges.map((edge) => {
+          if (edge.source === focusNode.id || edge.target === focusNode.id) {
+            const updatedEdge = {
+              ...edge,
+              animated: true,
+              data: {
+                ...edge.data,
+                key: `${edge.id}-${Date.now()}`,
+              },
+            };
+            return updatedEdge;
+          }
+          return edge;
+        })
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusNode?.data.rotate]);
 
   const edgeAction = useMemo(
     () => ({
@@ -227,18 +281,25 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
         if (focusEdge && focusEdge.data) {
           focusEdge.data.distance = distance.toString();
         }
+        if (twinFocusEdge && twinFocusEdge.data) {
+          twinFocusEdge.data.distance = distance.toString();
+        }
         if (focusEdge?.data) {
           setEdges((prevEdges) =>
-            prevEdges.map((edge) =>
-              edge.id === focusEdge.id
-                ? { ...edge, data: { ...edge.data, distance } }
-                : edge
-            )
+            prevEdges.map((edge) => {
+              if (edge.id === focusEdge?.id || edge.id === twinFocusEdge?.id) {
+                return {
+                  ...edge,
+                  data: { ...edge.data, distance: distance.toString() },
+                };
+              }
+              return edge;
+            })
           );
         }
       },
     }),
-    [edges, setEdges]
+    [edges, focusEdge, setEdges, twinFocusEdge]
   );
 
   const contextValue = useMemo(
@@ -249,6 +310,8 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
       setFocusNode,
       focusEdge,
       setFocusEdge,
+      twinFocusEdge,
+      setTwinFocusEdge,
       contextMenuPosition,
       setContextMenuPosition,
       nodeAction,
@@ -263,6 +326,7 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
       onEdgesChange,
       focusNode,
       focusEdge,
+      twinFocusEdge,
       contextMenuPosition,
       nodeAction,
       edgeAction,

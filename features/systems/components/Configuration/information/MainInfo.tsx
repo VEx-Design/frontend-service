@@ -40,6 +40,7 @@ export default function MainInfo() {
             vars: [],
             interfaces: [],
           },
+          rotate: 0 as 0 | 90 | 180 | 270,
         },
       },
       position: { x: 0, y: 0 },

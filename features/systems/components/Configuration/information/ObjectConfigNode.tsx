@@ -15,6 +15,8 @@ const NodeComponent = memo((props: NodeProps) => {
     [configAction, object?.typeId]
   );
 
+  if (!objectType) return null;
+
   return (
     <ObjectNodeTemp
       objectType={objectType}

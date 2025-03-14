@@ -63,6 +63,14 @@
       "unitId": "WATT_PER_METER_SQUARE",
       "isStadard": true,
       "symbol": "S_3"
+    },
+    {
+      "id": "3c897bee-24d7-4a06-8771-ed08152d0d47",
+      "name": "Frequency of light",
+      "description": "Frequency of light",
+      "unitId": "HERTZ",
+      "isStadard": true,
+      "symbol": "f"
     }
   ]
 }

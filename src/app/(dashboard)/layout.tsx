@@ -15,7 +15,7 @@ export default async function DashboardLayout({
           <Navbar />
         </div>
         <div className="flex flex-auto">
-          <div className="pt-5 flex-none">
+          <div className="pt-5 flex-none w-[15%]">
             <Sidebar />
           </div>
           <div className="flex flex-1 pt-5 px-8">{children}</div>

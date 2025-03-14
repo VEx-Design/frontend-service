@@ -11,7 +11,7 @@ export function CreateEdgeLight(connection: Connection): AppEdge {
         distance: "25",
         focusDistance: 0,
         locked: false,
-        light: [],
+        lights: [],
       },
     },
   };

@@ -11,14 +11,16 @@ export function CreateObjectNode(
     data: {
       data: {
         object: {
-          name: type.name,
+          name: type.displayName,
           typeId: type.id,
           vars: type.properties.map((prop) => ({
             propId: prop.id,
             value: 0,
+            unitPrefixId: "MILLI",
           })),
           interfaces: [],
         },
+        rotate: 0,
       },
     },
     position: position ?? { x: 0, y: 0 },
@@ -26,6 +28,10 @@ export function CreateObjectNode(
 }
 
 export function CreateStarterNode(position: { x: number; y: number }): AppNode {
+  const randomColor = `#${Math.floor(Math.random() * 16777215)
+    .toString(16)
+    .padStart(6, "0")}`;
+
   return {
     id: crypto.randomUUID(),
     type: "starter",
@@ -35,8 +41,13 @@ export function CreateStarterNode(position: { x: number; y: number }): AppNode {
           {
             id: crypto.randomUUID(),
             params: [],
+            path: {
+              id: crypto.randomUUID(),
+              color: randomColor,
+            },
           },
         ],
+        rotate: 0,
       },
     },
     position: position ?? { x: 0, y: 0 },
@@ -50,7 +61,7 @@ export function CreateTerminalNode(position?: {
   return {
     id: crypto.randomUUID(),
     type: "terminal",
-    data: { data: {} },
+    data: { data: { rotate: 0 } },
     position: position ?? { x: 0, y: 0 },
   };
 }

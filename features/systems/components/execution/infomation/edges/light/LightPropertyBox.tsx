@@ -13,6 +13,10 @@ export default function LightPropertyBox({
   const { configAction } = useConfig();
   const parameter = configAction.getParameter(lightParam.paramId);
 
+  if (!parameter) {
+    return null;
+  }
+
   return (
     <div className="flex py-2 px-3 border border-editbar-border rounded-xl gap-2">
       <div className="flex items-center">

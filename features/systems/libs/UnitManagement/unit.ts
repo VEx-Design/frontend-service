@@ -58,6 +58,13 @@ export const units: Unit[] = [
     symbol: "W",
     havePrefix: true,
   },
+  {
+    tag: "simple",
+    id: "HERTZ",
+    name: "Hertz",
+    symbol: "Hz",
+    havePrefix: true,
+  },
 ];
 
 export const getUnitById = (id: string): Unit | undefined => {

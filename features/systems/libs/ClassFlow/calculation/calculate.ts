@@ -9,6 +9,9 @@ import createScope from "./createScope";
 import { evaluate } from "mathjs";
 import setNodeOutput from "../setNodeOuput";
 import addInterface from "../addInterface";
+import isThereLight from "./isThereLight";
+import createFreeScope from "./createFreeScope";
+import setMesurement from "../setMesurement";
 
 export default function calculate(flow: Flow, config: Config): Flow {
   const { types, parameters } = config;
@@ -25,7 +28,7 @@ export default function calculate(flow: Flow, config: Config): Flow {
     const edge = processQueue.shift();
     if (!edge) continue;
 
-    const { source } = edge;
+    const { source, target } = edge;
     const sourceNode = resultFlow.nodes.find((node) => node.id === source);
 
     if (!sourceNode) continue;
@@ -39,6 +42,7 @@ export default function calculate(flow: Flow, config: Config): Flow {
           id: light.id,
           formInterfaceId: light.formInterfaceId,
           params: [],
+          path: light.path,
         };
         parameters.forEach((param) => {
           const value = light.params.find(
@@ -47,9 +51,12 @@ export default function calculate(flow: Flow, config: Config): Flow {
           input.params.push({
             paramId: param.id,
             value: value || 0,
+            unitPrefixId: "MILLI",
           });
         });
-        inputs.push(input);
+        if (isThereLight(input, config)) {
+          inputs.push(input);
+        }
       });
     } else if (sourceNode?.type === "ObjectNode") {
       const sourceInterfaceId =
@@ -57,7 +64,9 @@ export default function calculate(flow: Flow, config: Config): Flow {
       sourceData.object?.interfaces
         .find((inter) => inter.interfaceId === sourceInterfaceId)
         ?.output.forEach((light) => {
-          inputs.push(light);
+          if (isThereLight(light, config)) {
+            inputs.push(light);
+          }
         });
     }
 
@@ -69,11 +78,60 @@ export default function calculate(flow: Flow, config: Config): Flow {
     const targetNode = resultFlow.nodes.find((node) => node.id === edge.target);
     if (!targetNode) continue;
 
+    const inputObjects: Light[] = [];
+    inputs.forEach((input) => {
+      const newInput: Light = { ...input, params: [] };
+      parameters.forEach((param) => {
+        const formulaParamFree = config.freeSpaces[0].formulas.find(
+          (f) => f.paramId === param.id
+        );
+        if (formulaParamFree !== undefined) {
+          const freeScope = {
+            x: createFreeScope(
+              formulaParamFree.variables,
+              input,
+              +(edge.data.data.distance || 0)
+            ),
+          };
+          const freeValue = evaluate(
+            formulaParamFree.completeStream,
+            freeScope
+          );
+          newInput.params.push({
+            paramId: param.id,
+            value: Math.abs(freeValue) < Number.EPSILON ? 0 : freeValue,
+            unitPrefixId: "MILLI",
+          });
+        } else {
+          newInput.params.push({
+            paramId: param.id,
+            value:
+              input.params.find((paramValue) => paramValue.paramId === param.id)
+                ?.value || 0,
+            unitPrefixId: "MILLI",
+          });
+        }
+      });
+      inputObjects.push(newInput);
+    });
+
+    resultFlow = setNodeInput(
+      resultFlow,
+      target,
+      targetInterfaceId,
+      inputObjects
+    );
+
     const targetData = targetNode.data.data;
     if (targetNode.type === "starter") continue;
 
+    if (targetNode.type === "terminal") {
+      resultFlow = setMesurement(resultFlow, target, inputObjects);
+    }
+
     const targetObject = targetData.object;
     if (!targetObject) continue;
+
     const targetType = types.find((type) => type.id === targetObject.typeId);
     const targetAction = targetType?.interfaces.find(
       (inter) => inter.id === targetInterfaceId
@@ -87,12 +145,12 @@ export default function calculate(flow: Flow, config: Config): Flow {
         }
         const formula = action.formulas;
         const outputs: Light[] = [];
-        console.log(inputs);
-        inputs.forEach((light) => {
+        inputObjects.forEach((light) => {
           const output: Light = {
             id: crypto.randomUUID(),
             formInterfaceId: targetInterfaceId,
             params: [],
+            path: light.path,
           };
           parameters.map((param) => {
             const formulaParam = formula.find((f) => f.paramId === param.id);
@@ -107,7 +165,8 @@ export default function calculate(flow: Flow, config: Config): Flow {
               const value = evaluate(formulaParam.completeStream, scope);
               output.params.push({
                 paramId: param.id,
-                value: value,
+                value: Math.abs(value) < Number.EPSILON ? 0 : value,
+                unitPrefixId: "MILLI",
               });
             } else {
               output.params.push({
@@ -116,12 +175,12 @@ export default function calculate(flow: Flow, config: Config): Flow {
                   light.params.find(
                     (paramValue) => paramValue.paramId === param.id
                   )?.value || 0,
+                unitPrefixId: "MILLI",
               });
             }
           });
           outputs.push(output);
         });
-        console.log("outputs", outputs);
         resultFlow = setNodeOutput(
           resultFlow,
           targetNode.id,

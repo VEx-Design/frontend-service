@@ -5,6 +5,7 @@ export default function approximateConstant(
   const constants: { [key: string]: number } = {
     0: 0,
     π: Math.PI,
+
     e: Math.E,
     "√2": Math.SQRT2,
     "√3": Math.sqrt(3),
@@ -16,6 +17,12 @@ export default function approximateConstant(
     "√3/2": Math.sqrt(3) / 2,
     "√5/2": Math.sqrt(5) / 2,
     "1/π": 1 / Math.PI,
+    "π/2": Math.PI / 2,
+    "π/3": Math.PI / 3,
+    "π/4": Math.PI / 4,
+    "π/6": Math.PI / 6,
+    "π/180": Math.PI / 180,
+    "2/π": 2 / Math.PI,
     "2π": 2 * Math.PI,
     "1/e": 1 / Math.E,
     "ln(2)": Math.LN2,

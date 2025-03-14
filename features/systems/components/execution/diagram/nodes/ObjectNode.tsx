@@ -8,7 +8,7 @@ import { useConfig } from "@/features/systems/contexts/ProjectWrapper/ConfigCont
 const NodeComponent = memo((props: NodeProps) => {
   const { configAction, config } = useConfig();
   const { focusNode, setFocusNode } = useExecution();
-  const { object } = props.data.data as NodeData;
+  const { object, rotate } = props.data.data as NodeData;
   const typeId = object?.typeId || "";
 
   const [objectType, setObjectType] = useState(() =>
@@ -32,9 +32,16 @@ const NodeComponent = memo((props: NodeProps) => {
     [focusNode, props.id]
   );
 
+  if (!objectType) return null;
+
   return (
     <div className="cursor-pointer" onClick={handleOnClick}>
-      <ObjectNodeTemp objectType={objectType} isSelect={isSelect} />
+      <ObjectNodeTemp
+        objectType={objectType}
+        isSelect={isSelect}
+        rotate={rotate}
+        nodeId={props.id}
+      />
     </div>
   );
 });

@@ -95,47 +95,49 @@ export default function FormulaInput({ conditionId, paramId }: Props) {
   ]);
 
   return (
-    <div className="flex border border-editbar-border rounded-md p-1 bg-white text-sm w-full">
-      {myFormula?.formula.formulaTokens.map(({ stream, variable }, index) => (
-        <React.Fragment key={index}>
-          <AutoWidthInput
-            ref={(el) => {
-              inputRefs.current[index] = el;
-            }}
-            value={stream ?? ""}
-            onKeyDown={(e) => handleKeyDown(e, index)}
-            onFocus={() => setCurrentIdFormula({ conditionId, paramId })}
-            onSelect={(e) => {
-              updateCursorPosition(index)(e);
-            }}
-            onChange={(e) => formulaAction.setStream(e.target.value)}
-            onBlur={() => setCurrentIdFormula(undefined)}
-          />
-          <VariableBox
-            type={variable.type}
-            prop={typeAction.getProperty(variable.propId ?? "")}
-            inter={typeAction.getInterface(variable.interfaceId ?? "")}
-            param={configAction.getParameter(variable.paramId ?? "")}
-          />
-        </React.Fragment>
-      ))}
-      <input
-        ref={(el) => {
-          inputRefs.current[varLength] = el;
-        }}
-        type="text"
-        className="w-full outline-none focus:ring-0 focus:border-transparent"
-        value={myFormula?.formula.lastStream ?? ""}
-        onKeyDown={(e) => handleKeyDown(e, varLength)}
-        onFocus={() => {
-          setCurrentIdFormula({ conditionId, paramId });
-        }}
-        onSelect={(e) => {
-          updateCursorPosition(varLength)(e);
-        }}
-        onChange={(e) => formulaAction.setStream(e.target.value)}
-        onBlur={() => setCurrentIdFormula(undefined)}
-      />
+    <div className="flex w-full">
+      <div className="flex overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 border border-editbar-border rounded-md p-1 bg-white text-sm w-full">
+        {myFormula?.formula.formulaTokens.map(({ stream, variable }, index) => (
+          <React.Fragment key={index}>
+            <AutoWidthInput
+              ref={(el) => {
+                inputRefs.current[index] = el;
+              }}
+              value={stream ?? ""}
+              onKeyDown={(e) => handleKeyDown(e, index)}
+              onFocus={() => setCurrentIdFormula({ conditionId, paramId })}
+              onSelect={(e) => {
+                updateCursorPosition(index)(e);
+              }}
+              onChange={(e) => formulaAction.setStream(e.target.value)}
+              onBlur={() => setCurrentIdFormula(undefined)}
+            />
+            <VariableBox
+              type={variable.type}
+              prop={typeAction.getProperty(variable.propId ?? "")}
+              inter={typeAction.getInterface(variable.interfaceId ?? "")}
+              param={configAction.getParameter(variable.paramId ?? "")}
+            />
+          </React.Fragment>
+        ))}
+        <input
+          ref={(el) => {
+            inputRefs.current[varLength] = el;
+          }}
+          type="text"
+          className="w-full outline-none focus:ring-0 focus:border-transparent"
+          value={myFormula?.formula.lastStream ?? ""}
+          onKeyDown={(e) => handleKeyDown(e, varLength)}
+          onFocus={() => {
+            setCurrentIdFormula({ conditionId, paramId });
+          }}
+          onSelect={(e) => {
+            updateCursorPosition(varLength)(e);
+          }}
+          onChange={(e) => formulaAction.setStream(e.target.value)}
+          onBlur={() => setCurrentIdFormula(undefined)}
+        />
+      </div>
     </div>
   );
 }

@@ -449,6 +449,32 @@
               "completeStream": "0",
               "variables": [],
               "triggers": []
+            },
+            {
+              "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47",
+              "formulaTokens": [
+                {
+                  "id": "66c7331a-4bc4-4df3-9349-801cb0f42d5d",
+                  "stream": "",
+                  "variable": {
+                    "id": "c3c8cc2c-bfc6-42f3-a0ec-3c192ce549fd",
+                    "type": "interface",
+                    "interfaceId": "33296818-a26c-4caf-aadb-b6898585db88",
+                    "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "c3c8cc2c-bfc6-42f3-a0ec-3c192ce549fd",
+                  "type": "interface",
+                  "interfaceId": "33296818-a26c-4caf-aadb-b6898585db88",
+                  "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
+                }
+              ],
+              "triggers": ["33296818-a26c-4caf-aadb-b6898585db88"]
             }
           ]
         }
@@ -889,6 +915,32 @@
               "completeStream": "0",
               "variables": [],
               "triggers": []
+            },
+            {
+              "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47",
+              "formulaTokens": [
+                {
+                  "id": "1525a44d-49d8-4ac4-b93d-a1a3e9732207",
+                  "stream": "",
+                  "variable": {
+                    "id": "a9a99ecb-381b-4551-b80b-46f269eedf7e",
+                    "type": "interface",
+                    "interfaceId": "0a2e3637-292b-4e84-9a39-e60275cdc80d",
+                    "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "a9a99ecb-381b-4551-b80b-46f269eedf7e",
+                  "type": "interface",
+                  "interfaceId": "0a2e3637-292b-4e84-9a39-e60275cdc80d",
+                  "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
+                }
+              ],
+              "triggers": ["0a2e3637-292b-4e84-9a39-e60275cdc80d"]
             }
           ]
         }

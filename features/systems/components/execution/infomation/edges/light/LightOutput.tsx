@@ -13,7 +13,11 @@ export default function LightOutput({ symbol, value }: LightOutputProps) {
       <div className="flex items-center justify-center bg-C1 !text-white rounded-full py-1 px-2">
         <SymbolDisplay symbol={symbol} />
       </div>
-      <div>{approximateConstant(value)}</div>
+      {Number.isFinite(value) ? (
+        <div>{approximateConstant(value)}</div>
+      ) : (
+        <div>NaN</div>
+      )}
     </div>
   );
 }

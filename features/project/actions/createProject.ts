@@ -5,6 +5,7 @@ import { createProjectData, createProjectSchema } from "../schema/project";
 import { client } from "@/lib/service";
 import parameterConfig from "@/features/systems/libs/standard/parameter.json";
 import parameterGroupConfig from "@/features/systems/libs/standard/parameterGroup.json";
+import freeSpaceConfig from "@/features/systems/libs/standard/freeSpace.json";
 import { AppEdge } from "@/features/systems/libs/ClassEdge/types/AppEdge";
 import { Config } from "@/features/systems/libs/ClassConfig/types/Config";
 
@@ -15,10 +16,12 @@ import typePBS from "@/features/systems/libs/standard/type/PBS.json";
 import typeLP from "@/features/systems/libs/standard/type/LP.json";
 import typeHWP from "@/features/systems/libs/standard/type/HWP.json";
 import typeQWP from "@/features/systems/libs/standard/type/QWP.json";
+import typeAOM from "@/features/systems/libs/standard/type/AOM.json";
+import typeMirror from "@/features/systems/libs/standard/type/Mirror.json";
 
 export default async function createProject(form: createProjectData) {
   const { success, data } = createProjectSchema.safeParse(form);
-
+  // Update the initial flow with some errror
   const initialFlow: { nodes: AppNode[]; edges: AppEdge[] } = {
     nodes: [],
     edges: [],
@@ -32,11 +35,13 @@ export default async function createProject(form: createProjectData) {
       JSON.parse(JSON.stringify(typeLP)),
       JSON.parse(JSON.stringify(typeHWP)),
       JSON.parse(JSON.stringify(typeQWP)),
+      JSON.parse(JSON.stringify(typeAOM)),
+      JSON.parse(JSON.stringify(typeMirror)),
     ],
     // types: [],
     ...parameterConfig,
     ...parameterGroupConfig,
-    freeSpaces: [{ id: crypto.randomUUID(), name: "Regular", formulas: [] }],
+    ...JSON.parse(JSON.stringify(freeSpaceConfig)),
   };
 
   if (!success) {

@@ -291,6 +291,32 @@
                 }
               ],
               "triggers": ["3ac8f4ce-c2fe-48cd-a48f-b9da9a48c513"]
+            },
+            {
+              "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47",
+              "formulaTokens": [
+                {
+                  "id": "6a4ebd65-033d-40ce-bebd-6c3620b59d54",
+                  "stream": "",
+                  "variable": {
+                    "id": "0347361e-857b-433e-9b3f-26b997addef6",
+                    "type": "interface",
+                    "interfaceId": "3ac8f4ce-c2fe-48cd-a48f-b9da9a48c513",
+                    "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "0347361e-857b-433e-9b3f-26b997addef6",
+                  "type": "interface",
+                  "interfaceId": "3ac8f4ce-c2fe-48cd-a48f-b9da9a48c513",
+                  "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
+                }
+              ],
+              "triggers": ["3ac8f4ce-c2fe-48cd-a48f-b9da9a48c513"]
             }
           ]
         }
@@ -570,6 +596,32 @@
                   "type": "interface",
                   "interfaceId": "40843797-fad0-46c4-9b47-75c7765cab22",
                   "paramId": "f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5"
+                }
+              ],
+              "triggers": ["40843797-fad0-46c4-9b47-75c7765cab22"]
+            },
+            {
+              "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47",
+              "formulaTokens": [
+                {
+                  "id": "c55479d0-4080-42b3-baef-68774125a2b4",
+                  "stream": "",
+                  "variable": {
+                    "id": "efbcb112-760a-4b1c-a09d-75b54f445bfe",
+                    "type": "interface",
+                    "interfaceId": "40843797-fad0-46c4-9b47-75c7765cab22",
+                    "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "efbcb112-760a-4b1c-a09d-75b54f445bfe",
+                  "type": "interface",
+                  "interfaceId": "40843797-fad0-46c4-9b47-75c7765cab22",
+                  "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
                 }
               ],
               "triggers": ["40843797-fad0-46c4-9b47-75c7765cab22"]

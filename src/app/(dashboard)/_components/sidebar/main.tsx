@@ -8,7 +8,7 @@ const Sidebar = async () => {
   const email = user?.email;
 
   return (
-    <aside className="md:w-[200px] h-full border-r px-2 flex flex-col space-y-3 items-center md:items-start">
+    <aside className="w-full h-full border-r px-2 flex flex-col space-y-3 items-center md:items-start">
       <div className="flex items-center gap-2 p-2">
         <ProfilePicture />
         <div className=" hidden md:block md:w-[130px] overflow-hidden text-ellipsis whitespace-nowrap">

@@ -63,7 +63,34 @@ export function ExecutionProvider(props: { children: React.ReactNode }) {
     if (executedFlow) {
       setNodes(executedFlow.nodes);
       setEdges(executedFlow.edges);
+      if (focusNode) {
+        const foundNode = executedFlow.nodes.find(
+          (node) => node.id === focusNode.id
+        );
+        if (foundNode) {
+          setFocusNode({
+            id: foundNode.id,
+            type: foundNode.type || "",
+            data: foundNode.data.data,
+          });
+        }
+      }
+      if (focusEdge) {
+        const foundEdge = executedFlow.edges.find(
+          (edge) => edge.id === focusEdge.id
+        );
+        if (foundEdge) {
+          setFocusEdge({
+            id: foundEdge.id,
+            type: foundEdge.type || "",
+            data: foundEdge.data.data,
+          });
+        }
+      }
     }
+    console.log("Executed Flow", executedFlow);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [executedFlow, setEdges, setNodes]);
 
   const edgeAction: EdgeAction = {

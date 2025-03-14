@@ -2,6 +2,7 @@ import { useLightInfo } from "@/features/systems/contexts/Execution/LightInfoCon
 import { Light } from "@/features/systems/libs/ClassLight/types/Light";
 import { cn } from "@/lib/utils";
 import React from "react";
+import PathColor from "../../../_components/PathColor";
 
 interface Props {
   index: number;
@@ -9,7 +10,7 @@ interface Props {
 }
 
 export default function LightBox({ index, light }: Props) {
-  const { lightInfo, setLightInfo, setFocusDistance } = useLightInfo();
+  const { lightInfo, setLightInfo } = useLightInfo();
   const id = lightInfo?.id;
 
   const handleOnClick = () => {
@@ -17,7 +18,6 @@ export default function LightBox({ index, light }: Props) {
       return;
     }
     setLightInfo(light);
-    setFocusDistance(0);
   };
   return (
     <div
@@ -36,6 +36,7 @@ export default function LightBox({ index, light }: Props) {
       >
         {`Light ${index + 1}`}
       </span>
+      <PathColor color={light.path.color} />
     </div>
   );
 }

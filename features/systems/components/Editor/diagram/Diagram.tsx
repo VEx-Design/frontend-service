@@ -36,6 +36,7 @@ export default function Diagram() {
     edgeAction,
     setFocusNode,
     setFocusEdge,
+    setTwinFocusEdge,
     nodesState,
     edgesState,
   } = useEditor();
@@ -76,16 +77,47 @@ export default function Diagram() {
     (changes: { edges: Edge[] }) => {
       if (changes.edges.length > 0) {
         setFocusNode(undefined);
+
+        const selectedEdge = changes.edges[0];
+
         setFocusEdge({
-          id: changes.edges[0].id,
+          id: selectedEdge.id,
           type: "default",
-          data: changes.edges[0].data?.data ?? {},
+          target: selectedEdge.target,
+          source: selectedEdge.source,
+          targetHandle: selectedEdge.targetHandle ?? "",
+          sourceHandle: selectedEdge.sourceHandle ?? "",
+          data: selectedEdge.data?.data ?? {},
         });
+
+        const twinEdge = edges.findLast(
+          (edge) =>
+            edge.target === selectedEdge.source &&
+            edge.targetHandle?.replace("target-handle-", "") ===
+              selectedEdge.sourceHandle?.replace("source-handle-", "") &&
+            edge.source === selectedEdge.target &&
+            edge.sourceHandle?.replace("source-handle-", "") ===
+              selectedEdge.targetHandle?.replace("target-handle-", "")
+        );
+
+        if (twinEdge) {
+          setTwinFocusEdge({
+            id: twinEdge.id,
+            type: "default",
+            target: twinEdge.target,
+            source: twinEdge.source,
+            targetHandle: twinEdge.targetHandle ?? "",
+            sourceHandle: twinEdge.sourceHandle ?? "",
+            data: twinEdge.data?.data ?? {},
+          });
+        }
       } else {
         setFocusEdge(undefined);
+        setTwinFocusEdge(undefined);
       }
     },
-    [setFocusEdge, setFocusNode]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [edges]
   );
 
   const handleBackgroundClick = useCallback(() => {

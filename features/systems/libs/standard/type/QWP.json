@@ -527,6 +527,32 @@
                 }
               ],
               "triggers": ["ee4a8c93-7fde-4ca3-95f9-29cc00ae39fc"]
+            },
+            {
+              "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47",
+              "formulaTokens": [
+                {
+                  "id": "a5955d99-00ff-44f2-bdc1-7975b59e4758",
+                  "stream": "",
+                  "variable": {
+                    "id": "5ee08208-5c30-40ff-9022-665f772f023b",
+                    "type": "interface",
+                    "interfaceId": "ee4a8c93-7fde-4ca3-95f9-29cc00ae39fc",
+                    "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "5ee08208-5c30-40ff-9022-665f772f023b",
+                  "type": "interface",
+                  "interfaceId": "ee4a8c93-7fde-4ca3-95f9-29cc00ae39fc",
+                  "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
+                }
+              ],
+              "triggers": ["ee4a8c93-7fde-4ca3-95f9-29cc00ae39fc"]
             }
           ]
         }
@@ -687,7 +713,7 @@
                 },
                 {
                   "id": "0b704c53-156e-4607-b0a7-9424e726f246",
-                  "stream": "*(cos(2*",
+                  "stream": "*(cos(2*-",
                   "variable": {
                     "id": "5d13527b-b849-46e2-b175-b636c4f18777",
                     "type": "prop",
@@ -706,7 +732,7 @@
                 },
                 {
                   "id": "e607346e-1ea8-48fe-8314-38fc2dc2d4ea",
-                  "stream": "*(sin(2*",
+                  "stream": "*(sin(2*-",
                   "variable": {
                     "id": "bf2a9239-5c3f-498e-a25b-1e167aab2431",
                     "type": "prop",
@@ -725,7 +751,7 @@
                 },
                 {
                   "id": "59e77777-f1c7-4a90-9f96-eaee0f179180",
-                  "stream": "*cos(2*",
+                  "stream": "*cos(2*-",
                   "variable": {
                     "id": "aa4637b7-1175-4aa0-905e-11c66c142a59",
                     "type": "prop",
@@ -734,7 +760,7 @@
                 },
                 {
                   "id": "4e4eb52a-e1be-4216-8463-9a0e264708e5",
-                  "stream": ")*sin(2*",
+                  "stream": ")*sin(2*-",
                   "variable": {
                     "id": "80988be4-9769-4761-94a5-84c559d5a683",
                     "type": "prop",
@@ -742,10 +768,10 @@
                   }
                 },
                 {
-                  "id": "85de07e4-9d24-43d0-b68c-6260a1907fd3",
+                  "id": "15f9d945-bf9e-4855-9d88-47f22f475734",
                   "stream": ")*(1-cos(pi/2))+",
                   "variable": {
-                    "id": "826a3f6e-a62f-44c8-8185-8acbeb46e465",
+                    "id": "6a0cb4d0-6dff-4174-a68c-1a731068e98d",
                     "type": "interface",
                     "interfaceId": "b3871849-792a-468f-af8d-eb750907c853",
                     "paramId": "f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5"
@@ -753,7 +779,7 @@
                 },
                 {
                   "id": "a3dd1169-ffcf-43d1-8876-c9a1641e3bc1",
-                  "stream": "*sin(2*",
+                  "stream": "*sin(2*-",
                   "variable": {
                     "id": "87d06443-59ff-46c9-b0c2-7030fe64e97a",
                     "type": "prop",
@@ -762,7 +788,7 @@
                 }
               ],
               "lastStream": ")*sin(pi/2)",
-              "completeStream": "x[1]*(cos(2*x[2])^2)+x[3]*(sin(2*x[4])^2)*cos(pi/2)+x[5]*cos(2*x[6])*sin(2*x[7])*(1-cos(pi/2))+x[8]*sin(2*x[9])*sin(pi/2)",
+              "completeStream": "x[1]*(cos(2*-x[2])^2)+x[3]*(sin(2*-x[4])^2)*cos(pi/2)+x[5]*cos(2*-x[6])*sin(2*-x[7])*(1-cos(pi/2))+x[8]*sin(2*-x[9])*sin(pi/2)",
               "variables": [
                 {
                   "id": "225ea554-6086-4ca0-962f-14bd56f1096f",
@@ -803,7 +829,7 @@
                   "propId": "2b0d8038-a7cf-42d2-9dbc-1e5f849f52fe"
                 },
                 {
-                  "id": "826a3f6e-a62f-44c8-8185-8acbeb46e465",
+                  "id": "6a0cb4d0-6dff-4174-a68c-1a731068e98d",
                   "type": "interface",
                   "interfaceId": "b3871849-792a-468f-af8d-eb750907c853",
                   "paramId": "f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5"
@@ -831,7 +857,7 @@
                 },
                 {
                   "id": "80f827c9-ce3c-4f21-bc6c-ae94b657d6b4",
-                  "stream": "*cos(2*",
+                  "stream": "*cos(2*-",
                   "variable": {
                     "id": "d4f99d30-92a5-4220-a586-db38a0d35e43",
                     "type": "prop",
@@ -840,7 +866,7 @@
                 },
                 {
                   "id": "44eae7fd-f64c-45cf-9306-a6ac9a7785f0",
-                  "stream": ")*sin(2*",
+                  "stream": ")*sin(2*-",
                   "variable": {
                     "id": "efbc30d8-0008-4537-a5e5-a26d68897f3f",
                     "type": "prop",
@@ -859,7 +885,7 @@
                 },
                 {
                   "id": "b48e0274-9d09-4056-98f1-486b317e59d8",
-                  "stream": "*(cos(2*",
+                  "stream": "*(cos(2*-",
                   "variable": {
                     "id": "5e84bc10-2a78-4e43-8a5c-8836d0465066",
                     "type": "prop",
@@ -878,7 +904,7 @@
                 },
                 {
                   "id": "9a8062ce-a3e5-4c87-88b1-fbea48243106",
-                  "stream": "*(sin(2*",
+                  "stream": "*(sin(2*-",
                   "variable": {
                     "id": "3a5c3c29-64bb-48e1-b48b-70747221a36c",
                     "type": "prop",
@@ -897,7 +923,7 @@
                 },
                 {
                   "id": "08ab0ffb-5dfd-44fe-bffa-dd42e1feb8e8",
-                  "stream": "*cos(2*",
+                  "stream": "*cos(2*-",
                   "variable": {
                     "id": "6883dbcd-f622-4aec-9d6d-cda0fb293880",
                     "type": "prop",
@@ -906,7 +932,7 @@
                 }
               ],
               "lastStream": ")*sin(pi/2)",
-              "completeStream": "x[1]*cos(2*x[2])*sin(2*x[3])*(1-cos(pi/2))+x[4]*(cos(2*x[5])^2)*cos(pi/2)+x[6]*(sin(2*x[7])^2)-x[8]*cos(2*x[9])*sin(pi/2)",
+              "completeStream": "x[1]*cos(2*-x[2])*sin(2*-x[3])*(1-cos(pi/2))+x[4]*(cos(2*-x[5])^2)*cos(pi/2)+x[6]*(sin(2*-x[7])^2)-x[8]*cos(2*-x[9])*sin(pi/2)",
               "variables": [
                 {
                   "id": "ef3de17a-55d0-4b32-b463-813095012915",
@@ -975,7 +1001,7 @@
                 },
                 {
                   "id": "fb657858-7624-4bf5-884b-b9514f3766d4",
-                  "stream": "*sin(2*",
+                  "stream": "*sin(2*-",
                   "variable": {
                     "id": "3540320a-6133-4c2a-a855-947a36186f71",
                     "type": "prop",
@@ -994,7 +1020,7 @@
                 },
                 {
                   "id": "304a5e39-b223-48a2-a43e-5035d6f62c67",
-                  "stream": "*cos(2*",
+                  "stream": "*cos(2*-",
                   "variable": {
                     "id": "6378a2fa-c8cd-4c56-ac4b-b70fadd49eab",
                     "type": "prop",
@@ -1013,7 +1039,7 @@
                 }
               ],
               "lastStream": "*cos(pi/2)",
-              "completeStream": "-x[1]*sin(2*x[2])*sin(pi/2)+x[3]*cos(2*x[4])*sin(pi/2)+x[5]*cos(pi/2)",
+              "completeStream": "-x[1]*sin(2*-x[2])*sin(pi/2)+x[3]*cos(2*-x[4])*sin(pi/2)+x[5]*cos(pi/2)",
               "variables": [
                 {
                   "id": "87aa09d0-4cd9-4f95-9a30-56413eb73772",
@@ -1042,6 +1068,32 @@
                   "type": "interface",
                   "interfaceId": "b3871849-792a-468f-af8d-eb750907c853",
                   "paramId": "f0505ffe-6fa4-41ed-8cbe-b39d72d9c9f5"
+                }
+              ],
+              "triggers": ["b3871849-792a-468f-af8d-eb750907c853"]
+            },
+            {
+              "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47",
+              "formulaTokens": [
+                {
+                  "id": "1edd23cb-890c-4518-a092-064f92c6abcf",
+                  "stream": "",
+                  "variable": {
+                    "id": "b6b02051-9856-456d-9e44-9e39782036a0",
+                    "type": "interface",
+                    "interfaceId": "b3871849-792a-468f-af8d-eb750907c853",
+                    "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
+                  }
+                }
+              ],
+              "lastStream": "",
+              "completeStream": "x[1]",
+              "variables": [
+                {
+                  "id": "b6b02051-9856-456d-9e44-9e39782036a0",
+                  "type": "interface",
+                  "interfaceId": "b3871849-792a-468f-af8d-eb750907c853",
+                  "paramId": "3c897bee-24d7-4a06-8771-ed08152d0d47"
                 }
               ],
               "triggers": ["b3871849-792a-468f-af8d-eb750907c853"]

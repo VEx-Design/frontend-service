@@ -37,8 +37,8 @@ const PolarizationWave = ({
 
     for (let i = 0; i < points.length / 3; i++) {
       const x = i * 0.3 - 15; // Longer X-axis
-      const y = Ex * 10 * Math.sin(x + timeRef.current);
-      const z = Ey * 10 * Math.sin(x + timeRef.current + phase);
+      const z = Ex * 10 * Math.sin(x + timeRef.current); // Ex controls Z oscillation
+      const y = Ey * 10 * Math.sin(x + timeRef.current + phase); // Ey controls Y oscillation
 
       // Line points
       points[i * 3] = x;

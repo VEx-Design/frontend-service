@@ -6,7 +6,6 @@ import React, {
   ReactNode,
   useState,
   useMemo,
-  useEffect,
 } from "react";
 import { Config, ParameterGroup } from "../../libs/ClassConfig/types/Config";
 import { Type } from "../../libs/ClassType/types/Type";
@@ -85,10 +84,6 @@ export const ConfigProvider = ({ children, project }: ConfigProviderProps) => {
     }),
     [config]
   );
-
-  useEffect(() => {
-    console.log("Config updated:", config);
-  }, [config]);
 
   return (
     <ConfigContext.Provider
